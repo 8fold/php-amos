@@ -62,7 +62,7 @@ class PageTitle implements Buildable
         if ($this->isReversed()) {
             $titles = array_reverse($titles);
         }
-        return implode(' | ', $titles);
+        return implode(' | ', array_filter($titles));
     }
 
     /**
