@@ -20,6 +20,10 @@ test('Default page title', function() {
         PageTitle::create($store)->build()
     )->toBe('Index page');
 
+    expect(
+        PageTitle::create($store)->buildBookEnd()
+    )->toBe('Index page');
+
     $store = Store::create($this->root, '/subfolder');
 
     expect(
