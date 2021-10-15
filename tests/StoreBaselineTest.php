@@ -40,6 +40,17 @@ test('Markdown', function() {
     );
 });
 
+test('Folder content', function() {
+    $this->assertEquals(
+        Store::create($this->root)->folderContent('.navigation'),
+        [
+            Item::create($this->root)->append('.navigation', 'footer.md'),
+            Item::create($this->root)->append('.navigation', 'primary.md'),
+            Item::create($this->root)->append('.navigation', 'tiered.md'),
+        ]
+    );
+});
+
 test('Navigation shorthand', function() {
     expect(
         Store::create($this->root)->navigation('primary.md')

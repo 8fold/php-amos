@@ -77,6 +77,23 @@ class Store
         return [];
     }
 
+    /**
+     * @param  string $folder [description]
+     * @return array<Item>         [description]
+     */
+    public function folderContent(string $folder): array
+    {
+        $item = Item::create($this->root)->append($folder);
+        if ($item->isFolder()) {
+            $c = $item->content();
+            if (is_array($c)) {
+                return $c;
+
+            }
+        }
+        return [];
+    }
+
     private function item(string ...$append): Item
     {
         $extendedTail = array_merge($this->tail(), $append);
