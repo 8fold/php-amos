@@ -15,7 +15,7 @@ class PageTitle implements Buildable
      */
     private $store;
 
-    private string $titleStyle = 'page';
+    private $titles = [];
 
     private bool $isReversed = false;
 
@@ -29,12 +29,6 @@ class PageTitle implements Buildable
         $this->store = $store;
     }
 
-    public function bookEnd(): PageTitle
-    {
-        $this->titleStyle = 'book-end';
-        return $this;
-    }
-
     public function reversed(): PageTitle
     {
         $this->isReversed = true;
@@ -44,14 +38,18 @@ class PageTitle implements Buildable
     public function build(): string
     {
         $titles = $this->titles();
-        if ($this->titleStyle === 'book-end' and count($titles) > 2) {
-            $t = [];
-            $t[] = array_shift($titles);
-            $t[] = array_pop($titles);
+        return $this->combineTitles($titles);
+    }
 
-            $titles = $t;
-        }
-        return implode(' | ', $titles);
+    public function buildBookEnd(): string
+    {
+        $titles = $this->titles();
+
+        $t = [];
+        $t[] = array_shift($titles);
+        $t[] = array_pop($titles);
+
+        return $this->combineTitles($t);
     }
 
     public function __toString(): string
@@ -59,33 +57,41 @@ class PageTitle implements Buildable
         return $this->build();
     }
 
+    private function combineTitles(array $titles): string
+    {
+        if ($this->isReversed()) {
+            $titles = array_reverse($titles);
+        }
+        return implode(' | ', $titles);
+    }
+
     /**
      * @return array<string> [description]
      */
     private function titles(): array
     {
-        $titles = [];
-        $s = $this->store();
-        while (! $s->isRoot()) {
-            $m = $s->markdown();
-            if (is_object($m)) {
-                $titles[] = $m->title();
+        if (count($this->titles) === 0) {
+            $titles = [];
+            $s = $this->store();
+            while (! $s->isRoot()) {
+                $m = $s->markdown();
+                if (is_object($m)) {
+                    $titles[] = $m->title();
+                }
+
+                $s = $s->up();
             }
 
-            $s = $s->up();
-        }
-
-        if ($s->isRoot()) {
-            $m = $s->markdown();
-            if (is_object($m)) {
-                $titles[] = $m->title();
+            if ($s->isRoot()) {
+                $m = $s->markdown();
+                if (is_object($m)) {
+                    $titles[] = $m->title();
+                }
             }
-        }
 
-        if ($this->isReversed()) {
-            return array_reverse($titles);
+            $this->titles = $titles;
         }
-        return $titles;
+        return $this->titles;
     }
 
     private function isReversed(): bool
