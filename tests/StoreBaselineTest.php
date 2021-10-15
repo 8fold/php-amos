@@ -1,0 +1,64 @@
+<?php
+
+declare(strict_types=1);
+
+use Eightfold\Amos\Store;
+
+use Eightfold\FileSystem\Item;
+
+beforeEach(function() {
+    $this->root = Item::create(__DIR__)->up()->append('content-example')
+        ->thePath();
+});
+
+test('Markdown', function() {
+    expect(
+        Store::create($this->root)->markdown()->title()
+    )->toBe('Index page');
+
+    expect(
+        Store::create($this->root, '/subfolder')->markdown()->title()
+    )->toBe('Subfolder content title');
+
+    expect(
+        Store::create($this->root, '/subfolder/sub')->markdown()->content()
+    )->toBe(<<<md
+        # A heading
+
+        This would be the body copy.
+
+        md
+    );
+
+    expect(
+        Store::create($this->root, '/subfolder/sub')->markdown()->html()
+    )->toBe(<<<md
+        <h1>A heading</h1>
+        <p>This would be the body copy.</p>
+
+        md
+    );
+});
+
+test('Navigation shorthand', function() {
+    expect(
+        Store::create($this->root)->navigation('primary.md')
+    )->toBe([
+        '/subfolder Link text',
+        '/subfolder/sub Link 2 text'
+    ]);
+
+    expect(
+        Store::create($this->root)->navigation('footer.md')
+    )->toBe([
+        '/subfolder Some other link text',
+        '/subfolder/sub Yet another link text'
+    ]);
+
+    expect(
+        Store::create($this->root)->navigation('tiered.md')
+    )->toBe([
+        '/subfolder Some other link text',
+        ['/subfolder/sub Yet another link text']
+    ]);
+});

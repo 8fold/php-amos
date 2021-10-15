@@ -26,6 +26,8 @@ The following is a sample folder structure taken from a site leveraging the Amos
 └── content.md
 ```
 
+A user goes to your website: `https://8fold.pro`
+
 ## Details
 
 I (Josh) have developed multiple applications designed to help people easily update websites. I've also used a lot of content management systems and frameworks such as Laravel, WordPress, and some that I can't remember at the moment. Over the years I've decided to try and compartmentalize things a bit more. For example, use flat files for content, use front matter for details related to that content, and only use a database to manage relationships between content and metadata (if I never have to interact with a database again it will be too soon).
