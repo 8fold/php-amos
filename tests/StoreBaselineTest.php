@@ -13,6 +13,14 @@ beforeEach(function() {
     $this->store = Store::create($this->root);
 });
 
+test('Append', function() {
+    expect(
+        $this->store->append('subfolder', 'sub')->markdown()->title()
+    )->toBe(
+        'Sub'
+    );
+});
+
 test('Properties', function() {
     expect(
         $this->store->root()

@@ -70,22 +70,20 @@ class Store
         return false;
     }
 
+    public function append(string ...$parts): Store
+    {
+        return Store::create(
+            $this->root,
+            implode('/', $this->extendedTail(...$parts))
+        );
+    }
+
     public function up(): Store
     {
         $tail = $this->tail();
         array_pop($tail);
         $path = implode('/', $tail);
         return Store::create($this->root, '/' . $path);
-    }
-
-    /**
-     * @return array<string> [description]
-     */
-    private function tail(): array
-    {
-        $tail   = explode('/', $this->path());
-        $tail   = array_filter($tail);
-        return $tail;
     }
 
     public function media(string $path): Store
@@ -133,10 +131,27 @@ class Store
 
     private function item(string ...$append): Item
     {
-        $extendedTail = array_merge($this->tail(), $append);
+        $extendedTail = $this->extendedTail(...$append);
         return Item::create($this->root)->append(...$extendedTail);
     }
 
+    /**
+     * @return array<string>         [description]
+     */
+    private function extendedTail(string ...$append): array
+    {
+        return array_merge($this->tail(), $append);
+    }
+
+    /**
+     * @return array<string> [description]
+     */
+    private function tail(): array
+    {
+        $tail   = explode('/', $this->path());
+        $tail   = array_filter($tail);
+        return $tail;
+    }
 
 
 
