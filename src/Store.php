@@ -38,6 +38,11 @@ class Store
         return false;
     }
 
+    public function root(): string
+    {
+        return $this->root;
+    }
+
     public function isRoot(): bool
     {
         return count($this->tail()) === 0;
