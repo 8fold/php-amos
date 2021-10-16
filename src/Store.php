@@ -38,6 +38,10 @@ class Store
         return count($this->tail()) === 0;
     }
 
+    public function hasFile(string $fileName): bool
+    {
+        return $this->item($fileName)->isFile();
+    }
     /**
      * @return Markdown|bool|boolean [description]
      */
@@ -69,6 +73,11 @@ class Store
         $tail   = explode('/', $this->path());
         $tail   = array_filter($tail);
         return $tail;
+    }
+
+    public function media(string $path): Store
+    {
+        return Store::create($this->root, '/.media' . $path);
     }
 
     /**

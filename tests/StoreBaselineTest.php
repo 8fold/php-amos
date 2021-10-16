@@ -29,6 +29,18 @@ test('Properties', function() {
     expect(
         $this->store->isRoot()
     )->toBeTrue();
+
+    expect(
+        Store::create(
+            $this->store->root()
+        )->media($this->store->path())->hasfile('poster.png')
+    )->toBeTrue();
+
+    expect(
+        Store::create(
+            $this->store->root()
+        )->media($this->store->path())->hasfile('something.png')
+    )->toBeFalse();
 });
 
 test('Markdown', function() {
