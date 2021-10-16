@@ -23,6 +23,21 @@ class Store
         $this->path = $path;
     }
 
+    public function root(): string
+    {
+        return $this->root;
+    }
+
+    public function path(): string
+    {
+        return $this->path;
+    }
+
+    public function isRoot(): bool
+    {
+        return count($this->tail()) === 0;
+    }
+
     /**
      * @return Markdown|bool|boolean [description]
      */
@@ -38,16 +53,6 @@ class Store
         return false;
     }
 
-    public function root(): string
-    {
-        return $this->root;
-    }
-
-    public function isRoot(): bool
-    {
-        return count($this->tail()) === 0;
-    }
-
     public function up(): Store
     {
         $tail = $this->tail();
@@ -61,7 +66,7 @@ class Store
      */
     private function tail(): array
     {
-        $tail   = explode('/', $this->path);
+        $tail   = explode('/', $this->path());
         $tail   = array_filter($tail);
         return $tail;
     }

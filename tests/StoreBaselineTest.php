@@ -9,11 +9,31 @@ use Eightfold\FileSystem\Item;
 beforeEach(function() {
     $this->root = Item::create(__DIR__)->up()->append('content-example')
         ->thePath();
+
+    $this->store = Store::create($this->root);
+});
+
+test('Properties', function() {
+    expect(
+        $this->store->root()
+    )->toBe(
+        $this->root
+    );
+
+    expect(
+        $this->store->path()
+    )->toBe(
+        ''
+    );
+
+    expect(
+        $this->store->isRoot()
+    )->toBeTrue();
 });
 
 test('Markdown', function() {
     expect(
-        Store::create($this->root)->markdown()->title()
+        $this->store->markdown()->title()
     )->toBe('Index page');
 
     expect(
