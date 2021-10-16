@@ -13,6 +13,21 @@ beforeEach(function() {
         ->thePath();
 });
 
+test('Can add arbitrary title parts', function() {
+    $store = Store::create($this->root);
+
+    // When working with Events there are URLs with no corresponding folder with
+    // content. However, we don't want all the event-related URLs to just say
+    // "Events". So, with this method, we can add title parts.
+    expect(
+        PageTitle::create($store)
+            ->reversed()
+            ->buildWithAdditions('Events', '2020', 'May')
+    )->toBe(
+        'May | 2020 | Events | Index page'
+    );
+});
+
 test('Default page title', function() {
     $store = Store::create($this->root);
 
