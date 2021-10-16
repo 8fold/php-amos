@@ -40,8 +40,14 @@ class Store
 
     public function hasFile(string $fileName): bool
     {
-        return $this->item($fileName)->isFile();
+        return $this->file($fileName)->isFile();
     }
+
+    public function file(string $fileName): Item
+    {
+        return $this->item($fileName);
+    }
+
     /**
      * @return Markdown|bool|boolean [description]
      */
