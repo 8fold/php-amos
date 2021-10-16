@@ -80,6 +80,11 @@ class Store
         return Store::create($this->root, '/.media' . $path);
     }
 
+    public function assets(string $path): Store
+    {
+        return Store::create($this->root, '/.assets' . $path);
+    }
+
     /**
      * @param  string $fileName [description]
      * @return array<string>           [description]

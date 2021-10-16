@@ -26,7 +26,7 @@ The following is a sample folder structure taken from a site leveraging the Amos
 └── content.md
 ```
 
-A user goes to your website: `https://8fold.pro`
+The distinction between `.assets` and `.media` is that media are typically elements within a piece of content whereas assets are elements used by the interface itself. Similarly `.resources` are typically files you'd like to let users download from your site.
 
 ## Details
 

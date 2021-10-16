@@ -41,6 +41,18 @@ test('Properties', function() {
             $this->store->root()
         )->media($this->store->path())->hasfile('something.png')
     )->toBeFalse();
+
+    expect(
+        Store::create(
+            $this->store->root()
+        )->assets($this->store->path())->hasfile('poster.png')
+    )->toBeTrue();
+
+    expect(
+        Store::create(
+            $this->store->root()
+        )->assets($this->store->path())->hasfile('something.png')
+    )->toBeFalse();
 });
 
 test('Markdown', function() {

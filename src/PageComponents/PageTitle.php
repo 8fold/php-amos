@@ -41,7 +41,7 @@ class PageTitle implements Buildable
         return $this->combineTitles($titles);
     }
 
-    public function buildBookEnd(): string
+    public function buildBookend(): string
     {
         $titles = $this->titles();
 

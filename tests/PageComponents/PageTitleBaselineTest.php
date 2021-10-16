@@ -37,11 +37,11 @@ test('Default page title', function() {
     )->toBe('Sub | Subfolder content title | Index page');
 });
 
-test('Book end page title style', function() {
+test('Bookend page title style', function() {
     $store = Store::create($this->root, '/subfolder/sub');
 
     expect(
-        PageTitle::create($store)->buildBookEnd()
+        PageTitle::create($store)->buildBookend()
     )->toBe(
         'Sub | Index page'
     );
@@ -90,7 +90,7 @@ test('Performant and cached', function() use ($ms) {
 
     expect($cycleTime1)->toBeLessThan(0.4);
 
-    // build book end call
+    // build bookend call
     $cycleTime2 = $ms($start2, $end2);
 
     expect($cycleTime2)->toBeLessThan(0.002);
