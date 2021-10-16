@@ -40,12 +40,16 @@ class Store
 
     public function hasFile(string $fileName): bool
     {
-        return $this->file($fileName)->isFile();
+        return is_object($this->file($fileName));
     }
 
-    public function file(string $fileName): Item
+    public function file(string $fileName)
     {
-        return $this->item($fileName);
+        $item = $this->item($fileName);
+        if ($item->isFile()) {
+            return $item;
+        }
+        return false;
     }
 
     /**
