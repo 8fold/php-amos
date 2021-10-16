@@ -15,6 +15,9 @@ class PageTitle implements Buildable
      */
     private $store;
 
+    /**
+     * @var array<string>
+     */
     private $titles = [];
 
     private bool $isReversed = false;
@@ -46,8 +49,15 @@ class PageTitle implements Buildable
         $titles = $this->titles();
 
         $t = [];
-        $t[] = array_shift($titles);
-        $t[] = array_pop($titles);
+        $first = array_shift($titles);
+        if ($first !== null and strlen($first) > 0) {
+            $t[] = $first;
+        }
+
+        $last  = array_pop($titles);
+        if ($last !== null and strlen($last) > 0 and $last !== $first) {
+            $t[] = $last;
+        }
 
         return $this->combineTitles($t);
     }
@@ -57,6 +67,9 @@ class PageTitle implements Buildable
         return $this->build();
     }
 
+    /**
+     * @param  array<string>  $titles [description]
+     */
     private function combineTitles(array $titles): string
     {
         if ($this->isReversed()) {

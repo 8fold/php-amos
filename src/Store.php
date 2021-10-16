@@ -43,6 +43,9 @@ class Store
         return is_object($this->file($fileName));
     }
 
+    /**
+     * @return Item|bool|boolean           [description]
+     */
     public function file(string $fileName)
     {
         $item = $this->item($fileName);
