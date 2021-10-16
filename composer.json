@@ -11,9 +11,9 @@
   ],
   "require": {
     "php": "^7.4||^8.0",
-    "8fold/php-filesystem": "^0.5.0",
-    "8fold/commonmark-fluent-markdown": "^0.9.1",
-    "8fold/php-html-builder": "^0.5.1"
+    "8fold/php-filesystem": "*",
+    "8fold/commonmark-fluent-markdown": "*",
+    "8fold/php-html-builder": "*"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.6",
