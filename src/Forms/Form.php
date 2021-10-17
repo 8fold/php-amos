@@ -44,6 +44,9 @@ class Form implements Buildable
         $this->action = $action;
     }
 
+    /**
+     * @param Buildable|string $content [description]
+     */
     public function content(Buildable ...$content): Form
     {
         $this->content = $content;
