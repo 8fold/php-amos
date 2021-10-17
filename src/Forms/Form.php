@@ -26,11 +26,6 @@ class Form implements Buildable
         return new Form($methodAction);
     }
 
-    static public function fold(...$args): Foldable
-    {
-        return new static(...$args);
-    }
-
     public function __construct($methodAction = 'post /')
     {
         list($method, $action) = explode(' ', $methodAction, 2);
@@ -77,7 +72,7 @@ class Form implements Buildable
             'method ' . $this->method,
             'action ' . $this->action,
             ...$this->properties()
-        );
+        )->build();
     }
 
     public function __toString(): string

@@ -1,32 +1,35 @@
 <?php
 
-namespace Eightfold\LaravelMarkup\Elements\FormControls;
+namespace Eightfold\Amos\Forms\FormControls;
 
-use Eightfold\Markup\UIKit as PHPUIKit;
+use Eightfold\HTMLBuilder\Element as HtmlElement;
+// use Eightfold\Markup\UIKit as PHPUIKit;
 
-use Eightfold\Foldable\Foldable;
+// use Eightfold\Foldable\Foldable;
 
-use Eightfold\Shoop\Shoop;
+// use Eightfold\Shoop\Shoop;
 
 class Text extends FormControl
 {
-    private $placeholder = "";
+    private $placeholder = '';
     private $maxlength = 254;
 
     private $hasCounter = false;
 
-    static public function fold(...$args): Foldable
-    {
-        return new static(...$args);
+    public static function create(
+        string $label,
+        string $name,
+        string $value = ''
+    ): Text {
+        return new Text($label, $name, $value);
     }
 
     public function __construct(
-        string $label = "",
-        string $name = "",
-        string $value = ""
-    )
-    {
-        $this->type = "text";
+        string $label,
+        string $name,
+        string $value = ''
+    ) {
+        $this->type = 'text';
         $this->label = $label;
         $this->name = $name;
         $this->value = $value;
@@ -68,68 +71,61 @@ class Text extends FormControl
 
     public function input()
     {
-        $attr = Shoop::this($this->attrList())->append([
+        $props = [
             "id {$this->name}",
             "name {$this->name}",
             "aria-describedby {$this->name}-label"
-        ]);
+        ];
 
-        if ($this->type === "textarea") {
-            $input = PHPUIKit::textarea($this->value)->attr(...$attr);
-
-        } else {
-            $input = PHPUIKit::input()->attr(
-                ...$attr->append(["type {$this->type}"])
-            );
-
+        if (strlen($this->placeholder) > 0) {
+            $props[] = "placeholder {$this->placeholder}";
         }
 
-        if (Shoop::this($this->placeholder)->isEmpty()->reversed()->unfold()) {
-            $input = $input->attr(
-                ...Shoop::this($input->attrList())
-                    ->append(["placeholder {$this->placeholder}"])
-                );
-        }
-
-        if (Shoop::this($this->maxlength)->isEmpty()->reversed()->unfold()) {
-            $input = $input->attr(
-                ...Shoop::this($input->attrList())
-                    ->append(["maxlength {$this->maxlength}"])
-                );
-        }
-
-        if ($this->type !== "textarea" and
-            Shoop::this($this->value)->isEmpty()->reversed()->unfold()
-        ) {
-            $input = $input->attr(
-                ...Shoop::this($input->attrList())
-                    ->append(["value {$this->value}"])
-                );
+        if ($this->maxlength > 0) {
+            $props[] = "maxlength {$this->maxlength}";
         }
 
         if ($this->required) {
-            $input = $input->attr(
-                ...Shoop::this($this->attrList())
-                    ->append(["required required"])
-                );
+            $props[] = 'required required';
         }
 
-        $counter = (! $this->hasCounter)
-            ? ""
-            : PHPUIKit::span(
-                PHPUIKit::i("{$this->maxlength}"),
-                " characters remaining"
-            )->attr("id {$this->name}-counter", "aria-live polite");
+        if ($this->type === "textarea") {
+            return HtmlElement::textarea($this->value)->props(...$props);
 
-        return Shoop::this([$this->error(), $input, $counter]);
+        }
+
+        $props[] = (strlen($this->value) > 0) ? "value {$this->value}" : '';
+        $props[] = "type {$this->type}";
+        return HtmlElement::input()->props(...$props);
+
+        // $counter = (! $this->hasCounter)
+        //     ? ""
+        //     : PHPUIKit::span(
+        //         PHPUIKit::i("{$this->maxlength}"),
+        //         " characters remaining"
+        //     )->attr("id {$this->name}-counter", "aria-live polite");
+
+        // return Shoop::this([$this->error(), $input, $counter]);
     }
 
-    public function unfold(): string
+    public function build(): string
     {
-        $base = PHPUIKit::div($this->label(), ...$this->input());
-        if (Shoop::this($this->errorMessage)->efIsEmpty()) {
-            return $base->attr("is form-control");
+        $control = HtmlElement::div(
+            $this->label(),
+            $this->error(),
+            $this->input(),
+            // $this->counter()
+        )->props('is form-control');
+
+        if (strlen($this->errorMessage) > 0) {
+            $control = $control->props('is form-control-with-errors');
         }
-        return $base->attr("is form-control-with-errors");
+
+        return $control->build();
+        // $base = PHPUIKit::div($this->label(), ...$this->input());
+        // if (Shoop::this($this->errorMessage)->efIsEmpty()) {
+        //     return $base->attr("is form-control");
+        // }
+        // return $base->attr("is form-control-with-errors");
     }
 }

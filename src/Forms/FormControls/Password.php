@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\LaravelMarkup\Elements\FormControls;
+namespace Eightfold\Amos\Forms\FormControls;
 
 use Eightfold\Markup\UIKit as PHPUIKit;
 
@@ -12,7 +12,7 @@ class Password extends FormControl
 {
     private $maxlength = 254;
 
-    static public function fold(...$args): Foldable
+    public static function fold(...$args): Foldable
     {
         return new static(...$args);
     }
@@ -21,8 +21,7 @@ class Password extends FormControl
         string $label = "",
         string $name = "",
         string $value = ""
-    )
-    {
+    ) {
         $this->type = "password";
         $this->label = $label;
         $this->name = $name;
@@ -38,7 +37,8 @@ class Password extends FormControl
 
     public function input()
     {
-        $input = PHPUIKit::input()->attr(...Shoop::this($this->attrList())->append([
+        $input = PHPUIKit::input()->attr(
+            ...Shoop::this($this->attrList())->append([
                 "id {$this->name}",
                 "name {$this->name}",
                 "type {$this->type}",
@@ -47,14 +47,16 @@ class Password extends FormControl
         );
 
         if (Shoop::this($this->maxlength)->isEmpty()->reversed()->unfold()) {
-            $input = $input->attr(...Shoop::this($input->attrList())->append([
+            $input = $input->attr(
+                ...Shoop::this($input->attrList())->append([
                     "maxlength {$this->maxlength}"
                 ])->unfold()
             );
         }
 
         if ($this->required) {
-            $input = $input->attr(...Shoop::this($this->attrList())->append([
+            $input = $input->attr(
+                ...Shoop::this($this->attrList())->append([
                     "required required"
                 ])->unfold()
             );

@@ -1,23 +1,26 @@
 <?php
 
-namespace Eightfold\LaravelMarkup\Elements\FormControls;
+namespace Eightfold\Amos\Forms\FormControls;
 
-use Eightfold\Markup\Html\HtmlElement;
+use Eightfold\XMLBuilder\Contracts\Buildable;
 
-use Eightfold\Shoop\Shoop;
-use Eightfold\Markup\UIKit as PHPUIKit;
+use Eightfold\HTMLBuilder\Element as HtmlElement;
+// use Eightfold\Markup\Html\HtmlElement;
 
-abstract class FormControl extends HtmlElement implements FormControlInterface
+// use Eightfold\Shoop\Shoop;
+// use Eightfold\Markup\UIKit as PHPUIKit;
+
+abstract class FormControl implements Buildable
 {
-    protected $type = "";
+    protected $type = '';
 
     protected $required = true;
 
-    protected $label = "Select";
-    protected $name = "select";
-    protected $value = "";
+    protected $label = '';
+    protected $name = '';
+    protected $value = '';
 
-    protected $errorMessage = "";
+    protected $errorMessage = '';
 
     public function optional(bool $optional = true)
     {
@@ -25,17 +28,17 @@ abstract class FormControl extends HtmlElement implements FormControlInterface
         return $this;
     }
 
-    public function type(string $type = ""): string
-    {
-        $this->type = $type;
-        return $this;
-    }
+    // public function type(string $type = ""): string
+    // {
+    //     $this->type = $type;
+    //     return $this;
+    // }
 
-    public function value(string $value = "")
-    {
-        $this->value = $value;
-        return $this;
-    }
+    // public function value(string $value = "")
+    // {
+    //     $this->value = $value;
+    //     return $this;
+    // }
 
     public function errorMessage(string $message = "")
     {
@@ -43,20 +46,28 @@ abstract class FormControl extends HtmlElement implements FormControlInterface
         return $this;
     }
 
-    public function label()
+    protected function label()
     {
-        return PHPUIKit::label($this->label)
-            ->attr("id {$this->name}-label", "for {$this->name}");
+        return HtmlElement::label($this->label)
+            ->props("id {$this->name}-label", "for {$this->name}");
     }
 
     protected function error()
     {
-        if (Shoop::this($this->errorMessage)->efIsEmpty()) {
-            return "";
+        if (strlen($this->errorMessage) === 0) {
+            return '';
         }
+
         return PHPUIKit::span($this->errorMessage)->attr(
             "is form-control-error-message",
             "id {$this->name}-error-message",
         );
     }
+
+    public function __toString(): string
+    {
+        return $this->build();
+    }
+
+    abstract public function build(): string;
 }
