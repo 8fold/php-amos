@@ -34,13 +34,13 @@ abstract class FormControl implements Buildable
         return $this;
     }
 
-    // public function type(string $type = ""): string
+    // public function type(string $type = ''): string
     // {
     //     $this->type = $type;
     //     return $this;
     // }
 
-    // public function value(string $value = "")
+    // public function value(string $value = '')
     // {
     //     $this->value = $value;
     //     return $this;
@@ -49,7 +49,7 @@ abstract class FormControl implements Buildable
     /**
      * @return static                 [description]
      */
-    public function errorMessage(string $message = "")
+    public function errorMessage(string $message = '')
     {
         $this->errorMessage = $message;
         return $this;

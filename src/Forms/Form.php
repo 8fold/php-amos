@@ -28,9 +28,9 @@ class Form implements Buildable
     private $csrfToken;
 
     /**
-     * @var array<Buildable>
+     * @var array<int|array<Buildable|string>>
      */
-    private array $content = [];
+    private $content = [];
 
     public static function create(string $methodAction = 'post /'): Form
     {
@@ -45,7 +45,7 @@ class Form implements Buildable
     }
 
     /**
-     * @param Buildable|string $content [description]
+     * @param array<Buildable|string> $content [description]
      */
     public function content(...$content): Form
     {

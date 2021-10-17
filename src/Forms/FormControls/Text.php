@@ -8,7 +8,8 @@ use Eightfold\HTMLBuilder\Element as HtmlElement;
 
 class Text extends FormControl
 {
-    // private string $placeholder = '';
+    private string $placeholder = '';
+
     private int $maxlength = 254;
 
     private bool $hasCounter = false;
@@ -50,13 +51,12 @@ class Text extends FormControl
         return $this;
     }
 
-    // public function placeholder(string $placeholder = "")
-    // {
-    //     if (Shoop::this($placeholder)->isEmpty()->reversed()->unfold()) {
-    //         $this->placeholder = $placeholder;
-    //     }
-    //     return $this;
-    // }
+    public function placeholder(string $placeholder = ""): Text
+    {
+
+        $this->placeholder = $placeholder;
+        return $this;
+    }
 
     public function maxlength(int $maxlength = 0): Text
     {
@@ -74,9 +74,9 @@ class Text extends FormControl
             "aria-describedby {$this->name}-label"
         ];
 
-        // if (strlen($this->placeholder) > 0) {
-        //     $props[] = "placeholder {$this->placeholder}";
-        // }
+        if (strlen($this->placeholder) > 0) {
+            $props[] = "placeholder {$this->placeholder}";
+        }
 
         if ($this->maxlength > 0) {
             $props[] = "maxlength {$this->maxlength}";
