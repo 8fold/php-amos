@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos\Forms\FormControls;
 
+use Eightfold\XMLBuilder\Implementations\Properties as PropertiesImp;
+
 use Eightfold\HTMLBuilder\Element as HtmlElement;
 
 class Text extends FormControl
 {
+    use PropertiesImp;
+
     private string $placeholder = '';
 
     private int $maxlength = 254;
@@ -87,6 +91,7 @@ class Text extends FormControl
         }
 
         if ($this->type === "textarea") {
+            $props = array_merge($props, $this->properties());
             return HtmlElement::textarea($this->value)->props(...$props);
 
         }
@@ -95,7 +100,11 @@ class Text extends FormControl
             is_string($this->value) and
             strlen($this->value) > 0
         ) ? "value {$this->value}" : '';
+
         $props[] = "type {$this->type}";
+
+        $props = array_merge($props, $this->properties());
+
         return HtmlElement::input()->omitEndTag()->props(...$props);
     }
 
