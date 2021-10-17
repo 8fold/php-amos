@@ -25,6 +25,9 @@ abstract class FormControl implements Buildable
 
     protected string $errorMessage = '';
 
+    /**
+     * @return static                 [description]
+     */
     public function optional(bool $optional = true): static
     {
         $this->required = ! $optional;
@@ -43,7 +46,10 @@ abstract class FormControl implements Buildable
     //     return $this;
     // }
 
-    public function errorMessage(string $message = ""): static
+    /**
+     * @return static                 [description]
+     */
+    public function errorMessage(string $message = "")
     {
         $this->errorMessage = $message;
         return $this;
