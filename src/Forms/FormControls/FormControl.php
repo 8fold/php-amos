@@ -28,7 +28,7 @@ abstract class FormControl implements Buildable
     /**
      * @return static                 [description]
      */
-    public function optional(bool $optional = true): static
+    public function optional(bool $optional = true)
     {
         $this->required = ! $optional;
         return $this;
