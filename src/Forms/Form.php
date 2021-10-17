@@ -47,7 +47,7 @@ class Form implements Buildable
     /**
      * @param Buildable|string $content [description]
      */
-    public function content(Buildable ...$content): Form
+    public function content(...$content): Form
     {
         $this->content = $content;
         return $this;
