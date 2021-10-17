@@ -64,7 +64,7 @@ class PageTitle implements Buildable
 
     public function buildWithAdditions(string ...$titles): string
     {
-        $titles = array_merge($this->titles(), $titles);
+        $titles = array_merge($titles, $this->titles());
         return $this->combineTitles($titles);
     }
 

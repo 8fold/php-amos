@@ -14,17 +14,24 @@ beforeEach(function() {
 });
 
 test('Can add arbitrary title parts', function() {
-    $store = Store::create($this->root);
+    $store = Store::create($this->root)->append('subfolder');
 
     // When working with Events there are URLs with no corresponding folder with
     // content. However, we don't want all the event-related URLs to just say
     // "Events". So, with this method, we can add title parts.
     expect(
         PageTitle::create($store)
-            ->reversed()
-            ->buildWithAdditions('Events', '2020', 'May')
+            ->buildWithAdditions('May', '2020', 'Events')
     )->toBe(
-        'May | 2020 | Events | Index page'
+        'May | 2020 | Events | Subfolder content title | Index page'
+    );
+
+    expect(
+        PageTitle::create($store)
+            ->reversed()
+            ->buildWithAdditions('May', '2020', 'Events')
+    )->toBe(
+        'Index page | Subfolder content title | Events | 2020 | May'
     );
 });
 
@@ -36,7 +43,7 @@ test('Default page title', function() {
     )->toBe('Index page');
 
     expect(
-        PageTitle::create($store)->buildBookEnd()
+        PageTitle::create($store)->buildBookend()
     )->toBe('Index page');
 
     $store = Store::create($this->root, '/subfolder');
@@ -64,6 +71,10 @@ test('Bookend page title style', function() {
 
 test('Reversed page title', function() {
     $store = Store::create($this->root, '/subfolder/sub');
+
+    expect(
+        PageTitle::create($store)->build()
+    )->toBe('Sub | Subfolder content title | Index page');
 
     expect(
         PageTitle::create($store)->reversed()->build()
