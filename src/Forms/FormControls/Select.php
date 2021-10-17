@@ -87,7 +87,7 @@ class Select extends FormControl
 
     private function checkboxControl(): HtmlElement
     {
-        die('Not reset yet');
+        die('Checkbox not reset yet');
         // $options = Shoop::this($this->content)->each(
         // function ($v, $m, &$build) {
         //     if (Shoop::this($v)->efIsArray()) {
@@ -109,24 +109,24 @@ class Select extends FormControl
 
     private function radioControl(): HtmlElement
     {
-        die('Not reset yet');
-        // $options = Shoop::this($this->content)->each(
-        // function ($v, $m, &$build) {
-        //     if (Shoop::this($v)->efIsArray()) {
-        //         $build[] = Shoop::this($v)->each(fn($v) => $this->option($v))
-        //         ->unfold();
+        $options = [];
+        foreach ($this->content as $option) {
+            if (is_array($option)) {
+                foreach ($option as $o) {
+                    $options[] = $this->option($o);
+                }
 
-        //     } else {
-        //         $build[] = $this->option($v);
+            } else {
+                $options[] = $this->option($option);
 
-        //     }
-        // })->unfold();
+            }
+        }
 
-        // return PHPUIKit::fieldset(
-        //     PHPUIKit::legend($this->label)->attr("id {$this->name}-legend"),
-        //     $this->error(),
-        //     PHPUIKit::listWith(...$options)
-        // );
+        return HtmlElement::fieldset(
+            HtmlElement::legend($this->label)->props("id {$this->name}-legend"),
+            $this->error(),
+            HtmlElement::ul(...$options)
+        )->props('is form-control');
     }
 
     private function selectControl(): HtmlElement
@@ -179,32 +179,56 @@ class Select extends FormControl
     private function option(string $option): HtmlElement
     {
         list($value, $title) = explode(' ', $option, 2);
+        if ($this->type === 'dropdown') {
+            $option = HtmlElement::option($title)->props("value {$value}");
+            if (in_array($value, $this->value)) {
+                $option = $option->props('selected selected');
+            }
+            return $option;
+        }
+
+        $label = HtmlElement::label($title)->props("for {$value}");
+
+        $props = [
+            "value {$value}",
+            "id {$value}"
+        ];
+
+        if ($this->required) {
+            $props[] = 'required required';
+        }
+
+        if (in_array($value, $this->value)) {
+            $props[] = 'checked checked';
+        }
+
+        if ($this->type === 'checkbox') {
+            $props[] = 'type checkbox';
+            $props[] = "name {$this->name}[]";
+
+        } elseif ($this->type === 'radio') {
+            $props[] = 'type radio';
+            $props[] = "name {$this->name}";
+
+        }
+
+        return HtmlElement::li(
+            $label,
+            HtmlElement::input()->omitEndTag()->props(...$props)
+        );
         // if ($this->type === 'checkbox' or $this->type === 'radio') {
-        //     $label = PHPUIKit::label($title)->attr("for {$value}");
+        //
 
         //     if ($this->type === 'checkbox') {
         //         $radio = PHPUIKit::input()->attr(
-        //             'type checkbox',
-        //             "name {$this->name}[]",
-        //             "value {$value}",
-        //             "id {$value}"
         //         );
 
         //     } elseif ($this->type === 'radio') {
         //         $radio = PHPUIKit::input()->attr(
         //             'type radio',
         //             "name {$this->name}",
-        //             "value {$value}",
-        //             "id {$value}"
         //         );
 
-        //     }
-
-        //     if ($this->required) {
-        //         $radio = $radio->attr(
-        //             ...Shoop::this($this->attrList())
-        //                 ->append(['required required'])->unfold()
-        //         );
         //     }
 
         //     if ($this->type === 'radio' and $this->value === $value) {
@@ -223,11 +247,5 @@ class Select extends FormControl
 
         //     return $label . $radio;
         // }
-
-        $option = HtmlElement::option($title)->props("value {$value}");
-        if (in_array($value, $this->value)) {
-            $option = $option->props('selected selected');
-        }
-        return $option;
     }
 }
