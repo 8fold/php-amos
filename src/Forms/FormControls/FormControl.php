@@ -1,14 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Amos\Forms\FormControls;
 
 use Eightfold\XMLBuilder\Contracts\Buildable;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
-// use Eightfold\Markup\Html\HtmlElement;
-
-// use Eightfold\Shoop\Shoop;
-// use Eightfold\Markup\UIKit as PHPUIKit;
 
 abstract class FormControl implements Buildable
 {

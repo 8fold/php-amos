@@ -16,7 +16,7 @@ test('Form can have content and controls', function() {
             Text::create('Label text', 'input-name')
         )->build()
     )->toBe(<<<html
-        <form action="/" method="post"><p>These are form instructions.</p><div is="form-control"><label id="input-name-label" for="input-name">Label text</label><input id="input-name" type="text" name="input-name" aria-describedby="input-name-label" maxlength="254" required></input></div><button>Submit</button></form>
+        <form action="/" method="post"><p>These are form instructions.</p><div is="form-control"><label id="input-name-label" for="input-name">Label text</label><input id="input-name" type="text" name="input-name" aria-describedby="input-name-label" maxlength="254" required></div><button>Submit</button></form>
         html
     );
 
@@ -91,14 +91,14 @@ test('Form is speedy', function() {
     expect(
         $result
     )->toBe(<<<html
-        <form id="form" action="/something" method="get"><div is="form-control"><label id="input-name-label" for="input-name">Label text</label><input id="input-name" type="text" name="input-name" aria-describedby="input-name-label" maxlength="254" required></input></div><div is="form-control"><label id="select-label" for="select">Select</label><select id="select" name="select" required><option value="value1">Option A</option><option value="value2">Option B</option></select></div><button>Submit</button></form>
+        <form id="form" action="/something" method="get"><div is="form-control"><label id="input-name-label" for="input-name">Label text</label><input id="input-name" type="text" name="input-name" aria-describedby="input-name-label" maxlength="254" required></div><div is="form-control"><label id="select-label" for="select">Select</label><select id="select" name="select" required><option value="value1">Option A</option><option value="value2">Option B</option></select></div><button>Submit</button></form>
         html
     );
 
     $elapsed = $end - $start;
     $ms      = $elapsed/1e+6;
 
-    expect($ms)->toBeLessThan(0.31); // previous 12.83ms
+    expect($ms)->toBeLessThan(0.33); // previous 12.83ms
 
     $used = $endMem - $startMem;
     $kb   = round($used/1024.2);

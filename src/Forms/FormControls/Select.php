@@ -1,14 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Amos\Forms\FormControls;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
-
-// use Eightfold\Markup\UIKit as PHPUIKit;
-
-// use Eightfold\ShoopShelf\Shoop;
-
-// use Eightfold\Foldable\Foldable;
 
 class Select extends FormControl
 {

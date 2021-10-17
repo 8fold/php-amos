@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Amos\Forms;
 
 use Eightfold\XMLBuilder\Contracts\Buildable;

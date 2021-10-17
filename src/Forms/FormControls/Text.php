@@ -1,13 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Amos\Forms\FormControls;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
-// use Eightfold\Markup\UIKit as PHPUIKit;
-
-// use Eightfold\Foldable\Foldable;
-
-// use Eightfold\Shoop\Shoop;
 
 class Text extends FormControl
 {
@@ -69,7 +66,7 @@ class Text extends FormControl
         return $this;
     }
 
-    public function input()
+    private function input()
     {
         $props = [
             "id {$this->name}",
@@ -96,16 +93,18 @@ class Text extends FormControl
 
         $props[] = (strlen($this->value) > 0) ? "value {$this->value}" : '';
         $props[] = "type {$this->type}";
-        return HtmlElement::input()->props(...$props);
+        return HtmlElement::input()->omitEndTag()->props(...$props);
+    }
 
-        // $counter = (! $this->hasCounter)
-        //     ? ""
-        //     : PHPUIKit::span(
-        //         PHPUIKit::i("{$this->maxlength}"),
-        //         " characters remaining"
-        //     )->attr("id {$this->name}-counter", "aria-live polite");
+    private function counter()
+    {
+        if (! $this->hasCounter) {
+            return '';
+        }
 
-        // return Shoop::this([$this->error(), $input, $counter]);
+        return HtmlElement::span(
+            HtmlElement::i("{$this->maxlength}"), ' characters remaining'
+        )->props("id {$this->name}-counter", 'aria-live polite');
     }
 
     public function build(): string
@@ -114,7 +113,7 @@ class Text extends FormControl
             $this->label(),
             $this->error(),
             $this->input(),
-            // $this->counter()
+            $this->counter()
         )->props('is form-control');
 
         if (strlen($this->errorMessage) > 0) {
@@ -122,10 +121,5 @@ class Text extends FormControl
         }
 
         return $control->build();
-        // $base = PHPUIKit::div($this->label(), ...$this->input());
-        // if (Shoop::this($this->errorMessage)->efIsEmpty()) {
-        //     return $base->attr("is form-control");
-        // }
-        // return $base->attr("is form-control-with-errors");
     }
 }
