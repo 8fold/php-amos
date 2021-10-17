@@ -98,10 +98,10 @@ test('Form is speedy', function() {
     $elapsed = $end - $start;
     $ms      = $elapsed/1e+6;
 
-    expect($ms)->toBeLessThan(0.76); // previous 12.83ms
+    expect($ms)->toBeLessThan(1); // previous 12.83ms
 
     $used = $endMem - $startMem;
     $kb   = round($used/1024.2);
 
-    expect($kb)->toBeLessThan(89); // previous 115kb
+    expect($kb)->toBeLessThan(94); // previous 115kb
 });
