@@ -114,7 +114,7 @@ test('Performant and cached', function() use ($ms) {
     // build call
     $cycleTime1 = $ms($start1, $end1);
 
-    expect($cycleTime1)->toBeLessThan(0.45);
+    expect($cycleTime1)->toBeLessThan(0.49);
 
     // build bookend call
     $cycleTime2 = $ms($start2, $end2);
