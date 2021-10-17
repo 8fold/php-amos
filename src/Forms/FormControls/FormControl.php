@@ -10,17 +10,22 @@ use Eightfold\HTMLBuilder\Element as HtmlElement;
 
 abstract class FormControl implements Buildable
 {
-    protected $type = '';
+    protected string $type = '';
 
-    protected $required = true;
+    protected bool $required = true;
 
-    protected $label = '';
-    protected $name = '';
+    protected string $label = '';
+
+    protected string $name = '';
+
+    /**
+     * @var string|array<string|HtmlElement>
+     */
     protected $value = '';
 
-    protected $errorMessage = '';
+    protected string $errorMessage = '';
 
-    public function optional(bool $optional = true)
+    public function optional(bool $optional = true): static
     {
         $this->required = ! $optional;
         return $this;
@@ -38,26 +43,29 @@ abstract class FormControl implements Buildable
     //     return $this;
     // }
 
-    public function errorMessage(string $message = "")
+    public function errorMessage(string $message = ""): static
     {
         $this->errorMessage = $message;
         return $this;
     }
 
-    protected function label()
+    protected function label(): HtmlElement
     {
         return HtmlElement::label($this->label)
             ->props("id {$this->name}-label", "for {$this->name}");
     }
 
+    /**
+     * @return string|HtmlElement [description]
+     */
     protected function error()
     {
         if (strlen($this->errorMessage) === 0) {
             return '';
         }
 
-        return PHPUIKit::span($this->errorMessage)->attr(
-            "is form-control-error-message",
+        return HtmlElement::span($this->errorMessage)->props(
+            'is form-control-error-message',
             "id {$this->name}-error-message",
         );
     }

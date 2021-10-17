@@ -8,17 +8,31 @@ use Eightfold\HTMLBuilder\Element as HtmlElement;
 
 class Select extends FormControl
 {
+    /**
+     * @var array<string>
+     */
     protected $value = [];
 
+    /**
+     * @var array<string|array<string>>
+     */
+    private array $content = [];
+
+    /**
+     * @param  array<string>  $value [description]
+     */
     public static function create(
         string $label,
         string $name,
-        $value = []
+        array $value = []
     ): Select {
         return new Select($label, $name, $value);
     }
 
-    public function __construct(string $label, string $name, $value = [])
+    /**
+     * @param array<string>  $value [description]
+     */
+    public function __construct(string $label, string $name, array $value = [])
     {
         $this->type = 'dropdown';
         $this->label = $label;
@@ -26,19 +40,22 @@ class Select extends FormControl
         $this->value = $value;
     }
 
-    public function options(...$options)
+    /**
+     * @param  string|array<string> $options [description]
+     */
+    public function options(...$options): Select
     {
         $this->content = $options;
         return $this;
     }
 
-    public function radio()
+    public function radio(): Select
     {
         $this->type = 'radio';
         return $this;
     }
 
-    public function checkbox()
+    public function checkbox(): Select
     {
         $this->type = 'checkbox';
         return $this;
@@ -68,47 +85,51 @@ class Select extends FormControl
         return $control->build();
     }
 
-    private function checkboxControl()
+    private function checkboxControl(): HtmlElement
     {
         die('Not reset yet');
-        $options = Shoop::this($this->content)->each(function ($v, $m, &$build) {
-            if (Shoop::this($v)->efIsArray()) {
-                $build[] = Shoop::this($v)->each(fn($v) => $this->option($v))->unfold();
+        // $options = Shoop::this($this->content)->each(
+        // function ($v, $m, &$build) {
+        //     if (Shoop::this($v)->efIsArray()) {
+        //         $build[] = Shoop::this($v)->each(fn($v) => $this
+        //         ->option($v))->unfold();
 
-            } else {
-                $build[] = $this->option($v);
+        //     } else {
+        //         $build[] = $this->option($v);
 
-            }
-        })->unfold();
+        //     }
+        // })->unfold();
 
-        return PHPUIKit::fieldset(
-            PHPUIKit::legend($this->label)->attr("id {$this->name}-legend"),
-            $this->error(),
-            PHPUIKit::listWith(...$options)
-        );
+        // return PHPUIKit::fieldset(
+        //     PHPUIKit::legend($this->label)->attr("id {$this->name}-legend"),
+        //     $this->error(),
+        //     PHPUIKit::listWith(...$options)
+        // );
     }
 
-    private function radioControl()
+    private function radioControl(): HtmlElement
     {
         die('Not reset yet');
-        $options = Shoop::this($this->content)->each(function ($v, $m, &$build) {
-            if (Shoop::this($v)->efIsArray()) {
-                $build[] = Shoop::this($v)->each(fn($v) => $this->option($v))->unfold();
+        // $options = Shoop::this($this->content)->each(
+        // function ($v, $m, &$build) {
+        //     if (Shoop::this($v)->efIsArray()) {
+        //         $build[] = Shoop::this($v)->each(fn($v) => $this->option($v))
+        //         ->unfold();
 
-            } else {
-                $build[] = $this->option($v);
+        //     } else {
+        //         $build[] = $this->option($v);
 
-            }
-        })->unfold();
+        //     }
+        // })->unfold();
 
-        return PHPUIKit::fieldset(
-            PHPUIKit::legend($this->label)->attr("id {$this->name}-legend"),
-            $this->error(),
-            PHPUIKit::listWith(...$options)
-        );
+        // return PHPUIKit::fieldset(
+        //     PHPUIKit::legend($this->label)->attr("id {$this->name}-legend"),
+        //     $this->error(),
+        //     PHPUIKit::listWith(...$options)
+        // );
     }
 
-    private function selectControl()
+    private function selectControl(): HtmlElement
     {
         $props = [
             "id {$this->name}",
@@ -121,8 +142,18 @@ class Select extends FormControl
 
         $options = [];
         foreach ($this->content as $option) {
-            // TODO: Option group
             if (is_array($option)) {
+                $group = $option;
+                $label = array_shift($group);
+                $opts = $group;
+
+                $o = [];
+                foreach ($opts as $opt) {
+                    $o[] = $this->option($opt);
+                }
+
+                $options[] = HtmlElement::optgroup(...$o)
+                    ->props("label {$label}");
 
             } else {
                 $options[] = $this->option($option);
@@ -143,83 +174,55 @@ class Select extends FormControl
         }
 
         return $control;
-
-        // $select = HtmlElement::select(
-        //     ...Shoop::this($this->content)->each(function ($option) {
-        //         if (Shoop::this($option)->efIsArray()) {
-        //             // Format: [
-        //             //      "Group title",
-        //             //      "/path Title",
-        //             //      "/path/two Title Two",
-        //             //      "..."
-        //             // ]
-        //             $group = Shoop::this($option);
-        //             $label = $group->first()->unfold();
-        //             $options = $group->dropFirst();
-        //             return PHPUIKit::optgroup(
-        //                 ...$options->each(fn($option) => $this->option($option))
-        //             )->attr("label {$group->first()->unfold()}");
-        //         }
-        //         return $this->option($option);
-        //     })
-        // )->attr("id {$this->name}", "name {$this->name}");
-
-        // if ($this->required) {
-        //     $select = $select->attr(
-        //         ...Shoop::this($this->attrList())->append(["required required"])
-        //     );
-        // }
-
-        // return PHPUIKit::div($this->label(), $this->error(), $select);
     }
 
-    private function option($option): HtmlElement
+    private function option(string $option): HtmlElement
     {
         list($value, $title) = explode(' ', $option, 2);
-        if ($this->type === 'checkbox' or $this->type === 'radio') {
-            $label = PHPUIKit::label($title)->attr("for {$value}");
+        // if ($this->type === 'checkbox' or $this->type === 'radio') {
+        //     $label = PHPUIKit::label($title)->attr("for {$value}");
 
-            if ($this->type === 'checkbox') {
-                $radio = PHPUIKit::input()->attr(
-                    'type checkbox',
-                    "name {$this->name}[]",
-                    "value {$value}",
-                    "id {$value}"
-                );
+        //     if ($this->type === 'checkbox') {
+        //         $radio = PHPUIKit::input()->attr(
+        //             'type checkbox',
+        //             "name {$this->name}[]",
+        //             "value {$value}",
+        //             "id {$value}"
+        //         );
 
-            } elseif ($this->type === 'radio') {
-                $radio = PHPUIKit::input()->attr(
-                    'type radio',
-                    "name {$this->name}",
-                    "value {$value}",
-                    "id {$value}"
-                );
+        //     } elseif ($this->type === 'radio') {
+        //         $radio = PHPUIKit::input()->attr(
+        //             'type radio',
+        //             "name {$this->name}",
+        //             "value {$value}",
+        //             "id {$value}"
+        //         );
 
-            }
+        //     }
 
-            if ($this->required) {
-                $radio = $radio->attr(
-                    ...Shoop::this($this->attrList())
-                        ->append(['required required'])->unfold()
-                );
-            }
+        //     if ($this->required) {
+        //         $radio = $radio->attr(
+        //             ...Shoop::this($this->attrList())
+        //                 ->append(['required required'])->unfold()
+        //         );
+        //     }
 
-            if ($this->type === 'radio' and $this->value === $value) {
-                $radio = $radio->attr(
-                    ...Shoop::this($this->attrList())->append(['checked checked'])
-                );
+        //     if ($this->type === 'radio' and $this->value === $value) {
+        //         $radio = $radio->attr(
+        //             ...Shoop::this($this->attrList())->append(['checked checked'])
+        //         );
 
-            } elseif (
-                $this->type === 'checkbox' and
-                Shoop::this($this->value)->has($value)->efToBoolean()
-            ) {
-                $radio = $radio->attr(
-                    ...Shoop::this($this->attrList())->append(['checked checked'])
-                );
-            }
+        //     } elseif (
+        //         $this->type === 'checkbox' and
+        //         Shoop::this($this->value)->has($value)->efToBoolean()
+        //     ) {
+        //         $radio = $radio->attr(
+        //             ...Shoop::this($this->attrList())->append(['checked checked'])
+        //         );
+        //     }
 
-            return $label . $radio;
-        }
+        //     return $label . $radio;
+        // }
 
         $option = HtmlElement::option($title)->props("value {$value}");
         if (in_array($value, $this->value)) {

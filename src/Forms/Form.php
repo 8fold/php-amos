@@ -17,10 +17,19 @@ class Form implements Buildable
 
     private string $action = '/';
 
+    /**
+     * @var HtmlElement
+     */
     private $submitButton;
 
+    /**
+     * @var string|HtmlElement
+     */
     private $csrfToken;
 
+    /**
+     * @var array<Buildable>
+     */
     private array $content = [];
 
     public static function create(string $methodAction = 'post /'): Form
@@ -28,19 +37,22 @@ class Form implements Buildable
         return new Form($methodAction);
     }
 
-    public function __construct($methodAction = 'post /')
+    public function __construct(string $methodAction = 'post /')
     {
         list($method, $action) = explode(' ', $methodAction, 2);
         $this->method = $method;
         $this->action = $action;
     }
 
-    public function content(Buildable ...$content)
+    public function content(Buildable ...$content): Form
     {
         $this->content = $content;
         return $this;
     }
 
+    /**
+     * @param  array<string>  $props [description]
+     */
     public function submitButtonDetails(
         string $label = "Submit",
         array $props = []
@@ -90,6 +102,9 @@ class Form implements Buildable
         return $this->submitButton;
     }
 
+    /**
+     * @return string|HtmlElement [description]
+     */
     private function csrfToken()
     {
         if ($this->csrfToken === null) {

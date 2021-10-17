@@ -2,75 +2,50 @@
 
 namespace Eightfold\Amos\Forms\FormControls;
 
-use Eightfold\Markup\UIKit as PHPUIKit;
-
-use Eightfold\Foldable\Foldable;
-
-use Eightfold\Shoop\Shoop;
-
+use Eightfold\HTMLBuilder\Element as HtmlElement;
+// TODO: Not tested or used
 class Password extends FormControl
 {
-    private $maxlength = 254;
-
-    public static function fold(...$args): Foldable
+    public static function create(string $label, string $name): Password
     {
-        return new static(...$args);
+        return new Password($label, $name);
     }
 
-    public function __construct(
-        string $label = "",
-        string $name = "",
-        string $value = ""
-    ) {
-        $this->type = "password";
+    public function __construct(string $label, string $name)
+    {
+        $this->type  = "password";
         $this->label = $label;
-        $this->name = $name;
+        $this->name  = $name;
     }
 
-    public function maxlength(int $maxlength = 0)
+    public function input(): HtmlElement
     {
-        if ($maxlength > 0) {
-            $this->maxlength = $maxlength;
-        }
-        return $this;
-    }
+        $props = [
+            "id {$this->name}",
+            "name {$this->name}",
+            "type {$this->type}",
+            "aria-describedby {$this->name}-label"
+        ];
 
-    public function input()
-    {
-        $input = PHPUIKit::input()->attr(
-            ...Shoop::this($this->attrList())->append([
-                "id {$this->name}",
-                "name {$this->name}",
-                "type {$this->type}",
-                "aria-describedby {$this->name}-label"
-            ])->unfold()
-        );
-
-        if (Shoop::this($this->maxlength)->isEmpty()->reversed()->unfold()) {
-            $input = $input->attr(
-                ...Shoop::this($input->attrList())->append([
-                    "maxlength {$this->maxlength}"
-                ])->unfold()
-            );
-        }
-
+        $control = HtmlElement::input()->omitEndTag()->props(...$props);
         if ($this->required) {
-            $input = $input->attr(
-                ...Shoop::this($this->attrList())->append([
-                    "required required"
-                ])->unfold()
-            );
+            $control = $control->props('required required');
         }
-
-        return Shoop::this([$this->error(), $input]);
+        return $control;
     }
 
-    public function unfold(): string
+    public function build(): string
     {
-        $base = PHPUIKit::div($this->label(), ...$this->input());
-        if (Shoop::this($this->errorMessage)->efIsEmpty()) {
-            return $base->attr("is form-control");
+        $control = HtmlElement::div(
+            $this->label(),
+            $this->error(),
+            $this->input()
+        )->props('is form-control');
+
+        if (strlen($this->errorMessage) > 0) {
+            $control = $control->props('is form-control-with-errors');
         }
-        return $base->attr("is form-control-with-errors");
+
+        return $control->build();
     }
 }

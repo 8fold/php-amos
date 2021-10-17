@@ -8,10 +8,10 @@ use Eightfold\HTMLBuilder\Element as HtmlElement;
 
 class Text extends FormControl
 {
-    private $placeholder = '';
-    private $maxlength = 254;
+    // private string $placeholder = '';
+    private int $maxlength = 254;
 
-    private $hasCounter = false;
+    private bool $hasCounter = false;
 
     public static function create(
         string $label,
@@ -32,33 +32,33 @@ class Text extends FormControl
         $this->value = $value;
     }
 
-    public function email()
+    public function email(): Text
     {
         $this->type = "email";
         return $this;
     }
 
-    public function long()
+    public function long(): Text
     {
         $this->type = "textarea";
         return $this;
     }
 
-    public function hasCounter()
+    public function hasCounter(): Text
     {
         $this->hasCounter = true;
         return $this;
     }
 
-    public function placeholder(string $placeholder = "")
-    {
-        if (Shoop::this($placeholder)->isEmpty()->reversed()->unfold()) {
-            $this->placeholder = $placeholder;
-        }
-        return $this;
-    }
+    // public function placeholder(string $placeholder = "")
+    // {
+    //     if (Shoop::this($placeholder)->isEmpty()->reversed()->unfold()) {
+    //         $this->placeholder = $placeholder;
+    //     }
+    //     return $this;
+    // }
 
-    public function maxlength(int $maxlength = 0)
+    public function maxlength(int $maxlength = 0): Text
     {
         if ($maxlength > 0) {
             $this->maxlength = $maxlength;
@@ -66,7 +66,7 @@ class Text extends FormControl
         return $this;
     }
 
-    private function input()
+    private function input(): HtmlElement
     {
         $props = [
             "id {$this->name}",
@@ -74,9 +74,9 @@ class Text extends FormControl
             "aria-describedby {$this->name}-label"
         ];
 
-        if (strlen($this->placeholder) > 0) {
-            $props[] = "placeholder {$this->placeholder}";
-        }
+        // if (strlen($this->placeholder) > 0) {
+        //     $props[] = "placeholder {$this->placeholder}";
+        // }
 
         if ($this->maxlength > 0) {
             $props[] = "maxlength {$this->maxlength}";
@@ -91,11 +91,17 @@ class Text extends FormControl
 
         }
 
-        $props[] = (strlen($this->value) > 0) ? "value {$this->value}" : '';
+        $props[] = (
+            is_string($this->value) and
+            strlen($this->value) > 0
+        ) ? "value {$this->value}" : '';
         $props[] = "type {$this->type}";
         return HtmlElement::input()->omitEndTag()->props(...$props);
     }
 
+    /**
+     * @return HtmlElement|string [description]
+     */
     private function counter()
     {
         if (! $this->hasCounter) {
@@ -103,7 +109,8 @@ class Text extends FormControl
         }
 
         return HtmlElement::span(
-            HtmlElement::i("{$this->maxlength}"), ' characters remaining'
+            HtmlElement::i("{$this->maxlength}"),
+            ' characters remaining'
         )->props("id {$this->name}-counter", 'aria-live polite');
     }
 

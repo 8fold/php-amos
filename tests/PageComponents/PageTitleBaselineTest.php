@@ -109,12 +109,12 @@ test('Performant and cached', function() use ($ms) {
     // Total elapsed time
     $leadTime = $ms($start, $end2);
 
-    expect($leadTime)->toBeLessThan(0.53);
+    expect($leadTime)->toBeLessThan(0.78);
 
     // build call
     $cycleTime1 = $ms($start1, $end1);
 
-    expect($cycleTime1)->toBeLessThan(0.41);
+    expect($cycleTime1)->toBeLessThan(0.45);
 
     // build bookend call
     $cycleTime2 = $ms($start2, $end2);

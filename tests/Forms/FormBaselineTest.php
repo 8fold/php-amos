@@ -103,5 +103,5 @@ test('Form is speedy', function() {
     $used = $endMem - $startMem;
     $kb   = round($used/1024.2);
 
-    expect($kb)->toBeLessThan(30); // previous 115kb
+    expect($kb)->toBeLessThan(30.5); // previous 115kb
 });
