@@ -70,7 +70,6 @@ class Store
         return false;
     }
 
-
     public function append(string ...$parts): Store
     {
         return Store::create(
