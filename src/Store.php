@@ -96,6 +96,11 @@ class Store
         return Store::create($this->root, '/.assets' . $path);
     }
 
+    public function resources(string $path): Store
+    {
+        return Store::create($this->root, '/.resources' . $path);
+    }
+
     /**
      * @param  string $fileName [description]
      * @return array<string>           [description]
