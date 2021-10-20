@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace LiberatedElephant\Site;
+namespace Eightfold\Amos\Laravel;
 
 use Illuminate\Support\ServiceProvider;
 
 use Eightfold\Amos\Store;
+
 use Eightfold\Markdown\Markdown;
 
 class Provider extends ServiceProvider
