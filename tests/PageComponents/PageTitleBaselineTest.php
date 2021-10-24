@@ -14,7 +14,7 @@ beforeEach(function() {
 });
 
 test('Can add arbitrary title parts', function() {
-    $store = Store::create($this->root)->append('subfolder');
+    $store = Store::create($this->root)->appendPath('subfolder');
 
     // When working with Events there are URLs with no corresponding folder with
     // content. However, we don't want all the event-related URLs to just say
@@ -46,13 +46,13 @@ test('Default page title', function() {
         PageTitle::create($store)->buildBookend()
     )->toBe('Index page');
 
-    $store = Store::create($this->root, '/subfolder');
+    $store = Store::create($this->root)->appendPath('subfolder');
 
     expect(
         PageTitle::create($store)->build()
     )->toBe('Subfolder content title | Index page');
 
-    $store = Store::create($this->root, '/subfolder/sub');
+    $store = Store::create($this->root)->appendPath('subfolder', 'sub');
 
     expect(
         PageTitle::create($store)->build()
@@ -60,7 +60,7 @@ test('Default page title', function() {
 });
 
 test('Bookend page title style', function() {
-    $store = Store::create($this->root, '/subfolder/sub');
+    $store = Store::create($this->root)->appendPath('subfolder', 'sub');
 
     expect(
         PageTitle::create($store)->buildBookend()
@@ -70,7 +70,7 @@ test('Bookend page title style', function() {
 });
 
 test('Reversed page title', function() {
-    $store = Store::create($this->root, '/subfolder/sub');
+    $store = Store::create($this->root)->appendPath('subfolder', 'sub');
 
     expect(
         PageTitle::create($store)->build()

@@ -6,122 +6,99 @@ use Eightfold\Amos\Store;
 
 use Eightfold\FileSystem\Item;
 
-beforeEach(function() {
-    $this->root = Item::create(__DIR__)->up()->append('content-example')
-        ->thePath();
+// beforeEach(function() {
+//     $this->store = Store::create()->withPath(__DIR__)->up()
+//         ->appendPath('content-example');
+// });
 
-    $this->store = Store::create($this->root);
-});
+test('Can go up and down', function() {
+    $dir = explode('/', __DIR__);
+    array_pop($dir);
+    $dir[] = 'tests';
+    $dir[] = 'content-example';
+    $dir = implode('/', $dir);
 
-test('Append', function() {
     expect(
-        $this->store->append('subfolder', 'sub')->markdown()->title()
+        Store::create(__DIR__)->up()->appendPath('tests', 'content-example')
+            ->getAbsolutePath()
     )->toBe(
-        'Sub'
+        $dir
     );
 });
 
-test('Properties', function() {
+test('Can append path', function() {
+    $dir = explode('/', __DIR__);
+    $dir[] = 'Extensions';
+    $dir = implode('/', $dir);
+
     expect(
-        $this->store->root()
+        Store::create(__DIR__)->appendPath('Extensions')
+            ->getAbsolutePath()
     )->toBe(
-        $this->root
+        $dir
     );
+});
+
+test('Can go up', function() {
+    $dir = explode('/', __DIR__);
+    array_pop($dir);
+    $dir = implode('/', $dir);
 
     expect(
-        $this->store->path()
+        Store::create(__DIR__)->up()->getAbsolutePath()
     )->toBe(
-        ''
-    );
-
-    expect(
-        $this->store->isRoot()
-    )->toBeTrue();
-
-    expect(
-        Store::create(
-            $this->store->root()
-        )->media($this->store->path())->hasfile('poster.png')
-    )->toBeTrue();
-
-    expect(
-        Store::create(
-            $this->store->root()
-        )->media($this->store->path())->hasfile('something.png')
-    )->toBeFalse();
-
-    expect(
-        Store::create(
-            $this->store->root()
-        )->assets($this->store->path())->hasfile('poster.png')
-    )->toBeTrue();
-
-    expect(
-        Store::create(
-            $this->store->root()
-        )->assets($this->store->path())->hasfile('something.png')
-    )->toBeFalse();
-});
-
-test('Markdown', function() {
-    expect(
-        $this->store->markdown()->title()
-    )->toBe('Index page');
-
-    expect(
-        Store::create($this->root, '/subfolder')->markdown()->title()
-    )->toBe('Subfolder content title');
-
-    expect(
-        Store::create($this->root, '/subfolder/sub')->markdown()->content()
-    )->toBe(<<<md
-        # A heading
-
-        This would be the body copy.
-
-        md
-    );
-
-    expect(
-        Store::create($this->root, '/subfolder/sub')->markdown()->html()
-    )->toBe(<<<md
-        <h1>A heading</h1>
-        <p>This would be the body copy.</p>
-
-        md
+        $dir
     );
 });
 
-test('Folder content', function() {
-    $this->assertEquals(
-        Store::create($this->root)->folderContent('.navigation'),
-        [
-            Item::create($this->root)->append('.navigation', 'footer.md'),
-            Item::create($this->root)->append('.navigation', 'primary.md'),
-            Item::create($this->root)->append('.navigation', 'tiered.md'),
-        ]
-    );
-});
+// test('Markdown', function() {
+//     expect(
+//         $this->store->markdown()->title()
+//     )->toBe('Index page');
 
-test('Navigation shorthand', function() {
-    expect(
-        Store::create($this->root)->navigation('primary.md')
-    )->toBe([
-        '/subfolder Link text',
-        '/subfolder/sub Link 2 text'
-    ]);
+//     expect(
+//         Store::create($this->root, '/subfolder')->markdown()->title()
+//     )->toBe('Subfolder content title');
 
-    expect(
-        Store::create($this->root)->navigation('footer.md')
-    )->toBe([
-        '/subfolder Some other link text',
-        '/subfolder/sub Yet another link text'
-    ]);
+//     expect(
+//         Store::create($this->root, '/subfolder/sub')->markdown()->content()
+//     )->toBe(<<<md
+//         # A heading
 
-    expect(
-        Store::create($this->root)->navigation('tiered.md')
-    )->toBe([
-        '/subfolder Some other link text',
-        ['/subfolder/sub Yet another link text']
-    ]);
-});
+//         This would be the body copy.
+
+//         md
+//     );
+
+//     expect(
+//         Store::create($this->root, '/subfolder/sub')->markdown()->html()
+//     )->toBe(<<<md
+//         <h1>A heading</h1>
+//         <p>This would be the body copy.</p>
+
+//         md
+//     );
+// });
+
+// test('Navigation shorthand', function() {
+//     expect(
+//         $this->store->navigationWithFileName('primary.md')
+//     )->toBe([
+//         '/subfolder Link text',
+//         '/subfolder/sub Link 2 text'
+//     ]);
+
+//     expect(
+//         $this->store->navigationWithFileName('footer.md')
+//     )->toBe([
+//         '/subfolder Some other link text',
+//         '/subfolder/sub Yet another link text'
+//     ]);
+
+//     expect(
+//         $this->store->navigationWithFileName('tiered.md')
+//     )->toBe([
+//         '/subfolder Some other link text',
+//         ['/subfolder/sub Yet another link text']
+//     ]);
+// });

@@ -4,156 +4,89 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
-use Eightfold\FileSystem\Item;
+use Eightfold\Amos\File;
 
 class Store
 {
-    private string $root = '/';
+    private array $rootParts = [];
 
-    private string $path = '';
+    private array $pathParts = [];
 
-    public static function create(string $root, string $path = ''): Store
+    public static function create(string $root): static
     {
-        return new Store($root, $path);
+        return new static($root);
     }
 
-    public function __construct(string $root, string $path = '')
+    final public function __construct(private string $root)
     {
-        $this->root = $root;
-        $this->path = $path;
+        $this->rootParts = explode('/', $root);
     }
 
-    public function root(): string
+    private function getRootParts(): array
     {
-        return $this->root;
+        return $this->rootParts;
     }
 
-    public function path(): string
+    private function getPathParts(): array
     {
-        return $this->path;
+        return $this->pathParts;
+    }
+
+    public function getAbsolutePath(): string
+    {
+        $m = array_merge($this->getRootParts(), $this->getPathParts());
+        $f = array_filter($m);
+        return '/' . implode('/', $f);
     }
 
     public function isRoot(): bool
     {
-        return count($this->tail()) === 0;
+        return count(array_filter($this->getPathParts())) === 0;
+    }
+
+    public function up(int $levels = 1): static
+    {
+        if (count($this->getPathParts()) === 0) {
+            $parts = $this->getRootParts();
+
+            for ($i = 0; $i < $levels; $i++) {
+                array_pop($parts);
+            }
+
+            $this->rootParts = $parts;
+
+        } else {
+            $parts = $this->getPathParts();
+            array_pop($parts);
+
+            $this->pathParts = $parts;
+        }
+        return $this;
+    }
+
+    public function appendPath(string ...$folderNames): static
+    {
+        $this->pathParts = array_merge($this->getPathParts(), $folderNames);
+        return $this;
     }
 
     public function hasFile(string $fileName): bool
     {
-        return is_object($this->file($fileName));
+        $filePath = $this->filePath($fileName);
+        return file_exists($filePath) and is_file($filePath);
     }
 
-    /**
-     * @return Item|bool|boolean           [description]
-     */
-    public function file(string $fileName)
+    public function getFile(string $fileName): File|bool
     {
-        $item = $this->item($fileName);
-        if ($item->isFile()) {
-            return $item;
+        $file = File::create($this->filePath($fileName));
+        if (is_object($file) and $file->isFile()) {
+            return $file;
         }
         return false;
     }
 
-    public function append(string ...$parts): Store
+    private function filePath(string $fileName)
     {
-        return Store::create(
-            $this->root,
-            implode('/', $this->extendedTail(...$parts))
-        );
+        return $this->getAbsolutePath() . '/' . $fileName;
     }
-
-    public function up(): Store
-    {
-        $tail = $this->tail();
-        array_pop($tail);
-        $path = implode('/', $tail);
-        return Store::create($this->root, '/' . $path);
-    }
-
-    public function media(string $path): Store
-    {
-        return Store::create($this->root, '/.media' . $path);
-    }
-
-    public function assets(string $path): Store
-    {
-        return Store::create($this->root, '/.assets' . $path);
-    }
-
-    public function resources(string $path): Store
-    {
-        return Store::create($this->root, '/.resources' . $path);
-    }
-
-    /**
-     * @param  string $fileName [description]
-     * @return array<string>           [description]
-     */
-    public function navigation(string $fileName = 'main.md'): array
-    {
-        $m = Store::create($this->root, '/.navigation')->markdown($fileName);
-        if (is_object($m)) {
-            $meta = $m->frontMatter();
-            if (array_key_exists('navigation', $meta)) {
-                return $meta['navigation'];
-            }
-        }
-        return [];
-    }
-
-    /**
-     * @param  string $folder [description]
-     * @return array<Item>         [description]
-     */
-    public function folderContent(string $folder): array
-    {
-        $item = Item::create($this->root)->append($folder);
-        if ($item->isFolder()) {
-            $c = $item->content();
-            if (is_array($c)) {
-                return $c;
-
-            }
-        }
-        return [];
-    }
-
-    private function item(string ...$append): Item
-    {
-        $extendedTail = $this->extendedTail(...$append);
-        return Item::create($this->root)->append(...$extendedTail);
-    }
-
-    /**
-     * @return array<string>         [description]
-     */
-    private function extendedTail(string ...$append): array
-    {
-        return array_merge($this->tail(), $append);
-    }
-
-    /**
-     * @return array<string> [description]
-     */
-    private function tail(): array
-    {
-        $tail   = explode('/', $this->path());
-        $tail   = array_filter($tail);
-        return $tail;
-    }
-
-
-
-/***********/
-
-    private function banners(): Item
-    {
-        return Item::create($this->root)->append('.banners');
-    }
-
-
-
-
-
 }

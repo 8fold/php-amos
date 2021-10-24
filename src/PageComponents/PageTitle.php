@@ -91,20 +91,20 @@ class PageTitle implements Buildable
     {
         if (count($this->titles) === 0) {
             $titles = [];
-            $s = $this->store();
+            $s = clone $this->getStore();
             while (! $s->isRoot()) {
-                $m = $s->markdown();
-                if (is_object($m)) {
-                    $titles[] = $m->title();
+                $f = $s->getFile('content.md');
+                if (is_object($f)) {
+                    $titles[] = $f->title();
                 }
 
                 $s = $s->up();
             }
 
-            if ($s->isRoot()) {
-                $m = $s->markdown();
-                if (is_object($m)) {
-                    $titles[] = $m->title();
+            if ($s->isRoot() and $s->hasFile('content.md')) {
+                $f = $s->getFile('content.md');
+                if (is_object($f)) {
+                    $titles[] = $f->title();
                 }
             }
 
@@ -118,7 +118,7 @@ class PageTitle implements Buildable
         return $this->isReversed;
     }
 
-    private function store(): Store
+    private function getStore(): Store
     {
         return $this->store;
     }
