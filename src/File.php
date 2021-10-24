@@ -56,7 +56,11 @@ class File
 
     public function getContent(): string
     {
-        return file_get_contents($this->getAbsolutePath());
+        $c = file_get_contents($this->getAbsolutePath());
+        if (is_bool($c)) {
+            return '';
+        }
+        return $c;
     }
 
     private function getAbsolutePath(): string

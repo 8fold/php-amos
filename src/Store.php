@@ -8,8 +8,14 @@ use Eightfold\Amos\File;
 
 class Store
 {
+    /**
+     * @var string[]
+     */
     private array $rootParts = [];
 
+    /**
+     * @var string[]
+     */
     private array $pathParts = [];
 
     public static function create(string $root): static
@@ -22,11 +28,17 @@ class Store
         $this->rootParts = explode('/', $root);
     }
 
+    /**
+     * @return string[]
+     */
     private function getRootParts(): array
     {
         return $this->rootParts;
     }
 
+    /**
+     * @return string[]
+     */
     private function getPathParts(): array
     {
         return $this->pathParts;
@@ -85,7 +97,7 @@ class Store
         return false;
     }
 
-    private function filePath(string $fileName)
+    private function filePath(string $fileName): string
     {
         return $this->getAbsolutePath() . '/' . $fileName;
     }
