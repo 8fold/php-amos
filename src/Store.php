@@ -55,21 +55,6 @@ class Store
         return false;
     }
 
-    /**
-     * @return Markdown|bool|boolean [description]
-     */
-    public function markdown(string $fileName = 'content.md')
-    {
-        $item = $this->item($fileName);
-        if ($item->isFile()) {
-            $c = $item->content();
-            if (is_string($c)) {
-                return Markdown::create($c);
-            }
-        }
-        return false;
-    }
-
     public function append(string ...$parts): Store
     {
         return Store::create(
