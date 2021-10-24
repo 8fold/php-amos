@@ -16,7 +16,7 @@ test('Text can be textarea', function() {
         <div is="form-control"><label id="message-label" for="message">Message</label><textarea id="message" name="message" aria-describedby="contact-counter" maxlength="500" onkeyup="countCharacters(this)" required></textarea></div>
         html
     );
-})->group('focus');
+});
 
 test('Text can have placeholder text', function() {
     expect(

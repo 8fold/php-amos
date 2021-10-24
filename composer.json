@@ -10,8 +10,7 @@
     }
   ],
   "require": {
-    "php": "^7.4||^8.0",
-    "8fold/php-filesystem": "*",
+    "php": "^8.0",
     "8fold/commonmark-fluent-markdown": "*",
     "8fold/php-html-builder": "*"
   },
