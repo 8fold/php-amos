@@ -51,6 +51,6 @@
     ],
     "style": "./vendor/bin/phpcs --standard=phpcs.xml -p ./src",
     "stan": "./vendor/bin/phpstan analyze",
-    "test": "./vendor/bin/pest"
+    "test": "./vendor/bin/phpunit"
   }
 }
