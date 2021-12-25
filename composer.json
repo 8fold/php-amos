@@ -42,7 +42,12 @@
   "prefer-stable": true,
   "scripts": {
     "prod": "@production",
-    "production": ["@style", "@stan", "@test"],
+    "production": [
+      "composer dumpautoload -o",
+      "@style",
+      "@stan",
+      "@test"
+    ],
     "style": "./vendor/bin/phpcs --standard=phpcs.xml -p ./src",
     "stan": "./vendor/bin/phpstan analyze",
     "test": "./vendor/bin/pest"
