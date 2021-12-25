@@ -33,7 +33,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Eightfold\\Amos\\Tests": "./tests"
+      "Eightfold\\Amos\\Tests\\": "./tests"
     }
   },
   "config": {
