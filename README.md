@@ -1,3 +1,5 @@
+> This repo will be deleted on or around May 2023
+
 # 8fold Amos for PHP
 
 Amos is a set of helper classes and tools for a methodology of managing content and websites. By itself, Amos won't do it for you; however, Amos can be integrated into more robust frameworks and platforms.
