@@ -1,75 +1,108 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
-use Eightfold\Markdown\Markdown as EFMarkdown;
+use Eightfold\Markdown\Markdown as MarkdownConverter;
 
 class Markdown
 {
-    /**
-     * @var EFMarkdown
-     */
-    private $efMarkdown;
+    private static MarkdownConverter $markdownConverter;
 
-    private string $markdown = '';
+    private static MarkdownConverter $titleConverter;
 
-    /**
-     * @var array<mixed>
-     */
-    private array $frontMatter = [];
+    private const COMPONENT_WRAPPER = '{!!(.*)!!}';
 
-    private string $content = '';
-
-    public static function create(string $markdown): Markdown
+    public static function singletonConverter(): MarkdownConverter
     {
-        return new Markdown($markdown);
-    }
-
-    public function __construct(string $markdown)
-    {
-        $this->markdown = $markdown;
-    }
-
-    public function title(): string
-    {
-        $f = $this->frontMatter();
-        if (array_key_exists('title', $f)) {
-            return $f['title'];
+        if (! isset(self::$markdownConverter)) {
+            self::$markdownConverter = MarkdownConverter::create()
+                ->withConfig(
+                    [
+                        'html_input' => 'allow'
+                    ]
+                )->minified()
+                ->smartPunctuation()
+                ->descriptionLists()
+                ->attributes() // for class on notices
+                ->defaultAttributes([
+                    Image::class => [
+                        'loading'  => 'lazy',
+                        'decoding' => 'async'
+                    ]
+                ])->abbreviations()
+                ->externalLinks(
+                    [
+                        'open_in_new_window' => true,
+                        'internal_hosts'     => 'joshbruce.com'
+                    ]
+                );
         }
-        return '';
+        return self::$markdownConverter;
     }
 
-    /**
-     * @return array<mixed>
-     */
-    public function frontMatter(): array
+    public static function singletonTitleConverter(): MarkdownConverter
     {
-        if (count($this->frontMatter) === 0) {
-            $this->frontMatter = $this->fluentMarkdown()->frontMatter();
+        if (! isset(self::$titleConverter)) {
+            self::$titleConverter = MarkdownConverter::create()
+                ->smartPunctuation();
         }
-        return $this->frontMatter;
+        return self::$titleConverter;
     }
 
-    public function content(): string
-    {
-        if (strlen($this->content) === 0) {
-            $this->content = $this->fluentMarkdown()->content();
+    public static function convert(
+        string $markdown,
+        array $components = []
+    ): string {
+        if (count($components) > 0) {
+            $markdown = self::proccessPartials($markdown, $components);
         }
-        return $this->content;
+        return self::singletonConverter()->convert($markdown);
     }
 
-    public function html(): string
+    public static function convertTitle(string $title): string
     {
-        return $this->fluentMarkdown()->convertedContent();
+        return self::singletonTitleConverter()->convert($title);
     }
 
-    private function fluentMarkdown(): EFMarkdown
-    {
-        if ($this->efMarkdown === null) {
-            $this->efMarkdown = EFMarkdown::create($this->markdown);
+    private static function proccessPartials(
+        string $markdown,
+        array $components
+    ): string {
+        $partials = [];
+        if (
+            preg_match_all(
+                '/' . self::COMPONENT_WRAPPER . '/',
+                $markdown,
+                $partials // Populates $partials
+            )
+        ) {
+            $replacements = $partials[0];
+            $templates    = $partials[1];
+
+            for ($i = 0; $i < count($replacements); $i++) {
+                $partial      = trim($templates[$i]);
+                $partialParts = explode(':', $partial, 2);
+
+                $partialKey  = $partialParts[0];
+                $partialargs = [];
+                if (count($partialParts) > 1) {
+                    $partialargs = explode(',', $partialParts[1]);
+                }
+
+                if (! array_key_exists($partialKey, $components)) {
+                    continue;
+                }
+
+                $template = $components[$partialKey];
+
+                $markdown = str_replace(
+                    $replacements[$i],
+                    $template::create(...$partialargs)->build(),
+                    $markdown
+                );
+            }
         }
-        return $this->efMarkdown;
+        return $markdown;
     }
 }
