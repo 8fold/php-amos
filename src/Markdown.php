@@ -62,7 +62,7 @@ class Markdown
 
     public static function convertTitle(string $title): string
     {
-        return self::singletonTitleConverter()->convert($title);
+        return strip_tags(self::singletonTitleConverter()->convert($title));
     }
 
     private static function proccessPartials(

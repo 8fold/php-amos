@@ -1,125 +1,83 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Eightfold\Amos\PageComponents;
 
 use Eightfold\XMLBuilder\Contracts\Buildable;
 
-use Eightfold\Amos\Store;
+use Eightfold\Amos\Markdown;
 
 class PageTitle implements Buildable
 {
-    /**
-     * @var Store
-     */
-    private $store;
-
-    /**
-     * @var array<string>
-     */
-    private $titles = [];
-
-    private bool $isReversed = false;
-
-    public static function create(Store $store): PageTitle
+    public static function titleForPath(string $path): string
     {
-        return new PageTitle($store);
+        if (file_exists($path) === false) {
+            return '';
+        }
+
+        $json = file_get_contents($path);
+        $obj  = json_decode($json);
+
+        return Markdown::convertTitle($obj->title);
     }
 
-    public function __construct(Store $store)
-    {
-        $this->store = $store;
+    public static function create(
+        string $publicContentRoot,
+        string $contentPath
+    ): PageTitle {
+        return new static($publicContentRoot, $contentPath);
     }
 
-    public function reversed(): PageTitle
-    {
-        $this->isReversed = true;
-        return $this;
+    final private function __construct(
+        private string $publicContentRoot,
+        private string $contentPath
+    ) {
     }
 
     public function build(): string
     {
-        $titles = $this->titles();
-        return $this->combineTitles($titles);
-    }
+        $pathParts = explode('/', $this->contentPath());
+        $filtered  = array_filter($pathParts);
 
-    public function buildBookend(): string
-    {
-        $titles = $this->titles();
+        $titles = [];
+        while (count($filtered) > 0) {
+            $path     = '/' . implode('/', $filtered) . '/';
+            $metaPath = $this->publicContentRoot() . $path . '/meta.json';
+            $titles[] = $this->titleFor($metaPath);
 
-        $t = [];
-        $first = array_shift($titles);
-        if ($first !== null and strlen($first) > 0) {
-            $t[] = $first;
+            array_pop($filtered);
         }
 
-        $last  = array_pop($titles);
-        if ($last !== null and strlen($last) > 0 and $last !== $first) {
-            $t[] = $last;
-        }
+        $rootTitlePath = $this->publicContentRoot() . '/meta.json';
+        $titles[]      = $this->titleFor($rootTitlePath);
 
-        return $this->combineTitles($t);
+        $titles = array_filter($titles);
+
+        return trim(implode(' | ', $titles));
     }
 
-    public function buildWithAdditions(string ...$titles): string
+    private function publicContentRoot(): string
     {
-        $titles = array_merge($titles, $this->titles());
-        return $this->combineTitles($titles);
+        return $this->publicContentRoot;
+    }
+
+    private function contentPath(): string
+    {
+        return $this->contentPath;
+    }
+
+    private function titleFor(string $path): string
+    {
+        return static::titleForPath($path);
+    }
+
+    private function baseTitle(): string
+    {
+        return $this->baseTitle;
     }
 
     public function __toString(): string
     {
         return $this->build();
-    }
-
-    /**
-     * @param  array<string>  $titles [description]
-     */
-    private function combineTitles(array $titles): string
-    {
-        if ($this->isReversed()) {
-            $titles = array_reverse($titles);
-        }
-        return implode(' | ', array_filter($titles));
-    }
-
-    /**
-     * @return array<string> [description]
-     */
-    private function titles(): array
-    {
-        if (count($this->titles) === 0) {
-            $titles = [];
-            $s = $this->store();
-            while (! $s->isRoot()) {
-                $m = $s->markdown();
-                if (is_object($m)) {
-                    $titles[] = $m->title();
-                }
-
-                $s = $s->up();
-            }
-
-            if ($s->isRoot()) {
-                $m = $s->markdown();
-                if (is_object($m)) {
-                    $titles[] = $m->title();
-                }
-            }
-
-            $this->titles = $titles;
-        }
-        return $this->titles;
-    }
-
-    private function isReversed(): bool
-    {
-        return $this->isReversed;
-    }
-
-    private function store(): Store
-    {
-        return $this->store;
     }
 }

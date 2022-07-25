@@ -1,4 +1,39 @@
 <?php
+declare(strict_types=1);
+
+namespace Eightfold\Amos\Tests;
+
+use PHPUnit\Framework\TestCase;
+
+use Eightfold\Amos\PageComponents\PageTitle;
+
+class PageTitleTest extends TestCase
+{
+    /**
+     * @test
+     */
+    public function can_get_root(): void
+    {
+        $publicContentRoot = __DIR__ . '/../../content-example/public';
+        $contentPath = '';
+
+        $this->assertSame(
+            '8fold Amos',
+            PageTitle::create($publicContentRoot, $contentPath)->build()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function class_is_found(): void
+    {
+        $this->assertTrue(
+            class_exists(PageTitle::class)
+        );
+    }
+}
+/*
 
 declare(strict_types=1);
 
@@ -121,3 +156,4 @@ test('Performant and cached', function() use ($ms) {
 
     expect($cycleTime2)->toBeLessThan(0.007);
 });
+*/
