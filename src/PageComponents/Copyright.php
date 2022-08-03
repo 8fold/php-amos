@@ -1,71 +1,37 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Eightfold\Amos\PageComponents;
 
 use Eightfold\XMLBuilder\Contracts\Buildable;
 
-use Eightfold\Amos\Store;
+use Eightfold\HTMLBuilder\Element;
 
 class Copyright implements Buildable
 {
-    private string $name = '';
-
-    /**
-     * @var string|int
-     */
-    private $startYear = '';
-
-    /**
-     * @param  string|int $startYear [description]
-     */
-    public static function create(string $name, $startYear = ''): Copyright
-    {
-        return new Copyright($name, $startYear);
+    public static function create(
+        string $holder,
+        string $startYear = ''
+    ): self {
+        return new self($holder, $startYear);
     }
 
-    /**
-     * @param string|int $startYear [description]
-     */
-    public function __construct(string $name, $startYear = '')
-    {
-        $this->name      = $name;
-        $this->startYear = $startYear;
-    }
-
-    private function name(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string|int [description]
-     */
-    private function startYear()
-    {
-        return $this->startYear;
-    }
-
-    private function hasStartYear(): bool
-    {
-        return strlen(strval($this->startYear())) > 0;
+    final private function __construct(
+        private string $holder,
+        private string $startYear
+    ) {
     }
 
     public function build(): string
     {
-        $yearString = [];
-        if ($this->hasStartYear()) {
-            $yearString[] = $this->startYear();
+        $time = date('Y');
+        if (strlen($this->startYear) > 0) {
+            $time = $this->startYear . '–' . $time;
         }
-        $yearString[] = date('Y');
-        $yearString = implode('–', $yearString);
 
-        $name = $this->name();
-
-        return <<<html
-            <p>Copyright © {$yearString} {$name}. All rights reserved.</p>
-            html;
+        return Element::p(
+            'Copyright © ' . $time . ' ' . $this->holder . '. All rights reserved.'
+        )->build();
     }
 
     public function __toString(): string

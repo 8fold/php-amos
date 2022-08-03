@@ -3,7 +3,12 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
+use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
+
 use Eightfold\Markdown\Markdown as MarkdownConverter;
+
+use Eightfold\Amos\Site;
+use Eightfold\Amos\Meta;
 
 class Markdown
 {
@@ -13,30 +18,37 @@ class Markdown
 
     private const COMPONENT_WRAPPER = '{!!(.*)!!}';
 
-    public static function singletonConverter(): MarkdownConverter
-    {
-        if (! isset(self::$markdownConverter)) {
-            self::$markdownConverter = MarkdownConverter::create()
-                ->withConfig(
-                    [
-                        'html_input' => 'allow'
-                    ]
-                )->minified()
-                ->smartPunctuation()
-                ->descriptionLists()
-                ->attributes() // for class on notices
-                ->defaultAttributes([
-                    Image::class => [
-                        'loading'  => 'lazy',
-                        'decoding' => 'async'
-                    ]
-                ])->abbreviations()
-                ->externalLinks(
-                    [
-                        'open_in_new_window' => true,
-                        'internal_hosts'     => 'joshbruce.com'
-                    ]
-                );
+    public static function singletonConverter(
+        MarkdownConverter $converter = null
+    ): MarkdownConverter {
+        if (isset(self::$markdownConverter) === false) {
+            if ($converter === null) {
+                self::$markdownConverter = MarkdownConverter::create()
+                    ->withConfig(
+                        [
+                            'html_input' => 'allow'
+                        ]
+                    )->minified()
+                    ->smartPunctuation()
+                    ->descriptionLists()
+                    ->attributes() // for class on notices
+                    ->defaultAttributes([
+                        Image::class => [
+                            'loading'  => 'lazy',
+                            'decoding' => 'async'
+                        ]
+                    ])->abbreviations()
+                    ->externalLinks(
+                        [
+                            'open_in_new_window' => true,
+                            'internal_hosts'     => 'joshbruce.com'
+                        ]
+                    );
+
+            } else {
+                self::$markdownConverter = $converter;
+
+            }
         }
         return self::$markdownConverter;
     }
@@ -50,12 +62,25 @@ class Markdown
         return self::$titleConverter;
     }
 
+    /**
+     *
+     * @param Site $site
+     * @param string $markdown
+     * @param array<string, string> $components
+     *
+     * @return string
+     */
     public static function convert(
+        Site $site,
         string $markdown,
-        array $components = []
+        array $components = [],
     ): string {
         if (count($components) > 0) {
-            $markdown = self::proccessPartials($markdown, $components);
+            $markdown = self::proccessPartials(
+                $site,
+                $markdown,
+                $components
+            );
         }
         return self::singletonConverter()->convert($markdown);
     }
@@ -65,9 +90,18 @@ class Markdown
         return strip_tags(self::singletonTitleConverter()->convert($title));
     }
 
+    /**
+     *
+     * @param Site $site
+     * @param string $markdown
+     * @param array<string, string> $components
+     *
+     * @return string
+     */
     private static function proccessPartials(
+        Site $site,
         string $markdown,
-        array $components
+        array $components = [],
     ): string {
         $partials = [];
         if (
@@ -85,9 +119,9 @@ class Markdown
                 $partialParts = explode(':', $partial, 2);
 
                 $partialKey  = $partialParts[0];
-                $partialargs = [];
+                $partialArgs = [];
                 if (count($partialParts) > 1) {
-                    $partialargs = explode(',', $partialParts[1]);
+                    $partialArgs = explode(',', $partialParts[1]);
                 }
 
                 if (! array_key_exists($partialKey, $components)) {
@@ -98,7 +132,7 @@ class Markdown
 
                 $markdown = str_replace(
                     $replacements[$i],
-                    $template::create(...$partialargs)->build(),
+                    $template::create($site)->build(),
                     $markdown
                 );
             }

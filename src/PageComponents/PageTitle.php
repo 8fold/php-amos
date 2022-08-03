@@ -5,79 +5,64 @@ namespace Eightfold\Amos\PageComponents;
 
 use Eightfold\XMLBuilder\Contracts\Buildable;
 
+use Psr\Http\Message\RequestInterface;
+
+use Eightfold\Amos\Site;
+
+use Eightfold\Amos\Content;
+use Eightfold\Amos\Meta;
+
 use Eightfold\Amos\Markdown;
 
 class PageTitle implements Buildable
 {
-    public static function titleForPath(string $path): string
+    public static function create(Site $site): PageTitle
     {
-        if (file_exists($path) === false) {
-            return '';
-        }
-
-        $json = file_get_contents($path);
-        $obj  = json_decode($json);
-
-        return Markdown::convertTitle($obj->title);
+        return new self($site);
     }
 
-    public static function create(
-        string $publicContentRoot,
-        string $contentPath
-    ): PageTitle {
-        return new static($publicContentRoot, $contentPath);
+    final private function __construct(private Site $site)
+    {
     }
 
-    final private function __construct(
-        private string $publicContentRoot,
-        private string $contentPath
-    ) {
+    public function site(): Site
+    {
+        return $this->site;
     }
 
     public function build(): string
     {
-        $pathParts = explode('/', $this->contentPath());
+        $path = $this->site()->requestPath();
+
+        $pathParts = explode('/', $path);
         $filtered  = array_filter($pathParts);
 
         $titles = [];
         while (count($filtered) > 0) {
-            $path     = '/' . implode('/', $filtered) . '/';
-            $metaPath = $this->publicContentRoot() . $path . '/meta.json';
-            $titles[] = $this->titleFor($metaPath);
+            $path = '/' . implode('/', $filtered) . '/';
+            $titles[] = $this->title(at: $path);
 
             array_pop($filtered);
         }
 
-        $rootTitlePath = $this->publicContentRoot() . '/meta.json';
-        $titles[]      = $this->titleFor($rootTitlePath);
+        $titles[] = $this->title(at: '/');
 
         $titles = array_filter($titles);
 
         return trim(implode(' | ', $titles));
     }
 
-    private function publicContentRoot(): string
-    {
-        return $this->publicContentRoot;
-    }
-
-    private function contentPath(): string
-    {
-        return $this->contentPath;
-    }
-
-    private function titleFor(string $path): string
-    {
-        return static::titleForPath($path);
-    }
-
-    private function baseTitle(): string
-    {
-        return $this->baseTitle;
-    }
-
     public function __toString(): string
     {
         return $this->build();
+    }
+
+    private function title(string $at): string
+    {
+        $meta = $this->site()->meta(at: $at);
+        if (is_object($meta) and property_exists($meta, 'title')) {
+            return Markdown::convertTitle($meta->title);
+        }
+        return '';
     }
 }

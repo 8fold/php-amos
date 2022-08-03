@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "php": "^8.0",
+    "php": "^8.1",
     "ext-fileinfo": "*",
     "8fold/commonmark-fluent-markdown": "^1.0",
     "8fold/php-html-builder": "^1.0",
@@ -44,7 +44,8 @@
     "production": [
       "composer dumpautoload -o",
       "@style",
-      "@stan"
+      "@stan",
+      "@test"
     ],
     "deploy": [
       "@production",

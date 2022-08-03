@@ -5,55 +5,31 @@ namespace Eightfold\Amos\Documents;
 
 use Eightfold\XMLBuilder\Contracts\Buildable;
 
-use Eightfold\HTMLBuilder\Document;
-use Eightfold\HTMLBuilder\Element;
+use Eightfold\XMLBuilder\Document;
+use Eightfold\XMLBuilder\Element;
 
-use Eightfold\Amos\PageComponents\PageTitle;
+use Eightfold\Amos\Site;
 
 class Page implements Buildable
 {
-    public static function create(
-        string $publicContentRoot,
-        string $contentPath,
-        string $body
-    ): self
+    public static function create(Site $site): self
     {
-        return new self($publicContentRoot, $contentPath, $body);
+        return new self($site);
     }
 
-    final private function __construct(
-        private string $publicContentRoot,
-        private string $contentPath,
-        private string $body
-    )
+    final private function __construct(private Site $site)
     {
     }
 
-    private function publicContentRoot(): string
+    private function site(): Site
     {
-        return $this->publicContentRoot;
-    }
-
-    private function contentPath(): string
-    {
-        return $this->contentPath;
-    }
-
-    private function body(): string
-    {
-        return $this->body;
+        return $this->site;
     }
 
     public function build(): string
     {
-        return Document::create(
-            PageTitle::create($this->publicContentRoot(), $this->contentPath())
-                ->build()
-        )->head(
-
-        )->body(
-            $this->body()
-        )->build();
+        $site = $this->site();
+        return '';
     }
 
     public function __toString(): string
