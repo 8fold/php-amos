@@ -1,3 +1,0 @@
----
-title: Subfolder content title
----

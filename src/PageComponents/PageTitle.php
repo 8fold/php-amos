@@ -1,71 +1,55 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Eightfold\Amos\PageComponents;
 
 use Eightfold\XMLBuilder\Contracts\Buildable;
 
-use Eightfold\Amos\Store;
+use Psr\Http\Message\RequestInterface;
+
+use Eightfold\Amos\Site;
+
+use Eightfold\Amos\Content;
+use Eightfold\Amos\Meta;
+
+use Eightfold\Amos\Markdown;
 
 class PageTitle implements Buildable
 {
-    /**
-     * @var Store
-     */
-    private $store;
-
-    /**
-     * @var array<string>
-     */
-    private $titles = [];
-
-    private bool $isReversed = false;
-
-    public static function create(Store $store): PageTitle
+    public static function create(Site $site): PageTitle
     {
-        return new PageTitle($store);
+        return new self($site);
     }
 
-    public function __construct(Store $store)
+    final private function __construct(private Site $site)
     {
-        $this->store = $store;
     }
 
-    public function reversed(): PageTitle
+    public function site(): Site
     {
-        $this->isReversed = true;
-        return $this;
+        return $this->site;
     }
 
     public function build(): string
     {
-        $titles = $this->titles();
-        return $this->combineTitles($titles);
-    }
+        $path = $this->site()->requestPath();
 
-    public function buildBookend(): string
-    {
-        $titles = $this->titles();
+        $pathParts = explode('/', $path);
+        $filtered  = array_filter($pathParts);
 
-        $t = [];
-        $first = array_shift($titles);
-        if ($first !== null and strlen($first) > 0) {
-            $t[] = $first;
+        $titles = [];
+        while (count($filtered) > 0) {
+            $path = '/' . implode('/', $filtered) . '/';
+            $titles[] = $this->title(at: $path);
+
+            array_pop($filtered);
         }
 
-        $last  = array_pop($titles);
-        if ($last !== null and strlen($last) > 0 and $last !== $first) {
-            $t[] = $last;
-        }
+        $titles[] = $this->title(at: '/');
 
-        return $this->combineTitles($t);
-    }
+        $titles = array_filter($titles);
 
-    public function buildWithAdditions(string ...$titles): string
-    {
-        $titles = array_merge($titles, $this->titles());
-        return $this->combineTitles($titles);
+        return trim(implode(' | ', $titles));
     }
 
     public function __toString(): string
@@ -73,53 +57,12 @@ class PageTitle implements Buildable
         return $this->build();
     }
 
-    /**
-     * @param  array<string>  $titles [description]
-     */
-    private function combineTitles(array $titles): string
+    private function title(string $at): string
     {
-        if ($this->isReversed()) {
-            $titles = array_reverse($titles);
+        $meta = $this->site()->meta(at: $at);
+        if (is_object($meta) and property_exists($meta, 'title')) {
+            return Markdown::convertTitle($meta->title);
         }
-        return implode(' | ', array_filter($titles));
-    }
-
-    /**
-     * @return array<string> [description]
-     */
-    private function titles(): array
-    {
-        if (count($this->titles) === 0) {
-            $titles = [];
-            $s = $this->store();
-            while (! $s->isRoot()) {
-                $m = $s->markdown();
-                if (is_object($m)) {
-                    $titles[] = $m->title();
-                }
-
-                $s = $s->up();
-            }
-
-            if ($s->isRoot()) {
-                $m = $s->markdown();
-                if (is_object($m)) {
-                    $titles[] = $m->title();
-                }
-            }
-
-            $this->titles = $titles;
-        }
-        return $this->titles;
-    }
-
-    private function isReversed(): bool
-    {
-        return $this->isReversed;
-    }
-
-    private function store(): Store
-    {
-        return $this->store;
+        return '';
     }
 }
