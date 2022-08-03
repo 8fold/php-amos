@@ -1,10 +1,10 @@
 # 8fold Amos
 
-This project is a collection of patterns, guidelines, guardrails, and sample code for creating file-based websites with minimal dependencies and opinions. 
+This project is a collection of patterns, guidelines, guardrails, and sample code for creating file-based websites.
 
 The patterns are meant to be language and framework agnostic. The patterns are more important than the implementation.
 
-The sample code uses [PHP](https://www.php.net). 
+The sample code uses [PHP](https://www.php.net).
 
 This project is an example of these patterns and sample code in use. Who can host it on your local machine by pointing a PHP server at the following directory: `site-root/local`.
 
@@ -12,7 +12,8 @@ Defined terms are title-cased and their definitions are available in the glossar
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
 
-- Implementations: 
+- Implementations:
+	- SHOULD favor dependency injection despite singletons and globals being available.
 	- SHOULD favor separating metadata, content, rendering, and logic.
 		- Metadata SHOULD favor JSON over YAML.
 		- Content SHOULD favor Markdown over HTML.
@@ -39,33 +40,64 @@ For the web, HTTP messages (described in [RFC 7230](https://datatracker.ietf.org
 
 However, this concept and flow can be seen in many areas of life.
 
-## Folders and files (basics)
+## Principles
 
-Each website MAY have three areas:
+Principles represent our guardrails. They are more rigid than values.
 
-1. content (serves content creators),
-2. site (serves user interface designers and developers), and
-3. source (serves all designers and developers).
+1. The server can respond faster than our application.
 
-Each site SHOULD have its own content folder. Each site SHOULD have two folders; one for local development and the other for pointing the domain. Each site MAY have only one source folder. A baseline Amos project, MAY look something like this:
+## Practices
+
+1. For each feature, implementations SHOULD start by asking if the server can do what we are wanting to do; delivering site assets such as style sheets and similar, for example. (Principle: 1)
+
+## Information architecture (basics)
+
+We RECOMMEND dividing things into three areas: content, server, and source. Generally, a separate folder for each.
+
+The content area represents what would typically found in a database, serves content creators, and typically changes more than the other areas. The server area gives the server a place to start or respond and typically changes less often than the other two areas; where the server will be pointed as the root of the site. The source area is where code for rendering the site is housed and typically changes less often than the content area.
+
+This separation affords us the opportunity to decouple all three areas entirely from one another.
+
+We RECOMMEND:
+
+- The content area root folder be prefixed with the word `content-`.
+- The server area root folder be prefixed with the word `site-`.
+- The source are root folder be named in the tradition of the language or framework; for example, PHP projects typically use `src`.
+
+```bash
+.
+├── content-root/
+├── site-root/
+└── src
+```
+
+Within the content and server areas, we RECOMMEND creating a `public` folder. In the content area this affords implementers the ability to add other folders to store files from content creators that operate outside the standard URL-page relationship; system alerts, for example. In the site area this affords implementers the ability to create environment folders without the overhead sometimes seen with configuration (`.env` files) unless necessary for the security of the site.
 
 ```bash
 .
 ├── content-root/
 │   └── public
 ├── site-root/
-│   ├── local
 │   └── public
 └── src
 ```
 
-While not required, we RECOMMEND prefixing content folders with `content-`, site folders with `site-`, and using the naming convention for your preferred stack to name the folder where source code lives. (In PHP this is `src`.)
+To use the sample code found in this project, which is used to render and maintain this site, we presume the existence of the `public` folders.
 
-- The `public` folder within a `content` folder MUST be present to use the sample code and classes found here. It represents content Client-users will be able to see at some point during their interactions with the site.
-	- `site-root/local` would be for development on a local machine; to display all errors, for example.
-	- `site-root/public` would be where the server is pointed for each request; to hide all errors. (This way, you don't run the risk of accidentally misidentifying an environment and exposing the underlying technology stack used for the site.)
-- Each folder under a `site` folder represents an environment with its own configuration. We've found performance improvements (speed and memory) over `.env` files and implementations. *Note: Environment-specific variables that need to remain secret SHOULD use something like [.env](https://www.dotenv.org) files.*
--  
+The server for the website SHOULD be pointed to the `public` folder in the site area folder. For local development, we RECOMMEND creating a duplicate folder called `local` and pointing local servers (virtual machines) to that folder.
+
+```bash
+.
+├── content-root/
+│   └── public
+├── site-root/
+│   └── local
+│   └── public
+└── src
+```
+
+This allows implementers to closely mirror their production environments based on the contents of those folders.
+
 ### Content directories
 
 *Usually the most frequently changed.*
@@ -88,11 +120,22 @@ Note: The content folder(s) MAY NOT be at the same level as the site and source 
 
 The `content.md` is a plain text file that can operate independently from the website and rendering. The `meta.json` file holds metadata about the content itself and SHOULD NOT depend on the website implementation.
 
+- We RECOMMEND that content folders without a `meta.json` file are considered unpublished by scripts that would take that into account; `SiteMap` example, for example.
+
 ### Source directories
 
 *Usually changed less often compared to content.*
 
 The code that consumes, manipulates, and renders the content lives here. We RECOMMEND separating data manipulation code from view code; facilitating [MVC](https://en.wikipedia.org/wiki/Model–view–controller), [MVVM](https://en.wikipedia.org/wiki/Model–view–viewmodel), or [MVP](https://en.wikipedia.org/wiki/Model–view–presenter) design patterns.
+
+```bash
+.
+├── content-root/
+├── site-root/
+└── src
+│   └── Documents
+│   └── Templates
+```
 
 ### Site directories
 
