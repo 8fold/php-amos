@@ -17,9 +17,6 @@ use Eightfold\Amos\Site;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
 
-use JoshBruce\Site\Templates\Page;
-use JoshBruce\Site\Templates\PageNotFound;
-
 $psr17Factory = new Psr17Factory();
 
 $request = (new ServerRequestCreator(
@@ -32,12 +29,7 @@ $request = (new ServerRequestCreator(
 (new SapiEmitter())->emit(
     Site::init(
         withDomain: 'http://com.joshbruce:8889',
-        contentIn: __DIR__ . '/../../content-root'
-    )->setTemplates(
-        default: Page::class,
-        templates: [
-            'error404' => PageNotFound::class
-        ]
-    )->response(for: $request)
+        contentIn: __DIR__ . '/../../content-example'
+    )->handle($request)
 );
 exit();

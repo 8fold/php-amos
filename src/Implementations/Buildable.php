@@ -1,16 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Eightfold\Amos\Documents;
+namespace Eightfold\Amos\Implementations;
 
-use Eightfold\XMLBuilder\Contracts\Buildable;
-
-use Eightfold\XMLBuilder\Document;
-use Eightfold\XMLBuilder\Element;
+use Eightfold\Amos\Contracts\Buildable as BuildableContract;
 
 use Eightfold\Amos\Site;
 
-class Page implements Buildable
+trait Buildable
 {
     public static function create(Site $site): self
     {
@@ -21,15 +18,9 @@ class Page implements Buildable
     {
     }
 
-    private function site(): Site
+    public function site(): Site
     {
         return $this->site;
-    }
-
-    public function build(): string
-    {
-        $site = $this->site();
-        return '';
     }
 
     public function __toString(): string

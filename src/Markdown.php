@@ -16,6 +16,8 @@ class Markdown
 
     private static MarkdownConverter $titleConverter;
 
+    private static string $domain = '';
+
     private const COMPONENT_WRAPPER = '{!!(.*)!!}';
 
     public static function singletonConverter(
@@ -24,26 +26,26 @@ class Markdown
         if (isset(self::$markdownConverter) === false) {
             if ($converter === null) {
                 self::$markdownConverter = MarkdownConverter::create()
-                    ->withConfig(
-                        [
-                            'html_input' => 'allow'
-                        ]
-                    )->minified()
-                    ->smartPunctuation()
-                    ->descriptionLists()
-                    ->attributes() // for class on notices
-                    ->defaultAttributes([
+                    ->withConfig([
+                        'html_input' => 'allow'
+                    ])->defaultAttributes([
                         Image::class => [
                             'loading'  => 'lazy',
                             'decoding' => 'async'
                         ]
-                    ])->abbreviations()
-                    ->externalLinks(
-                        [
-                            'open_in_new_window' => true,
-                            'internal_hosts'     => 'joshbruce.com'
-                        ]
-                    );
+                    ])->externalLinks([
+                        'open_in_new_window' => true,
+                        'internal_hosts'     => self::$domain
+                    ])->accessibleHeadingPermalinks([
+                        'min_heading_level' => 2,
+                        'max_heading_level' => 3,
+                        'symbol'            => '＃'
+                    ])->minified()
+                    ->smartPunctuation()
+                    ->descriptionLists()
+                    ->tables()
+                    ->attributes() // for class on notices
+                    ->abbreviations();
 
             } else {
                 self::$markdownConverter = $converter;
@@ -75,6 +77,7 @@ class Markdown
         string $markdown,
         array $components = [],
     ): string {
+        self::$domain = $site->domain();
         if (count($components) > 0) {
             $markdown = self::proccessPartials(
                 $site,

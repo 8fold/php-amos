@@ -122,6 +122,15 @@ The `content.md` is a plain text file that can operate independently from the we
 
 - We RECOMMEND that content folders without a `meta.json` file are considered unpublished by scripts that would take that into account; `SiteMap` example, for example.
 
+The `meta.json` is where you put information related to the content. The following are system-level members (they are all optionals and you can use other member names for the same pattern):
+
+title
+:    Used by the `PageTitle` class to create a concatenated title for the page.
+template
+:    The dictionary key for the array of templates settable in the `Site` class to use to process and display the content.
+priority
+:    A floating point number between `0.0` and `1.0` used with the `Sitemap` class.
+
 ### Source directories
 
 *Usually changed less often compared to content.*
@@ -133,9 +142,12 @@ The code that consumes, manipulates, and renders the content lives here. We RECO
 ├── content-root/
 ├── site-root/
 └── src
-│   └── Documents
 │   └── Templates
+│   └── Documents
+│   └── PageComponents
 ```
+
+The pattern we have found is like a nesting doll. A user requests a URL. The `Site` class determines which `Template` to use; if you prefer model-view-controller software pattern, this would be the controller, however, you MAY decide to use it to return a page full of content. The `Template` decides which `Document` to return; includes the doctype declaration for the HTML, XML, or similar content type—the view in the model-view-controller pattern. The `Document` MAY include `Partials`, which are smaller than a `Document` and are usable by multiple `Documents`.
 
 ### Site directories
 

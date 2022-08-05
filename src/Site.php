@@ -7,7 +7,10 @@ use StdClass;
 use SplFileInfo;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+
+use Psr\Http\Server\RequestHandlerInterface;
 
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\Stream;
@@ -16,14 +19,17 @@ use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
 
 use Eightfold\Markdown\Markdown as MarkdownConverter;
 
-use Eightfold\Amos\Documents\Page;
+use Eightfold\Amos\Templates\Page;
+use Eightfold\Amos\Templates\PageNotFound;
+
 use Eightfold\Amos\Documents\Sitemap;
 
-class Site
+class Site implements RequestHandlerInterface
 {
     /**
-     * Initializer
+     * Initialization
      */
+
     public static function init(
         string $withDomain,
         string $contentIn,
@@ -32,8 +38,19 @@ class Site
         return self::singleton();
     }
 
+    final private function __construct(
+        private string $withDomain,
+        private string $contentIn
+    ) {
+    }
+
+    public function domain(): string
+    {
+        return $this->withDomain;
+    }
+
     /**
-     * Singleton
+     * Singleton.
      */
     private static self $singleton;
 
@@ -43,24 +60,16 @@ class Site
     }
 
     /**
-     * Instance
+     * Request
      */
-    private string $realRootPath = '';
-
     private RequestInterface $request;
 
-    /**
-     *
-     * @var array<string, string>
-     */
-    private array $templates = [
-        'default' => Page::class
-    ];
-
-    final private function __construct(
-        private string $withDomain,
-        private string $contentIn
-    ) {
+    public function request(): RequestInterface
+    {
+        if (isset($this->request) === false) {
+            trigger_error("No request received.", E_USER_WARNING);
+        }
+        return $this->request;
     }
 
     public function requestPath(): string
@@ -69,10 +78,71 @@ class Site
         return rtrim($path, '/');
     }
 
-    public function domain(): string
+    public function handle(RequestInterface $request): ResponseInterface
     {
-        return $this->withDomain;
+        $this->request = $request;
+
+        if ($this->requestPath() === '/sitemap.xml') {
+            return new Response(
+                status: 200,
+                headers: ['Content-type' => 'application/xml'],
+                body: Stream::create(
+                    Sitemap::create($this)->build()
+                )
+            );
+
+        } elseif (str_contains($this->requestPath(), '.')) {
+            $path = $this->publicRoot() . $this->requestPath();
+            if (file_exists($path)) {
+                $mime = mime_content_type($path);
+
+                $resource = @\fopen($path, 'r');
+                if (is_resource($resource)) {
+                    return new Response(
+                        status: 200,
+                        headers: ['Content-type' => mime_content_type($path)],
+                        body: Stream::create($resource)
+                    );
+                }
+            }
+        }
+
+        if ($this->isPublishedContent($this->requestPath()) === false) {
+            $path = $this->contentRoot() . '/errors/404/content.md';
+            if (file_exists($path)) {
+                $template = $this->templates['error404'];
+                return new Response(
+                    status: 404,
+                    headers: ['Content-type' => 'text/html'],
+                    body: Stream::create(
+                        $template::create($this)->build()
+                    )
+                );
+
+            } else {
+                // No custom 404 page error content found.
+                return new Response(
+                    status: 404,
+                    headers: ['Content-type' => 'text/html'],
+                    body: Stream::create('404: Page not found.')
+                );
+            }
+        }
+
+        $template = $this->templates['default'];
+        return new Response(
+            status: 200,
+            headers: ['Content-type' => 'text/html'],
+            body: Stream::create(
+                $template::create($this)->build()
+            )
+        );
     }
+
+    /**
+     * File system
+     */
+    private string $realRootPath = '';
 
     public function contentRoot(): string
     {
@@ -111,6 +181,21 @@ class Site
         return false;
     }
 
+    public function textFile(string $named, string $at): string|false
+    {
+        $path = $this->contentRoot() . $at . '/' . $named;
+        if (is_file($path) === false) {
+            return false;
+        }
+
+        return file_get_contents($path);
+    }
+
+    private function metaPath(string $at): string
+    {
+        return $this->publicRoot() . $at . '/meta.json';
+    }
+
     public function content(string $at): string
     {
         $path = $this->contentPath($at);
@@ -126,29 +211,6 @@ class Site
         return $content;
     }
 
-    public function decodedJsonFile(string $named, string $at): StdClass|false
-    {
-        $path = $this->publicRoot() . $at . $named;
-        if (is_file($path) === false) {
-            return false;
-        }
-
-        $json = file_get_contents($path);
-        if ($json === false) {
-            return false;
-        }
-
-        $decoded = json_decode($json);
-        if (
-            is_object($decoded) and
-            is_a($decoded, StdClass::class)
-        ) {
-            return $decoded;
-        }
-
-        return false;
-    }
-
     public function isPublishedContent(string $at): bool
     {
         return file_exists($this->contentPath($at)) and
@@ -160,18 +222,15 @@ class Site
         return $this->publicRoot() . $at . '/content.md';
     }
 
-    private function metaPath(string $at): string
-    {
-        return $this->publicRoot() . $at . '/meta.json';
-    }
-
-    public function request(): RequestInterface
-    {
-        if (isset($this->request) === false) {
-            trigger_error("No request received.", E_USER_WARNING);
-        }
-        return $this->request;
-    }
+    /**
+     * User-specified templates.
+     *
+     * @var array<string, string>
+     */
+    private array $templates = [
+        'default'  => Page::class,
+        'error404' => PageNotFound::class
+    ];
 
     /**
      *
@@ -206,84 +265,21 @@ class Site
         return $templates[$at];
     }
 
-    public function response(RequestInterface $for): ResponseInterface
+    public function setMarkdownConverter(MarkdownConverter $converter): self
     {
-        $this->request = $for;
-
-        if ($this->requestPath() === '/sitemap.xml') {
-            return new Response(
-                status: 200,
-                headers: ['Content-type' => 'application/xml'],
-                body: Stream::create(
-                    Sitemap::create($this)->build()
-                )
-            );
-
-        } elseif (str_contains($this->requestPath(), '.')) {
-            $path = $this->publicRoot() . $this->requestPath();
-            if (file_exists($path)) {
-                $mime = mime_content_type($path);
-
-                $resource = @\fopen($path, 'r');
-                if (is_resource($resource)) {
-                    return new Response(
-                        status: 200,
-                        headers: ['Content-type' => mime_content_type($path)],
-                        body: Stream::create($resource)
-                    );
-                }
-            }
-        }
-
-        $this->createMarkdownConverter();
-        if ($this->isPublishedContent($this->requestPath()) === false) {
-            $path = $this->contentRoot() . '/errors/404/content.md';
-            if (file_exists($path)) {
-                $template = $this->templates['error404'];
-                return new Response(
-                    status: 404,
-                    headers: ['Content-type' => 'text/html'],
-                    body: Stream::create(
-                        $template::create($this)->build()
-                    )
-                );
-            }
-        }
-
-        $template = $this->templates['default'];
-        return new Response(
-            status: 200,
-            headers: ['Content-type' => 'text/html'],
-            body: Stream::create(
-                $template::create($this)->build()
-            )
-        );
+        Markdown::singletonConverter($converter);
+        return $this;
     }
 
-    private function createMarkdownConverter(): void
+    /**
+     * @deprecated 2.0.0 Switched to using RequestHandlerInterface method signature.
+     *
+     * @param RequestInterface $for
+     *
+     * @return ResponseInterface
+     */
+    public function response(RequestInterface $for): ResponseInterface
     {
-        Markdown::singletonConverter(
-            MarkdownConverter::create()
-                ->withConfig([
-                    'html_input' => 'allow'
-                ])->defaultAttributes([
-                    Image::class => [
-                        'loading'  => 'lazy',
-                        'decoding' => 'async'
-                    ]
-                ])->externalLinks([
-                    'open_in_new_window' => true,
-                    'internal_hosts'     => $this->domain()
-                ])->accessibleHeadingPermalinks([
-                    'min_heading_level' => 2,
-                    'max_heading_level' => 3,
-                    'symbol'            => '＃'
-                ])->minified()
-                ->smartPunctuation()
-                ->descriptionLists()
-                ->tables()
-                ->attributes() // for class on notices
-                ->abbreviations()
-        );
+        return $this->handle($for);
     }
 }
