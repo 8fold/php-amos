@@ -7,7 +7,10 @@ use StdClass;
 use SplFileInfo;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+
+use Psr\Http\Server\RequestHandlerInterface;
 
 use Nyholm\Psr7\Response;
 use Nyholm\Psr7\Stream;
@@ -16,10 +19,12 @@ use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
 
 use Eightfold\Markdown\Markdown as MarkdownConverter;
 
-use Eightfold\Amos\Documents\Page;
+use Eightfold\Amos\Templates\Page;
+
+use Eightfold\Amos\Documents\PageNotFound;
 use Eightfold\Amos\Documents\Sitemap;
 
-class Site
+class Site implements RequestHandlerInterface
 {
     /**
      * Initializer
@@ -173,42 +178,9 @@ class Site
         return $this->request;
     }
 
-    /**
-     *
-     * @param string $default
-     * @param array<string, string> $templates
-     *
-     * @return self
-     */
-    public function setTemplates(
-        string $default,
-        array $templates = []
-    ): self {
-        $this->templates['default'] = $default;
-        foreach ($templates as $id => $className) {
-            $this->templates[$id] = $className;
-        }
-        return $this;
-    }
-
-    /**
-     *
-     * @return array<string, string>
-     */
-    public function templates(): array
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->templates;
-    }
-
-    public function template(string $at): string
-    {
-        $templates = $this->templates();
-        return $templates[$at];
-    }
-
-    public function response(RequestInterface $for): ResponseInterface
-    {
-        $this->request = $for;
+        $this->request = $request;
 
         if ($this->requestPath() === '/sitemap.xml') {
             return new Response(
@@ -247,6 +219,14 @@ class Site
                         $template::create($this)->build()
                     )
                 );
+
+            } else {
+                // No custom 404 page error content found.
+                return new Response(
+                    status: 404,
+                    headers: ['Content-type' => 'text/html'],
+                    body: Stream::create('404: Page not found.')
+                );
             }
         }
 
@@ -258,6 +238,51 @@ class Site
                 $template::create($this)->build()
             )
         );
+    }
+
+    /**
+     *
+     * @param string $default
+     * @param array<string, string> $templates
+     *
+     * @return self
+     */
+    public function setTemplates(
+        string $default,
+        array $templates = []
+    ): self {
+        $this->templates['default'] = $default;
+        foreach ($templates as $id => $className) {
+            $this->templates[$id] = $className;
+        }
+        return $this;
+    }
+
+    /**
+     *
+     * @return array<string, string>
+     */
+    public function templates(): array
+    {
+        return $this->templates;
+    }
+
+    public function template(string $at): string
+    {
+        $templates = $this->templates();
+        return $templates[$at];
+    }
+
+    /**
+     * @deprecated 2.0.0 Switched to using RequestHandlerInterface method signature.
+     *
+     * @param RequestInterface $for
+     *
+     * @return ResponseInterface
+     */
+    public function response(RequestInterface $for): ResponseInterface
+    {
+        return $this->handle($for);
     }
 
     private function createMarkdownConverter(): void
