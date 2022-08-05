@@ -20,15 +20,16 @@ use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
 use Eightfold\Markdown\Markdown as MarkdownConverter;
 
 use Eightfold\Amos\Templates\Page;
+use Eightfold\Amos\Templates\PageNotFound;
 
-use Eightfold\Amos\Documents\PageNotFound;
 use Eightfold\Amos\Documents\Sitemap;
 
 class Site implements RequestHandlerInterface
 {
     /**
-     * Initializer
+     * Initialization
      */
+
     public static function init(
         string $withDomain,
         string $contentIn,
@@ -37,8 +38,19 @@ class Site implements RequestHandlerInterface
         return self::singleton();
     }
 
+    final private function __construct(
+        private string $withDomain,
+        private string $contentIn
+    ) {
+    }
+
+    public function domain(): string
+    {
+        return $this->withDomain;
+    }
+
     /**
-     * Singleton
+     * Singleton.
      */
     private static self $singleton;
 
@@ -48,127 +60,9 @@ class Site implements RequestHandlerInterface
     }
 
     /**
-     * Instance
+     * Request
      */
-    private string $realRootPath = '';
-
     private RequestInterface $request;
-
-    /**
-     *
-     * @var array<string, string>
-     */
-    private array $templates = [
-        'default' => Page::class
-    ];
-
-    final private function __construct(
-        private string $withDomain,
-        private string $contentIn
-    ) {
-    }
-
-    public function requestPath(): string
-    {
-        $path = $this->request()->getUri()->getPath();
-        return rtrim($path, '/');
-    }
-
-    public function domain(): string
-    {
-        return $this->withDomain;
-    }
-
-    public function contentRoot(): string
-    {
-        if ($this->realRootPath === '') {
-            $fileInfo = new SplFileInfo($this->contentIn);
-            $this->realRootPath = $fileInfo->getRealPath();
-        }
-        return $this->realRootPath;
-    }
-
-    public function publicRoot(): string
-    {
-        return $this->contentRoot() . '/public';
-    }
-
-    public function meta(string $at): StdClass|false
-    {
-        $path = $this->metaPath($at);
-
-        if (is_file($path) === false) {
-            return false;
-        }
-
-        $json = file_get_contents($path);
-        if ($json === false) {
-            return false;
-        }
-
-        $decoded = json_decode($json);
-        if (
-            is_object($decoded) and
-            is_a($decoded, StdClass::class)
-        ) {
-            return $decoded;
-        }
-        return false;
-    }
-
-    public function content(string $at): string
-    {
-        $path = $this->contentPath($at);
-
-        if (file_exists($path) === false) {
-            return '';
-        }
-
-        $content = file_get_contents($path);
-        if ($content === false) {
-            return '';
-        }
-        return $content;
-    }
-
-    public function decodedJsonFile(string $named, string $at): StdClass|false
-    {
-        $path = $this->publicRoot() . $at . $named;
-        if (is_file($path) === false) {
-            return false;
-        }
-
-        $json = file_get_contents($path);
-        if ($json === false) {
-            return false;
-        }
-
-        $decoded = json_decode($json);
-        if (
-            is_object($decoded) and
-            is_a($decoded, StdClass::class)
-        ) {
-            return $decoded;
-        }
-
-        return false;
-    }
-
-    public function isPublishedContent(string $at): bool
-    {
-        return file_exists($this->contentPath($at)) and
-            file_exists($this->metaPath($at));
-    }
-
-    public function contentPath(string $at): string
-    {
-        return $this->publicRoot() . $at . '/content.md';
-    }
-
-    private function metaPath(string $at): string
-    {
-        return $this->publicRoot() . $at . '/meta.json';
-    }
 
     public function request(): RequestInterface
     {
@@ -176,6 +70,12 @@ class Site implements RequestHandlerInterface
             trigger_error("No request received.", E_USER_WARNING);
         }
         return $this->request;
+    }
+
+    public function requestPath(): string
+    {
+        $path = $this->request()->getUri()->getPath();
+        return rtrim($path, '/');
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -239,6 +139,122 @@ class Site implements RequestHandlerInterface
             )
         );
     }
+
+    /**
+     * File system
+     */
+    private string $realRootPath = '';
+
+    public function contentRoot(): string
+    {
+        if ($this->realRootPath === '') {
+            $fileInfo = new SplFileInfo($this->contentIn);
+            $this->realRootPath = $fileInfo->getRealPath();
+        }
+        return $this->realRootPath;
+    }
+
+    public function publicRoot(): string
+    {
+        return $this->contentRoot() . '/public';
+    }
+
+    public function meta(string $at): StdClass|false
+    {
+        $path = $this->metaPath($at);
+
+        if (is_file($path) === false) {
+            return false;
+        }
+
+        $json = file_get_contents($path);
+        if ($json === false) {
+            return false;
+        }
+
+        $decoded = json_decode($json);
+        if (
+            is_object($decoded) and
+            is_a($decoded, StdClass::class)
+        ) {
+            return $decoded;
+        }
+        return false;
+    }
+
+    public function textFile(string $named, string $at): string|false
+    {
+        $path = $this->contentRoot() . $at . '/' . $named;
+        if (is_file($path) === false) {
+            return false;
+        }
+
+        return file_get_contents($path);
+    }
+
+    private function metaPath(string $at): string
+    {
+        return $this->publicRoot() . $at . '/meta.json';
+    }
+
+    public function content(string $at): string
+    {
+        $path = $this->contentPath($at);
+
+        if (file_exists($path) === false) {
+            return '';
+        }
+
+        $content = file_get_contents($path);
+        if ($content === false) {
+            return '';
+        }
+        return $content;
+    }
+
+    public function isPublishedContent(string $at): bool
+    {
+        return file_exists($this->contentPath($at)) and
+            file_exists($this->metaPath($at));
+    }
+
+    public function contentPath(string $at): string
+    {
+        return $this->publicRoot() . $at . '/content.md';
+    }
+
+    public function decodedJsonFile(string $named, string $at): StdClass|false
+    {
+        $path = $this->publicRoot() . $at . $named;
+        if (is_file($path) === false) {
+            return false;
+        }
+
+        $json = $this->content($at);
+        if ($json === false) {
+            return false;
+        }
+
+        $decoded = json_decode($json);
+        if (
+            is_object($decoded) and
+            is_a($decoded, StdClass::class)
+        ) {
+            return $decoded;
+        }
+
+        return false;
+    }
+
+    /**
+     * User- specified templates.
+     *
+     * @var array<string, string>
+     */
+    private array $templates = [
+        'default'  => Page::class,
+        'error404' => PageNotFound::class
+    ];
 
     /**
      *
