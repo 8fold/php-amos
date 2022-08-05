@@ -107,7 +107,10 @@ class Site implements RequestHandlerInterface
             }
         }
 
-        $this->createMarkdownConverter();
+        if (method_exists($this::class, 'createMarkdownConverter')) {
+            $this->createMarkdownConverter();
+        }
+
         if ($this->isPublishedContent($this->requestPath()) === false) {
             $path = $this->contentRoot() . '/errors/404/content.md';
             if (file_exists($path)) {
@@ -299,32 +302,5 @@ class Site implements RequestHandlerInterface
     public function response(RequestInterface $for): ResponseInterface
     {
         return $this->handle($for);
-    }
-
-    private function createMarkdownConverter(): void
-    {
-        Markdown::singletonConverter(
-            MarkdownConverter::create()
-                ->withConfig([
-                    'html_input' => 'allow'
-                ])->defaultAttributes([
-                    Image::class => [
-                        'loading'  => 'lazy',
-                        'decoding' => 'async'
-                    ]
-                ])->externalLinks([
-                    'open_in_new_window' => true,
-                    'internal_hosts'     => $this->domain()
-                ])->accessibleHeadingPermalinks([
-                    'min_heading_level' => 2,
-                    'max_heading_level' => 3,
-                    'symbol'            => '＃'
-                ])->minified()
-                ->smartPunctuation()
-                ->descriptionLists()
-                ->tables()
-                ->attributes() // for class on notices
-                ->abbreviations()
-        );
     }
 }

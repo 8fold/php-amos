@@ -20,16 +20,17 @@ class PageNotFound implements Buildable
 
     public function build(): string
     {
+        $markdown = $this->site()->textFile(
+            named: 'content.md',
+            at: '/errors/404'
+        );
+        if ($markdown === false) {
+            $markdown = '';
+        }
         return Document::create(
             'Page not found error (404)'
         )->body(
-            Markdown::convert(
-                $this->site(),
-               $this->site()->textFile(
-                   named: 'content.md',
-                   at: '/errors/404'
-                )
-            )
+            Markdown::convert($this->site(), $markdown)
         )->build();
     }
 }
