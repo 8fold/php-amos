@@ -78,7 +78,7 @@ class Site implements RequestHandlerInterface
         return rtrim($path, '/');
     }
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function handle(RequestInterface $request): ResponseInterface
     {
         $this->request = $request;
 
@@ -105,10 +105,6 @@ class Site implements RequestHandlerInterface
                     );
                 }
             }
-        }
-
-        if (method_exists($this::class, 'createMarkdownConverter')) {
-            $this->createMarkdownConverter();
         }
 
         if ($this->isPublishedContent($this->requestPath()) === false) {
@@ -226,31 +222,8 @@ class Site implements RequestHandlerInterface
         return $this->publicRoot() . $at . '/content.md';
     }
 
-    public function decodedJsonFile(string $named, string $at): StdClass|false
-    {
-        $path = $this->publicRoot() . $at . $named;
-        if (is_file($path) === false) {
-            return false;
-        }
-
-        $json = $this->content($at);
-        if ($json === false) {
-            return false;
-        }
-
-        $decoded = json_decode($json);
-        if (
-            is_object($decoded) and
-            is_a($decoded, StdClass::class)
-        ) {
-            return $decoded;
-        }
-
-        return false;
-    }
-
     /**
-     * User- specified templates.
+     * User-specified templates.
      *
      * @var array<string, string>
      */
@@ -290,6 +263,12 @@ class Site implements RequestHandlerInterface
     {
         $templates = $this->templates();
         return $templates[$at];
+    }
+
+    public function setMarkdownConverter(MarkdownConverter $converter): self
+    {
+        Markdown::singletonConverter($converter);
+        return $this;
     }
 
     /**
