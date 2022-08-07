@@ -11,6 +11,7 @@ use Eightfold\HTMLBuilder\Element;
 use Eightfold\Amos\Implementations\Buildable as BuildableTrait;
 
 use Eightfold\Amos\PageComponents\PageTitle;
+use Eightfold\Amos\PageComponents\Favicons;
 
 use Eightfold\Amos\Markdown;
 
@@ -23,6 +24,23 @@ class Page implements Buildable
         // $site = $this->site();
         return Document::create(
             PageTitle::create($this->site())->build()
+        )->head(
+            Element::meta()->omitEndTag()->props(
+                'name viewport',
+                'content width=device-width,initial-scale=1'
+            ),
+            Favicons::create(
+                themeColor: '#0780A7',
+                path: '/favicons',
+                msAppTileColor: '#008181',
+                safariTabColor: '#008181'
+            ),
+            Element::link()->omitEndTag()
+                ->props(
+                    'rel stylesheet',
+                    'href /css/styles.min.css',
+                    'type text/css'
+                ),
         )->body(
             Markdown::convert(
                 $this->site(),
