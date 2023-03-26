@@ -1,10 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>8fold Amos for PHP</title>
-    </head>
-    <body>
+<?php require_once __DIR__ . '/../opening.php'; ?>
 <h1 id="8fold-amos-for-php">8fold Amos for PHP</h1>
 <p>Amos is more of an approach to implementing websites than a framework or content management system.</p>
 <p>The values and principles are more important than any single implementation. We try to be short on binary decisions and long on flexibility.</p>
@@ -35,5 +29,4 @@
 <p>Having specified locations for certain things allows the framework to know the location of things. Even if those locations aren&#39;t, strictly speaking, required. It also helps with interoperability; developers can quickly get their bearings from one project to another.</p>
 <p>Because Amos isn&#39;t a framework or system, you can pretty much do whatever you want to do regarding how you organize your files and folders. </p>
 <p><a href="./getting-started">Let&#39;s get started</a>!</p>
-    </body>
-</html>
+<?php require_once __DIR__ . '/../closing.php'; ?>
