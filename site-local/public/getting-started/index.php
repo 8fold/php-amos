@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>8fold Amos for PHP</title>
+        <title>Getting started | 8fold Amos for PHP</title>
     </head>
     <body>
 <h1 id="getting-started">Getting started</h1>
