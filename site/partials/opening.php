@@ -1,10 +1,9 @@
 <?php
+require_once __DIR__ . '/../environment.php';
+
 require_once __DIR__ . '/../functions.php';
 
-$title = page_title(
-    __DIR__ . '/../../docs/public',
-    $_SERVER['REQUEST_URI']
-);
+$title = page_title($contentPublicRoot, $_SERVER['REQUEST_URI']);
 ?>
 <!doctype html>
 <html>

@@ -1,10 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Getting started | 8fold Amos for PHP</title>
-    </head>
-    <body>
+<?php require_once __DIR__ . '/../../partials/opening.php'; ?>
 <h1 id="getting-started">Getting started</h1>
 <p>One of the things I appreciate about the Internet is how easy, relatively speaking, it is to create something without any special hardware or software.</p>
 <ol>
@@ -79,6 +73,7 @@
 <p>Some applications you can purchase allow you to create components and place them on pages to edit once to update everywhere. (My understanding is one such app for macOS is <a href="https://blocsapp.com">Blocs</a>.) You will build the site, then publish it using FTP (often built into the application).</p>
 <p>Alternatively, if you&#39;re ready to increase complexity, you can use static site generators or a server-side rendering setup. Some static site generators include <a href="https://jekyllrb.com">Jekyll</a> (written in Ruby), <a href="https://www.11ty.dev">11ty</a> (written in JavaScript), <a href="https://jigsaw.tighten.com">Jigsaw</a> (written in PHP), and <a href="https://jamstack.org/generators/">many more</a>. Typically, you build the site on your local machine or within the hosting server. Then you&#39;ll run a script that will generate all the individual HTML files, similar to the applications in the previous paragraph, and make those available on your server in the &quot;public&quot; folder your domain points to. (You can even use <a href="https://pages.github.com">GitHub Pages</a> to host and server your site, there&#39;s some setup required, it uses Jekyll, and pushing to GitHub becomes your FTP.)</p>
 <p>You can choose from several <a href="https://en.wikipedia.org/wiki/List_of_content_management_systems"><a href="CMSs">.content management systems</a> </a> if you want to increase complexity. The most prevalent is still <a href="https://wordpress.org">WordPress</a>, and many hosting service providers will set up a basic installation for you. These typically replace uploading files with separating content from layout through databases.</p>
-<p>Or, what we typically find with Amos-style sites is we <a href="./roll-your-own/">roll our own</a>.</p>
+<p>Or, what we typically find with Amos-style sites is we <a href="../roll-your-own/">roll our own</a>.</p>
     </body>
 </html>
+<?php require_once __DIR__ . '/../../partials/closing.php'; ?>
