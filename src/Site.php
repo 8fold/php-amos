@@ -25,6 +25,11 @@ class Site
     ) {
     }
 
+    public function domain(): string
+    {
+        return $this->withDomain;
+    }
+
     public function contentRoot(): string
     {
         if (isset($this->contentRoot) === false) {
@@ -82,6 +87,9 @@ class Site
         return $content;
     }
 
+    /**
+     * @param array<string, string> $partials
+     */
     public function content(string $at = '', array $partials = []): string
     {
         $content = $this->publicMarkdown('content.md', $at);
@@ -96,6 +104,9 @@ class Site
         return $content;
     }
 
+    /**
+     * @param array<string, string> $components
+     */
     private function processPartials(
         string $at,
         string $content,
@@ -156,7 +167,10 @@ class Site
         }
 
         $decoded = json_decode($json);
-        if (is_a($decoded, StdClass::class) === false) {
+        if (
+            is_object($decoded) === false or
+            is_a($decoded, StdClass::class) === false
+        ) {
             return false;
         }
 
@@ -170,13 +184,19 @@ class Site
         }
 
         $meta = $this->meta($at);
-        if (property_exists($meta, 'title') === false) {
+        if (
+            $meta === false or
+            property_exists($meta, 'title') === false
+        ) {
             return '';
         }
 
         return $meta->title;
     }
 
+    /**
+     * @return string[]
+     */
     public function titles(string $at = ''): array
     {
         if (str_starts_with($at, '/') === false) {
