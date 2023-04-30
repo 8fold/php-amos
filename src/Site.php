@@ -3,44 +3,25 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
-use StdClass;
 use SplFileInfo;
+use StdClass;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
-
-use Psr\Http\Server\RequestHandlerInterface;
-
-use Nyholm\Psr7\Response;
-use Nyholm\Psr7\Stream;
-
-use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
-
-use Eightfold\Markdown\Markdown as MarkdownConverter;
-
-use Eightfold\Amos\Templates\Page;
-use Eightfold\Amos\Templates\PageNotFound;
-
-use Eightfold\Amos\Documents\Sitemap;
-
-class Site implements RequestHandlerInterface
+class Site
 {
-    /**
-     * Initialization
-     */
+    private string $contentRoot;
+
+    private const COMPONENT_WRAPPER = '{!!(.*)!!}';
 
     public static function init(
         string $withDomain,
-        string $contentIn,
+        string $contentIn
     ): self {
-        self::$singleton = new Site($withDomain, $contentIn);
-        return self::singleton();
+        return new self($withDomain, $contentIn);
     }
 
     final private function __construct(
-        private string $withDomain,
-        private string $contentIn
+        private readonly string $withDomain,
+        private readonly string $contentIn
     ) {
     }
 
@@ -49,108 +30,36 @@ class Site implements RequestHandlerInterface
         return $this->withDomain;
     }
 
-    /**
-     * Singleton.
-     */
-    private static self $singleton;
-
-    public static function singleton(): self
-    {
-        return self::$singleton;
-    }
-
-    /**
-     * Request
-     */
-    private RequestInterface $request;
-
-    public function request(): RequestInterface
-    {
-        if (isset($this->request) === false) {
-            trigger_error("No request received.", E_USER_WARNING);
-        }
-        return $this->request;
-    }
-
-    public function requestPath(): string
-    {
-        $path = $this->request()->getUri()->getPath();
-        return rtrim($path, '/');
-    }
-
-    public function handle(RequestInterface $request): ResponseInterface
-    {
-        $this->request = $request;
-
-        if ($this->requestPath() === '/sitemap.xml') {
-            return new Response(
-                status: 200,
-                headers: ['Content-type' => 'application/xml'],
-                body: Stream::create(
-                    Sitemap::create($this)->build()
-                )
-            );
-
-        } elseif (str_contains($this->requestPath(), '.')) {
-            $path = $this->publicRoot() . $this->requestPath();
-            if (file_exists($path)) {
-                $mime = mime_content_type($path);
-
-                $resource = @\fopen($path, 'r');
-                if (is_resource($resource)) {
-                    return new Response(
-                        status: 200,
-                        headers: ['Content-type' => mime_content_type($path)],
-                        body: Stream::create($resource)
-                    );
-                }
-            }
-        }
-
-        if ($this->isPublishedContent($this->requestPath()) === false) {
-            $path = $this->contentRoot() . '/errors/404/content.md';
-            if (file_exists($path)) {
-                $template = $this->templates['error404'];
-                return new Response(
-                    status: 404,
-                    headers: ['Content-type' => 'text/html'],
-                    body: Stream::create(
-                        $template::create($this)->build()
-                    )
-                );
-
-            } else {
-                // No custom 404 page error content found.
-                return new Response(
-                    status: 404,
-                    headers: ['Content-type' => 'text/html'],
-                    body: Stream::create('404: Page not found.')
-                );
-            }
-        }
-
-        $template = $this->templates['default'];
-        return new Response(
-            status: 200,
-            headers: ['Content-type' => 'text/html'],
-            body: Stream::create(
-                $template::create($this)->build()
-            )
-        );
-    }
-
-    /**
-     * File system
-     */
-    private string $realRootPath = '';
-
     public function contentRoot(): string
     {
-        if ($this->realRootPath === '') {
+        if (isset($this->contentRoot) === false) {
             $fileInfo = new SplFileInfo($this->contentIn);
-            $this->realRootPath = $fileInfo->getRealPath();
+
+            $p = $fileInfo->getRealPath();
+            if ($p === false) {
+                return '';
+            }
+            $this->contentRoot = $p;
         }
-        return $this->realRootPath;
+        return $this->contentRoot;
+    }
+
+    private function filePath(string $base, string $filename, string $at = ''): string
+    {
+        if (str_starts_with($at, '/') === false) {
+            $at = '/' . $at;
+        }
+
+        if ($at === '/') {
+            $at = '';
+        }
+
+        return $base . $at . '/' . $filename;
+    }
+
+    public function rootFilePath(string $filename, string $at = ''): string
+    {
+        return $this->filePath($this->contentRoot(), $filename, $at);
     }
 
     public function publicRoot(): string
@@ -158,128 +67,156 @@ class Site implements RequestHandlerInterface
         return $this->contentRoot() . '/public';
     }
 
-    public function meta(string $at): StdClass|false
+    public function publicFilePath(string $filename, string $at = ''): string
     {
-        $path = $this->metaPath($at);
+        return $this->filePath($this->publicRoot(), $filename, $at);
+    }
 
-        if (is_file($path) === false) {
+    public function publicMarkdown(string $filename, string $at = ''): string
+    {
+        $filePath = $this->publicFilePath($filename, $at);
+        if (is_file($filePath) === false) {
+            return '';
+        }
+
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            return '';
+        }
+
+        return $content;
+    }
+
+    /**
+     * @param array<string, string> $partials
+     */
+    public function content(string $at = '', array $partials = []): string
+    {
+        $content = $this->publicMarkdown('content.md', $at);
+        if (strlen($content) === 0) {
+            return '';
+        }
+
+        if (count($partials) > 0) {
+            $content = $this->processPartials($at, $content, $partials);
+        }
+
+        return $content;
+    }
+
+    /**
+     * @param array<string, string> $components
+     */
+    private function processPartials(
+        string $at,
+        string $content,
+        array $components
+    ): string {
+        $partials = [];
+        if (
+            preg_match_all(
+                '/' . self::COMPONENT_WRAPPER . '/',
+                $content,
+                $partials // Populates $p
+            )
+        ) {
+            $replacements = $partials[0];
+            $templates    = $partials[1];
+
+            for ($i = 0; $i < count($replacements); $i++) {
+                $partial      = trim($templates[$i]);
+                $partialParts = explode(':', $partial, 2);
+
+                $partialKey  = $partialParts[0];
+                $partialArgs = [];
+                if (count($partialParts) > 1) {
+                    $partialArgs = explode(',', $partialParts[1]);
+                }
+
+                if (! array_key_exists($partialKey, $components)) {
+                    continue;
+                }
+
+                $template = $components[$partialKey];
+
+                $content = str_replace(
+                    $replacements[$i],
+                    (string) $template::create($this, $at),
+                    $content
+                );
+            }
+        }
+        return $content;
+    }
+
+    public function metaPath(string $at = ''): string
+    {
+        return $this->publicFilePath('meta.json', $at);
+    }
+
+    public function meta(string $at = ''): StdClass|false
+    {
+        $meta = $this->metaPath($at);
+        if (is_file($meta) === false) {
             return false;
         }
 
-        $json = file_get_contents($path);
+        $json = file_get_contents($meta);
         if ($json === false) {
             return false;
         }
 
         $decoded = json_decode($json);
         if (
-            is_object($decoded) and
-            is_a($decoded, StdClass::class)
+            is_object($decoded) === false or
+            is_a($decoded, StdClass::class) === false
         ) {
-            return $decoded;
-        }
-        return false;
-    }
-
-    public function textFile(string $named, string $at): string|false
-    {
-        $path = $this->contentRoot() . $at . '/' . $named;
-        if (is_file($path) === false) {
             return false;
         }
 
-        return file_get_contents($path);
+        return $decoded;
     }
 
-    private function metaPath(string $at): string
+    public function title(string $at = ''): string
     {
-        return $this->publicRoot() . $at . '/meta.json';
-    }
+        if (str_starts_with($at, '/') === false) {
+            $at = '/' . $at;
+        }
 
-    public function content(string $at): string
-    {
-        $path = $this->contentPath($at);
-
-        if (file_exists($path) === false) {
+        $meta = $this->meta($at);
+        if (
+            $meta === false or
+            property_exists($meta, 'title') === false
+        ) {
             return '';
         }
 
-        $content = file_get_contents($path);
-        if ($content === false) {
-            return '';
+        return $meta->title;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function titles(string $at = ''): array
+    {
+        if (str_starts_with($at, '/') === false) {
+            $at = '/' . $at;
         }
-        return $content;
-    }
 
-    public function isPublishedContent(string $at): bool
-    {
-        return file_exists($this->contentPath($at)) and
-            file_exists($this->metaPath($at));
-    }
+        $titles = [];
+        $parts = explode('/', $at);
+        while (count($parts) > 0) {
+            $path = implode('/', $parts);
+            $titles[] = $this->title($path);
 
-    public function contentPath(string $at): string
-    {
-        return $this->publicRoot() . $at . '/content.md';
-    }
-
-    /**
-     * User-specified templates.
-     *
-     * @var array<string, string>
-     */
-    private array $templates = [
-        'default'  => Page::class,
-        'error404' => PageNotFound::class
-    ];
-
-    /**
-     *
-     * @param string $default
-     * @param array<string, string> $templates
-     *
-     * @return self
-     */
-    public function setTemplates(
-        string $default,
-        array $templates = []
-    ): self {
-        $this->templates['default'] = $default;
-        foreach ($templates as $id => $className) {
-            $this->templates[$id] = $className;
+            array_pop($parts);
         }
-        return $this;
+
+        return array_filter($titles);
     }
 
-    /**
-     *
-     * @return array<string, string>
-     */
-    public function templates(): array
+    public function hasPublishedContent(string $at = ''): bool
     {
-        return $this->templates;
-    }
-
-    public function template(string $at): string
-    {
-        $templates = $this->templates();
-        return $templates[$at];
-    }
-
-    public function setMarkdownConverter(MarkdownConverter $converter): self
-    {
-        Markdown::singletonConverter($converter);
-        return $this;
-    }
-
-    /**
-     * @deprecated 2.0.0 Switched to using RequestHandlerInterface method signature.
-     *
-     * @param RequestInterface $for
-     *
-     * @return ResponseInterface
-     */
-    public function response(RequestInterface $for): ResponseInterface
-    {
-        return $this->handle($for);
+        return is_file($this->metaPath($at));
     }
 }
