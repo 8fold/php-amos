@@ -1,4 +1,4 @@
-# 8fold Amos
+# 8fold Amos for PHP
 
 This project is a collection of patterns and sample code for creating flat-file PHP-based websites with minimal dependencies and opinions. The patterns are more important than the implementation.
 
