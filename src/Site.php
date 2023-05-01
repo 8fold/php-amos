@@ -199,18 +199,20 @@ class Site
      */
     public function titles(string $at = ''): array
     {
-        if (str_starts_with($at, '/') === false) {
-            $at = '/' . $at;
+        if (str_starts_with($at, '/')) {
+            $at = substr($at, 1);
         }
 
         $titles = [];
-        $parts = explode('/', $at);
+        $parts = array_filter(explode('/', $at));
         while (count($parts) > 0) {
             $path = implode('/', $parts);
             $titles[] = $this->title($path);
 
             array_pop($parts);
         }
+
+        $titles[] = $this->title('/');
 
         return array_filter($titles);
     }
