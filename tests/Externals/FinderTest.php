@@ -18,6 +18,7 @@ class FinderTest extends TestCase
     {
         $expected = [
             $this->site()->publicRoot() . '/deeper-page/meta.json',
+            $this->site()->publicRoot() . '/skipping-sitemap/meta.json',
             $this->site()->publicRoot() . '/meta.json'
         ];
 

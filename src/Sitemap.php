@@ -85,6 +85,14 @@ class Sitemap implements Stringable
                 continue;
             }
 
+            if (
+                property_exists($meta, 'sitemap') and
+                $meta->sitemap === false
+            ) {
+                $urls[] = '';
+                continue;
+            }
+
             $lastmod = false;
             if (property_exists($meta, 'updated')) {
                 $lastmod = date_create($meta->updated);
