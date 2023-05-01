@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos\Tests;
 
-use PHPUnit\Framework\TestCase;
-
-use Eightfold\Amos\Site;
+use Eightfold\Amos\Tests\TestCase;
 
 class SiteTest extends TestCase
 {
@@ -16,10 +14,7 @@ class SiteTest extends TestCase
     {
         $expected = ['Root test content'];
 
-        $result = Site::init(
-            'https://ex.ample',
-            __DIR__ . '/test-content'
-        )->titles('/');
+        $result = $this->site()->titles('/');
 
         $this->assertSame(
             $expected,
@@ -31,27 +26,11 @@ class SiteTest extends TestCase
             'Root test content'
         ];
 
-        $result = Site::init(
-            'https://ex.ample',
-            __DIR__ . '/test-content'
-        )->titles('/deeper-page');
+        $result = $this->site()->titles('/deeper-page');
 
         $this->assertSame(
             $expected,
             $result
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function can_initialize_site(): void
-    {
-        $this->assertNotNull(
-            Site::init(
-                'https://ex.ample',
-                __DIR__ . '/test-content'
-            )
         );
     }
 }
