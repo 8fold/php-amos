@@ -17,6 +17,9 @@ class Log implements Stringable, JsonSerializable
 
     private ServerRequestInterface|false $request = false;
 
+    /**
+     * @param string[] $context
+     */
     public static function with(
         string $message,
         StdClass|false $extras = false,
@@ -25,6 +28,9 @@ class Log implements Stringable, JsonSerializable
         return new self($message, $extras, $context);
     }
 
+    /**
+     * @param string[] $context
+     */
     final private function __construct(
         private string $message,
         private StdClass|false $extras,
@@ -68,11 +74,17 @@ class Log implements Stringable, JsonSerializable
         return $this->request;
     }
 
+    /**
+     * @return string[]
+     */
     private function context(): array
     {
         return $this->context;
     }
 
+    /**
+     * @param string[] $context
+     */
     private function compiledMessage(
         string|Stringable $message,
         array $context = []
@@ -89,7 +101,7 @@ class Log implements Stringable, JsonSerializable
         return str_replace(
             array_keys($replace),
             array_values($replace),
-            $message
+            (string) $message
         );
     }
 
@@ -132,6 +144,10 @@ class Log implements Stringable, JsonSerializable
     /** Stringable **/
     public function __toString(): string
     {
-        return json_encode($this, JSON_PRETTY_PRINT);
+        $json = json_encode($this, JSON_PRETTY_PRINT);
+        if ($json === false) {
+            return '';
+        }
+        return $json;
     }
 }

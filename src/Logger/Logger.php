@@ -32,6 +32,10 @@ class Logger extends AbstractLogger
         return $this->shopRoot() . '/' . $level . '/' . $filename;
     }
 
+    /**
+     * @param string $level
+     * @param string[] $context
+     */
     public function log(
         $level,
         string|\Stringable $message,
