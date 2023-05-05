@@ -7,7 +7,8 @@ use Eightfold\Amos\Tests\TestCase;
 
 use Eightfold\Amos\Externals\Finder;
 
-use Eightfold\Amos\Site;
+use function Eightfold\Amos\real_path_for_public_file;
+use function Eightfold\Amos\real_paths_for_public_meta_files;
 
 class FinderTest extends TestCase
 {
@@ -17,13 +18,24 @@ class FinderTest extends TestCase
     public function is_expected_array(): void
     {
         $expected = [
-            $this->site()->publicRoot() . '/deeper-page/meta.json',
-            $this->site()->publicRoot() . '/skipping-sitemap/meta.json',
-            $this->site()->publicRoot() . '/meta.json'
+            real_path_for_public_file(
+                $this->site()->contentRoot(),
+                'meta.json',
+                '/deeper-page'
+            ),
+            real_path_for_public_file(
+                $this->site()->contentRoot(),
+                'meta.json',
+                '/skipping-sitemap'
+            ),
+            real_path_for_public_file(
+                $this->site()->contentRoot(),
+                'meta.json'
+            )
         ];
 
-        $result = Finder::allMetaPaths(
-            $this->site()
+        $result = real_paths_for_public_meta_files(
+            $this->site()->contentRoot()
         );
 
         $this->assertSame(

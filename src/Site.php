@@ -6,6 +6,8 @@ namespace Eightfold\Amos;
 use SplFileInfo;
 use StdClass;
 
+use function Eightfold\Amos\real_path_for_public_meta;
+
 class Site
 {
     private string $contentRoot;
@@ -33,75 +35,9 @@ class Site
     public function contentRoot(): string
     {
         if (isset($this->contentRoot) === false) {
-            $fileInfo = new SplFileInfo($this->contentIn);
-
-            $p = $fileInfo->getRealPath();
-            if ($p === false) {
-                return '';
-            }
-            $this->contentRoot = $p;
+            $this->contentRoot = real_path_for_dir($this->contentIn);
         }
         return $this->contentRoot;
-    }
-
-    private function filePath(string $base, string $filename, string $at = ''): string
-    {
-        if (str_starts_with($at, '/') === false) {
-            $at = '/' . $at;
-        }
-
-        if ($at === '/') {
-            $at = '';
-        }
-
-        return $base . $at . '/' . $filename;
-    }
-
-    public function rootFilePath(string $filename, string $at = ''): string
-    {
-        return $this->filePath($this->contentRoot(), $filename, $at);
-    }
-
-    public function publicRoot(): string
-    {
-        return $this->contentRoot() . '/public';
-    }
-
-    public function publicFilePath(string $filename, string $at = ''): string
-    {
-        return $this->filePath($this->publicRoot(), $filename, $at);
-    }
-
-    public function publicMarkdown(string $filename, string $at = ''): string
-    {
-        $filePath = $this->publicFilePath($filename, $at);
-        if (is_file($filePath) === false) {
-            return '';
-        }
-
-        $content = file_get_contents($filePath);
-        if ($content === false) {
-            return '';
-        }
-
-        return $content;
-    }
-
-    /**
-     * @param array<string, string> $partials
-     */
-    public function content(string $at = '', array $partials = []): string
-    {
-        $content = $this->publicMarkdown('content.md', $at);
-        if (strlen($content) === 0) {
-            return '';
-        }
-
-        if (count($partials) > 0) {
-            $content = $this->processPartials($at, $content, $partials);
-        }
-
-        return $content;
     }
 
     /**
@@ -147,78 +83,5 @@ class Site
             }
         }
         return $content;
-    }
-
-    public function metaPath(string $at = ''): string
-    {
-        return $this->publicFilePath('meta.json', $at);
-    }
-
-    public function meta(string $at = ''): StdClass|false
-    {
-        $meta = $this->metaPath($at);
-        if (is_file($meta) === false) {
-            return false;
-        }
-
-        $json = file_get_contents($meta);
-        if ($json === false) {
-            return false;
-        }
-
-        $decoded = json_decode($json);
-        if (
-            is_object($decoded) === false or
-            is_a($decoded, StdClass::class) === false
-        ) {
-            return false;
-        }
-
-        return $decoded;
-    }
-
-    public function title(string $at = ''): string
-    {
-        if (str_starts_with($at, '/') === false) {
-            $at = '/' . $at;
-        }
-
-        $meta = $this->meta($at);
-        if (
-            $meta === false or
-            property_exists($meta, 'title') === false
-        ) {
-            return '';
-        }
-
-        return $meta->title;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function titles(string $at = ''): array
-    {
-        if (str_starts_with($at, '/')) {
-            $at = substr($at, 1);
-        }
-
-        $titles = [];
-        $parts = array_filter(explode('/', $at));
-        while (count($parts) > 0) {
-            $path = implode('/', $parts);
-            $titles[] = $this->title($path);
-
-            array_pop($parts);
-        }
-
-        $titles[] = $this->title('/');
-
-        return array_filter($titles);
-    }
-
-    public function hasPublishedContent(string $at = ''): bool
-    {
-        return is_file($this->metaPath($at));
     }
 }
