@@ -10,7 +10,8 @@ use Eightfold\XMLBuilder\Element;
 
 use Eightfold\Amos\Site;
 
-use Eightfold\Amos\Externals\Finder;
+use function Eightfold\Amos\real_paths_for_public_meta_files;
+use function Eightfold\Amos\object_from_json_in_public_file;
 
 /**
  * https://www.sitemaps.org
@@ -60,30 +61,26 @@ class Sitemap implements Stringable
 
     public function __toString(): string
     {
-        $metaFilePaths = Finder::allMetaPaths($this->site());
-        // $metaFilePaths = (new Finder())->files()->name('meta.json')
-        //     ->in($this->site()->publicRoot());
+        $content_root = $this->site()->contentRoot();
+        $domain = $this->site()->domain();
+
+        $meta_file_paths = real_paths_for_public_meta_files($content_root);
+
+        $public_dir_path = real_path_for_public_dir($content_root);
 
         $urls = [];
-        foreach ($metaFilePaths as $metaFilePath) {
-            // $fullyQualifiedPath = $metaFilePath->getRealPath();
+        foreach ($meta_file_paths as $meta_file_path) {
             $path = str_replace(
-                [$this->site()->publicRoot(), '/meta.json'],
+                [$public_dir_path, '/meta.json'],
                 ['', ''],
-                $metaFilePath
+                $meta_file_path
             );
 
             $elements = [];
 
-            $elements[] = Element::loc(
-                $this->site()->domain() . $path . '/'
-            );
+            $elements[] = Element::loc($domain . $path . '/');
 
-            $meta = $this->site()->meta(at: $path);
-            if ($meta === false) {
-                $urls[] = '';
-                continue;
-            }
+            $meta = meta_object_in_public_dir($content_root, $path);
 
             if (
                 property_exists($meta, 'sitemap') and

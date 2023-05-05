@@ -5,6 +5,8 @@ namespace Eightfold\Amos\Tests;
 
 use Eightfold\Amos\Tests\TestCase;
 
+use function Eightfold\Amos\titles_for_meta_objects_in_public_dir;
+
 class SiteTest extends TestCase
 {
     /**
@@ -14,7 +16,10 @@ class SiteTest extends TestCase
     {
         $expected = ['Root test content'];
 
-        $result = $this->site()->titles('/');
+        $result = titles_for_meta_objects_in_public_dir(
+            $this->site()->contentRoot(),
+            '/'
+        );
 
         $this->assertSame(
             $expected,
@@ -26,7 +31,10 @@ class SiteTest extends TestCase
             'Root test content'
         ];
 
-        $result = $this->site()->titles('/deeper-page');
+        $result = titles_for_meta_objects_in_public_dir(
+            $this->site()->contentRoot(),
+            '/deeper-page'
+        );
 
         $this->assertSame(
             $expected,
