@@ -17,8 +17,7 @@ class SiteTest extends TestCase
         $expected = ['Root test content'];
 
         $result = titles_for_meta_objects_in_public_dir(
-            $this->site()->contentRoot(),
-            '/'
+            $this->site()->contentRoot()
         );
 
         $this->assertSame(
@@ -35,6 +34,34 @@ class SiteTest extends TestCase
             $this->site()->contentRoot(),
             '/deeper-page'
         );
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+    }
+
+    /**
+     * @test
+     * @deprecated
+     */
+    public function deprecated_page_title_does_not_duplicate_root(): void
+    {
+        $expected = ['Root test content'];
+
+        $result = $this->site()->titles();
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+
+        $expected = [
+            'Deeper page',
+            'Root test content'
+        ];
+
+        $result = $this->site()->titles('/deeper-page');
 
         $this->assertSame(
             $expected,

@@ -43,4 +43,24 @@ class FinderTest extends TestCase
             $result
         );
     }
+
+    /**
+     * @test
+     * @deprecated
+     */
+    public function deprecated_is_expected_array(): void
+    {
+        $expected = [
+            $this->site()->publicRoot() . '/deeper-page/meta.json',
+            $this->site()->publicRoot() . '/skipping-sitemap/meta.json',
+            $this->site()->publicRoot() . '/meta.json',
+        ];
+
+        $result = Finder::allMetaPaths($this->site());
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+    }
 }

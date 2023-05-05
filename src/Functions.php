@@ -7,6 +7,9 @@ use StdClass;
 
 use Symfony\Component\Finder\Finder;
 
+use Eightfold\Amos\Logger\Logger;
+use Eightfold\Amos\Logger\Log;
+
 function real_path_for_dir(string $base, string $at = ''): string
 {
     if (str_starts_with($at, '/') === false) {
@@ -21,7 +24,12 @@ function real_path_for_dir(string $base, string $at = ''): string
     if (is_dir($propsedDir) === false) {
         return '';
     }
-    return realpath($propsedDir);
+
+    $real_path = realpath($propsedDir);
+    if ($real_path === false) {
+        return '';
+    }
+    return $real_path;
 }
 
 function real_path_for_public_dir(string $base, string $at = ''): string
@@ -34,16 +42,17 @@ function real_path_for_file(
     string $filename,
     string $at = ''
 ): string {
-    $propsedDir = real_path_for_dir($base, $at);
-    if ($propsedDir === '') {
-        return '';
-    }
-
+    $propsedDir   = real_path_for_dir($base, $at);
     $proposedFile = $propsedDir . '/' . $filename;
     if (is_file($proposedFile) === false) {
         return '';
     }
-    return realpath($proposedFile);
+
+    $real_path = realpath($proposedFile);
+    if ($real_path === false) {
+        return '';
+    }
+    return $real_path;
 }
 
 function real_path_for_public_file(
@@ -63,6 +72,9 @@ function real_path_for_public_meta(string $base, string $at = ''): string
     return real_path_for_public_file($base, 'meta.json', $at);
 }
 
+/**
+ * @return string[]
+ */
 function real_paths_for_files_named(string $base, string $filename): array
 {
     $iterator = (new Finder())->files()->name($filename)->in($base);
@@ -72,6 +84,9 @@ function real_paths_for_files_named(string $base, string $filename): array
     return array_keys($array);
 }
 
+/**
+ * @return string[]
+ */
 function real_paths_for_public_meta_files(string $base): array
 {
     return real_paths_for_files_named(
@@ -88,7 +103,7 @@ function content_for_file(
 ): string {
     $real_path = real_path_for_file($base, $filename, $at);
     if (file_exists($real_path) === false) {
-        if (is_a($logger, Logger::class)) {
+        if ($logger !== false and is_a($logger, Logger::class)) {
             $logger->error(
                 Log::with(
                     'JSON file not found: {path}.',
@@ -101,7 +116,7 @@ function content_for_file(
 
     $content = file_get_contents($real_path);
     if ($content === false) {
-        if (is_a($logger, Logger::class)) {
+        if ($logger !== false and is_a($logger, Logger::class)) {
             $logger->error(
                 Log::with(
                     'Failed to get file contents: {path}.',
@@ -124,11 +139,11 @@ function object_from_json_in_file(
     $json = content_for_file($base, $filename, $at, $logger);
     $obj  = json_decode($json);
     if (is_object($obj) === false or is_a($obj, StdClass::class) === false) {
-        if (is_a($logger, Logger::class)) {
+        if ($logger !== false and is_a($logger, Logger::class)) {
             $logger->error(
                 Log::with(
                     'Failed to decode JSON: {path}.',
-                    context: ['path' => $real_path]
+                    context: ['path' => real_path_for_file($base, $filename, $at)]
                 )
             );
         }
@@ -154,7 +169,7 @@ function object_from_json_in_public_file(
 function meta_file_exists_in_public_dir(
     string $base,
     string $at = ''
-): StdClass {
+): bool {
     return is_file(
         real_path_for_public_meta($base, $at)
     );
@@ -178,16 +193,15 @@ function title_for_meta_object_in_public_dir(
     }
 
     $meta = meta_object_in_public_dir($base, $at);
-    if (
-        $meta === false or
-        property_exists($meta, 'title') === false
-    ) {
+    if (property_exists($meta, 'title') === false) {
         return '';
     }
-
     return $meta->title;
 }
 
+/**
+ * @return string[]
+ */
 function titles_for_meta_objects_in_public_dir(
     string $base,
     string $at = '',
