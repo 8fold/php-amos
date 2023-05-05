@@ -84,4 +84,113 @@ class Site
         }
         return $content;
     }
+
+    /**
+     * @deprecated
+     */
+    public function publicRoot(): string
+    {
+        return real_path_for_public_dir($this->contentRoot());
+    }
+
+    /**
+     * @deprecated
+     */
+    public function rootFilePath(string $filename, string $at = ''): string
+    {
+        return real_path_for_file($this->contentRoot(), $filename, $at);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function publicFilePath(string $filename, string $at = ''): string
+    {
+        return real_path_for_public_file($this->contentRoot(), $filename, $at);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function publicMarkdown(string $filename, string $at = ''): string
+    {
+        $filePath = $this->publicFilePath($filename, $at);
+        if (is_file($filePath) === false) {
+            return '';
+        }
+
+        $content = file_get_contents($filePath);
+        if ($content === false) {
+            return '';
+        }
+
+        return $content;
+    }
+
+    /**
+     * @deprecated
+     *
+     * @param array<string, string> $partials
+     */
+    public function content(string $at = '', array $partials = []): string
+    {
+        $content = $this->publicMarkdown('content.md', $at);
+        if (strlen($content) === 0) {
+            return '';
+        }
+
+        if (count($partials) > 0) {
+            $content = $this->processPartials($at, $content, $partials);
+        }
+
+        return $content;
+    }
+
+    /**
+     * @deprecated
+     */
+    public function metaPath(string $at = ''): string
+    {
+        return $this->publicFilePath('meta.json', $at);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function meta(string $at = ''): StdClass|false
+    {
+        $obj = meta_object_in_public_dir($this->contentRoot(), $at);
+        if (count(get_object_vars($obj)) === 0) {
+            return false;
+        }
+        return $obj;
+    }
+
+    /**
+     * @deprecated
+     */
+    public function title(string $at = ''): string
+    {
+        return title_for_meta_object_in_public_dir($this->contentRoot(), $at);
+    }
+
+    /**
+     * @deprecated
+     * @return string[]
+     */
+    public function titles(string $at = ''): array
+    {
+        return titles_for_meta_objects_in_public_dir(
+            $this->contentRoot(),
+            $at
+        );
+    }
+
+    /**
+     * @deprecated
+     */
+    public function hasPublishedContent(string $at = ''): bool
+    {
+        return is_file($this->metaPath($at));
+    }
 }
