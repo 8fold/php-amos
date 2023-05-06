@@ -29,7 +29,7 @@
       "Eightfold\\Amos\\": "./src"
     },
     "files": [
-      "src/Functions.php"
+      "src/functions.php"
     ]
   },
   "autoload-dev": {

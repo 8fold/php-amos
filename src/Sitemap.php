@@ -80,7 +80,7 @@ class Sitemap implements Stringable
 
             $elements[] = Element::loc($domain . $path . '/');
 
-            $meta = meta_object_in_public_dir($content_root, $path);
+            $meta = meta_in_public_dir($content_root, $path);
 
             if (
                 property_exists($meta, 'sitemap') and

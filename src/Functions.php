@@ -10,7 +10,22 @@ use Symfony\Component\Finder\Finder;
 use Eightfold\Amos\Logger\Logger;
 use Eightfold\Amos\Logger\Log;
 
-function real_path_for_dir(string $base, string $at = ''): string
+function public_directory_name(): string
+{
+    return '/public';
+}
+
+function meta_filename(): string
+{
+    return 'meta.json';
+}
+
+function content_filename(): string
+{
+    return 'content.md';
+}
+
+function real_path_for_dir(string $contentRoot, string $at = ''): string
 {
     if (str_starts_with($at, '/') === false) {
         $at = '/' . $at;
@@ -20,33 +35,28 @@ function real_path_for_dir(string $base, string $at = ''): string
         $at = '';
     }
 
-    $propsedDir = $base . $at;
-    if (is_dir($propsedDir) === false) {
-        return '';
-    }
-
-    $real_path = realpath($propsedDir);
+    $real_path = realpath($contentRoot . $at);
     if ($real_path === false) {
         return '';
     }
     return $real_path;
 }
 
-function real_path_for_public_dir(string $base, string $at = ''): string
+function real_path_for_public_dir(string $contentRoot, string $at = ''): string
 {
-    return real_path_for_dir($base . '/public', $at);
+    return real_path_for_dir(
+        $contentRoot . public_directory_name(),
+        $at
+    );
 }
 
 function real_path_for_file(
-    string $base,
+    string $contentRoot,
     string $filename,
     string $at = ''
 ): string {
-    $propsedDir   = real_path_for_dir($base, $at);
+    $propsedDir   = real_path_for_dir($contentRoot, $at);
     $proposedFile = $propsedDir . '/' . $filename;
-    if (is_file($proposedFile) === false) {
-        return '';
-    }
 
     $real_path = realpath($proposedFile);
     if ($real_path === false) {
@@ -55,29 +65,39 @@ function real_path_for_file(
     return $real_path;
 }
 
+function real_path_for_meta_file(
+    string $contentRoot,
+    string $at = ''
+): string {
+    return real_path_for_file(
+        real_path_for_dir($contentRoot, $at),
+        meta_filename()
+    );
+}
+
 function real_path_for_public_file(
-    string $base,
+    string $contentRoot,
     string $filename,
     string $at = ''
 ): string {
     return real_path_for_file(
-        real_path_for_public_dir($base),
+        real_path_for_public_dir($contentRoot),
         $filename,
         $at
     );
 }
 
-function real_path_for_public_meta(string $base, string $at = ''): string
+function real_path_for_public_meta_file(string $contentRoot, string $at = ''): string
 {
-    return real_path_for_public_file($base, 'meta.json', $at);
+    return real_path_for_public_file($contentRoot, meta_filename(), $at);
 }
 
 /**
  * @return string[]
  */
-function real_paths_for_files_named(string $base, string $filename): array
+function real_paths_for_files_named(string $contentRoot, string $filename): array
 {
-    $iterator = (new Finder())->files()->name($filename)->in($base);
+    $iterator = (new Finder())->files()->name($filename)->in($contentRoot);
 
     $array = iterator_to_array($iterator);
 
@@ -87,27 +107,38 @@ function real_paths_for_files_named(string $base, string $filename): array
 /**
  * @return string[]
  */
-function real_paths_for_public_meta_files(string $base): array
-{
+function real_paths_for_public_files_named(
+    string $contentRoot,
+    string $filename
+): array {
     return real_paths_for_files_named(
-        real_path_for_public_dir($base),
-        'meta.json'
+        real_path_for_public_dir($contentRoot),
+        $filename
     );
 }
 
-function content_for_file(
-    string $base,
+/**
+ * @return string[]
+ */
+function real_paths_for_public_meta_files(string $contentRoot): array
+{
+    return real_paths_for_public_files_named($contentRoot, meta_filename());
+}
+
+function contents_of_file(
+    string $contentRoot,
     string $filename,
     string $at = '',
     Logger|false $logger = false
 ): string {
-    $real_path = real_path_for_file($base, $filename, $at);
-    if (file_exists($real_path) === false) {
+    $real_path = real_path_for_file($contentRoot, $filename, $at);
+
+    if (strlen($real_path) === 0) {
         if ($logger !== false and is_a($logger, Logger::class)) {
             $logger->error(
                 Log::with(
-                    'JSON file not found: {path}.',
-                    context: ['path' => $real_path]
+                    'File not found: {path}.',
+                    context: ['path' => $contentRoot . '/' . $at . '/' . $filename]
                 )
             );
         }
@@ -130,97 +161,147 @@ function content_for_file(
     return $content;
 }
 
+function contents_of_public_file(
+    string $contentRoot,
+    string $filename,
+    string $at = '',
+    Logger|false $logger = false
+): string {
+    return contents_of_file(
+        real_path_for_public_dir($contentRoot),
+        $filename,
+        $at,
+        $logger
+    );
+}
+
 function object_from_json_in_file(
-    string $base,
+    string $contentRoot,
     string $filename,
     string $at = '',
     Logger|false $logger = false
 ): StdClass {
-    $json = content_for_file($base, $filename, $at, $logger);
+    $json = contents_of_file($contentRoot, $filename, $at, $logger);
     $obj  = json_decode($json);
     if (is_object($obj) === false or is_a($obj, StdClass::class) === false) {
         if ($logger !== false and is_a($logger, Logger::class)) {
             $logger->error(
                 Log::with(
                     'Failed to decode JSON: {path}.',
-                    context: ['path' => real_path_for_file($base, $filename, $at)]
+                    context: ['path' => real_path_for_file($contentRoot, $filename, $at)]
                 )
             );
         }
         return new StdClass();
     }
-
     return $obj;
 }
 
 function object_from_json_in_public_file(
-    string $base,
+    string $contentRoot,
     string $filename,
     string $at = '',
     Logger|false $logger = false
 ): StdClass {
     return object_from_json_in_file(
-        real_path_for_public_dir($base, $at),
+        real_path_for_public_dir($contentRoot),
         $filename,
-        logger: $logger
+        $at,
+        $logger
     );
 }
 
-function meta_file_exists_in_public_dir(
-    string $base,
+function meta_exists_in_dir(
+    string $contentRoot,
     string $at = ''
 ): bool {
-    return is_file(
-        real_path_for_public_meta($base, $at)
+    $real_path = real_path_for_meta_file($contentRoot, $at);
+    return strlen($real_path) > 0 and is_file($real_path);
+}
+
+function meta_exists_in_public_dir(
+    string $contentRoot,
+    string $at = ''
+): bool {
+    return meta_exists_in_dir(
+        real_path_for_public_dir($contentRoot),
+        $at
     );
 }
 
-function meta_object_in_public_dir(
-    string $base,
+function meta_in_dir(
+    string $contentRoot,
     string $at = '',
     Logger|false $logger = false
 ): StdClass {
-    return object_from_json_in_public_file($base, 'meta.json', $at, $logger);
+    return object_from_json_in_file(
+        $contentRoot,
+        meta_filename(),
+        $at,
+        $logger
+    );
 }
 
-function title_for_meta_object_in_public_dir(
-    string $base,
+function meta_in_public_dir(
+    string $contentRoot,
+    string $at = '',
+    Logger|false $logger = false
+): StdClass {
+    return meta_in_dir(
+        real_path_for_public_dir($contentRoot),
+        $at,
+        $logger
+    );
+}
+
+function title_for_meta_in_dir(
+    string $contentRoot,
     string $at = '',
     Logger|false $logger = false
 ): string {
-    if (str_starts_with($at, '/') === false) {
-        $at = '/' . $at;
-    }
-
-    $meta = meta_object_in_public_dir($base, $at);
+    $meta = meta_in_dir($contentRoot, $at, $logger);
     if (property_exists($meta, 'title') === false) {
         return '';
     }
     return $meta->title;
 }
 
+function title_for_meta_in_public_dir(
+    string $contentRoot,
+    string $at = '',
+    Logger|false $logger = false
+): string {
+    return title_for_meta_in_dir(
+        real_path_for_public_dir($contentRoot),
+        $at,
+        $logger
+    );
+}
+
+
+
+
+
+
+
 /**
  * @return string[]
  */
-function titles_for_meta_objects_in_public_dir(
-    string $base,
+function titles_for_meta_in_public_dir(
+    string $contentRoot,
     string $at = '',
     Logger|false $logger = false
 ): array {
-    if (str_starts_with($at, '/')) {
-        $at = substr($at, 1);
-    }
-
     $titles = [];
     $parts = array_filter(explode('/', $at));
     while (count($parts) > 0) {
         $path = implode('/', $parts);
-        $titles[] = title_for_meta_object_in_public_dir($base, $at);
+        $titles[] = title_for_meta_in_public_dir($contentRoot, $at);
 
         array_pop($parts);
     }
 
-    $titles[] = title_for_meta_object_in_public_dir($base, '/');
+    $titles[] = title_for_meta_in_public_dir($contentRoot, '/');
 
     return array_filter($titles);
 }

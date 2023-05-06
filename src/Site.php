@@ -6,7 +6,7 @@ namespace Eightfold\Amos;
 use SplFileInfo;
 use StdClass;
 
-use function Eightfold\Amos\real_path_for_public_meta;
+use function Eightfold\Amos\real_path_for_public_meta_file;
 
 class Site
 {
@@ -159,7 +159,7 @@ class Site
      */
     public function meta(string $at = ''): StdClass|false
     {
-        $obj = meta_object_in_public_dir($this->contentRoot(), $at);
+        $obj = meta_in_public_dir($this->contentRoot(), $at);
         if (count(get_object_vars($obj)) === 0) {
             return false;
         }
@@ -171,7 +171,7 @@ class Site
      */
     public function title(string $at = ''): string
     {
-        return title_for_meta_object_in_public_dir($this->contentRoot(), $at);
+        return title_for_meta_in_public_dir($this->contentRoot(), $at);
     }
 
     /**
@@ -180,7 +180,7 @@ class Site
      */
     public function titles(string $at = ''): array
     {
-        return titles_for_meta_objects_in_public_dir(
+        return titles_for_meta_in_public_dir(
             $this->contentRoot(),
             $at
         );
