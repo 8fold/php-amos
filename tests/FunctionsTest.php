@@ -5,36 +5,36 @@ namespace Eightfold\Amos\Tests;
 
 use Eightfold\Amos\Tests\TestCase;
 
-use function Eightfold\Amos\real_path_for_dir;
-use function Eightfold\Amos\real_path_for_file;
-use function Eightfold\Amos\real_path_for_meta_file;
+// use function Eightfold\Amos\real_path_for_dir;
+// use function Eightfold\Amos\real_path_for_file;
+// use function Eightfold\Amos\real_path_for_meta_file;
 
-use function Eightfold\Amos\real_paths_for_files_named;
+// use function Eightfold\Amos\real_paths_for_files_named;
 
-use function Eightfold\Amos\contents_of_file;
+// use function Eightfold\Amos\contents_of_file;
 
-use function Eightfold\Amos\object_from_json_in_file;
+// use function Eightfold\Amos\object_from_json_in_file;
 
 use function Eightfold\Amos\meta_exists_in_dir;
 
-use function Eightfold\Amos\meta_in_dir;
+// use function Eightfold\Amos\meta_in_dir;
 
 use function Eightfold\Amos\title_for_meta_in_dir;
 
-use function Eightfold\Amos\real_path_for_public_dir;
-use function Eightfold\Amos\real_path_for_public_file;
-use function Eightfold\Amos\real_path_for_public_meta_file;
+// use function Eightfold\Amos\real_path_for_public_dir;
+// use function Eightfold\Amos\real_path_for_public_file;
+// use function Eightfold\Amos\real_path_for_public_meta_file;
 
-use function Eightfold\Amos\real_paths_for_public_files_named;
-use function Eightfold\Amos\real_paths_for_public_meta_files;
+// use function Eightfold\Amos\real_paths_for_public_files_named;
+// use function Eightfold\Amos\real_paths_for_public_meta_files;
 
-use function Eightfold\Amos\contents_of_public_file;
+// use function Eightfold\Amos\contents_of_public_file;
 
-use function Eightfold\Amos\object_from_json_in_public_file;
+// use function Eightfold\Amos\object_from_json_in_public_file;
 
 use function Eightfold\Amos\meta_exists_in_public_dir;
 
-use function Eightfold\Amos\meta_in_public_dir;
+// use function Eightfold\Amos\meta_in_public_dir;
 
 use function Eightfold\Amos\title_for_meta_in_public_dir;
 
@@ -42,11 +42,11 @@ use StdClass;
 
 class FunctionsTest extends TestCase
 {
-    private function contentRoot(): string
-    {
-        $content_root = __DIR__ . '/test-content';
-        return $content_root;
-    }
+    // private function contentRoot(): string
+    // {
+    //     $content_root = __DIR__ . '/test-content';
+    //     return $content_root;
+    // }
 
     /**
      * @test

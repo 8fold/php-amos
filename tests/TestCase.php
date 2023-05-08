@@ -9,16 +9,31 @@ use Eightfold\Amos\Site;
 
 use SplFileInfo;
 
+use Nyholm\Psr7\ServerRequest;
+
 class TestCase extends BaseTestCase
 {
-    protected function site(): Site
+    protected function domain(): string
     {
-        $realPath = (new SplFileInfo(__DIR__ . '/test-content'))
-            ->getRealPath();
+        return 'http://ex.ample';
+    }
 
+    protected function contentRoot(): string
+    {
+        $content_root = __DIR__ . '/test-content';
+        return $content_root;
+    }
+
+    protected function request(string $path = '/'): ServerRequest
+    {
+        return new ServerRequest('get', $this->domain() . $path);
+    }
+
+    protected function site(string $path = '/'): Site
+    {
         return Site::init(
-            'http://ex.ample',
-            $realPath
+            $this->contentRoot(),
+            $this->request($path)
         );
     }
 }

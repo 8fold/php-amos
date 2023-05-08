@@ -85,6 +85,9 @@ For example, Apache servers have a file called `.htaccess` we can, and do, use t
 2. Use a framework that has this implementation already in place, thereby, increasing dependencies. This MAY become difficult in the future because the framework developers may modify things in a way that forces us to write more source code or modify multiple files to update to the latest version of the framework.
 3. Add one line to the `.htaccess` file.
 
+## This implementation
+
+MUST remain as functional as possible. `final` `abstract` classes with `static` methods are used to accomplish this while taking advantage of PSR-4 autoloading.
 ## Other
 
 {links or descriptions or license, versioning, and governance}

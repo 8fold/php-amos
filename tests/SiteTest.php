@@ -11,6 +11,22 @@ class SiteTest extends TestCase
 {
     /**
      * @test
+     * @group focus
+     */
+    public function has_expected_domain(): void
+    {
+        $expected = $this->domain();
+
+        $result = $this->site()->domain();
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+    }
+
+    /**
+     * @test
      */
     public function page_title_does_not_duplicate_root(): void
     {

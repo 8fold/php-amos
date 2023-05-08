@@ -11,8 +11,27 @@ use StdClass;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class Log implements Stringable, JsonSerializable
+final abstract class Log
 {
+    public static function message(
+        string|Stringable $message,
+        array $context = []
+    ): string {
+        $replace = [];
+        foreach ($context as $token => $content) {
+            if (
+                is_string($content) or
+                (is_object($content) and method_exists($content, '__toString'))
+            ) {
+                $replace['{' . $token . '}'] = $content;
+            }
+        }
+        return str_replace(
+            array_keys($replace),
+            array_values($replace),
+            (string) $message
+        );
+    }
     private ResponseInterface|false $response = false;
 
     private ServerRequestInterface|false $request = false;

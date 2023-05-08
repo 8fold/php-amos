@@ -6,38 +6,91 @@ namespace Eightfold\Amos;
 use SplFileInfo;
 use StdClass;
 
-use function Eightfold\Amos\real_path_for_public_meta_file;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerInterface;
 
-class Site
+use Eightfold\Amos\RealPaths\FromPrimitives;
+
+use Eightfold\Amos\PlainText\Content;
+
+use Eightfold\Amos\SiteInterface;
+
+class Site implements SiteInterface
 {
-    private string $contentRoot;
+    private string $content_root;
+
+    private string $domain;
+
+    private UriInterface $uri;
+
+    private string $request_path;
 
     private const COMPONENT_WRAPPER = '{!!(.*)!!}';
 
     public static function init(
-        string $withDomain,
-        string $contentIn
-    ): self {
-        return new self($withDomain, $contentIn);
+        SplFileInfo|string $contentIn,
+        RequestInterface $request,
+        LoggerInterface|false $logger = false
+    ): self|false {
+        if (is_string($contentIn) === false) {
+            $contentIn = $contentIn->getRealPath();
+            if ($contentIn === false) {
+                return false;
+            }
+        }
+        return new self($contentIn, $request, $logger);
     }
 
     final private function __construct(
-        private readonly string $withDomain,
-        private readonly string $contentIn
+        private readonly string $contentIn,
+        private readonly RequestInterface $request,
+        private readonly LoggerInterface|false $logger
     ) {
     }
 
     public function domain(): string
     {
-        return $this->withDomain;
+        if (isset($this->domain) === false) {
+            $this->domain = $this->uri()->getScheme() . '://' .
+                $this->uri()->getAuthority();
+        }
+        return $this->domain;
     }
 
     public function contentRoot(): string
     {
-        if (isset($this->contentRoot) === false) {
-            $this->contentRoot = real_path_for_dir($this->contentIn);
+        if (isset($this->content_root) === false) {
+            $this->content_root = FromPrimitives::forDir($this->contentIn);
         }
-        return $this->contentRoot;
+        return $this->content_root;
+    }
+
+    public function request(): RequestInterface
+    {
+        return $this->request;
+    }
+
+
+    private function uri(): UriInterface
+    {
+        if (isset($this->uri) === false) {
+            $this->uri = $this->request()->getUri();
+        }
+        return $this->uri;
+    }
+
+    public function requestPath(): string
+    {
+        if (isset($this->request_path) === false) {
+            $this->request_path = $this->uri()->getPath();
+        }
+        return $this->request_path;
+    }
+
+    public function logger(): LoggerInterface|false
+    {
+        return $this->logger;
     }
 
     /**
@@ -48,6 +101,19 @@ class Site
         string $content,
         array $components
     ): string {
+        // partialsInPublicFileFromSite(
+        //   $contentRoot,
+        //   $wrapper,
+        //   $components,
+		//   $at = '',
+		//   $logger = false
+        // )
+
+        // partialsInContent(
+        //   $content,
+        //   $wrapper,
+        //   $components
+        // )
         $partials = [];
         if (
             preg_match_all(
@@ -60,16 +126,24 @@ class Site
             $templates    = $partials[1];
 
             for ($i = 0; $i < count($replacements); $i++) {
-                $partial      = trim($templates[$i]);
-                $partialParts = explode(':', $partial, 2);
+                $replace = $replacements[$i];
 
-                $partialKey  = $partialParts[0];
-                $partialArgs = [];
-                if (count($partialParts) > 1) {
-                    $partialArgs = explode(',', $partialParts[1]);
+                $partial = trim($templates[$i]);
+                $args = [];
+                if (str_contains($partial, ':')) {
+                    list($partial, $args) = explode(':', $partial, 2);
+                    $args = explode(',', $args);
+
                 }
 
-                if (! array_key_exists($partialKey, $components)) {
+
+                // $partialKey  = $partialParts[0];
+                // $partialArgs = [];
+                // if (count($partialParts) > 1) {
+                //     $partialArgs = explode(',', $partialParts[1]);
+                // }
+
+                if (! array_key_exists($partial, $components)) {
                     continue;
                 }
 
