@@ -1,0 +1,70 @@
+<?php
+declare(strict_types=1);
+
+namespace Eightfold\Amos\Tests\FileSystem\Files;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
+
+use Eightfold\Amos\FileSystem\Files\PublicContentFile;
+
+use Eightfold\Amos\FileSystem\Directories\Root;
+
+class PublicContentFileTest extends BaseTestCase
+{
+    /**
+     * @test
+     * @group oop
+     */
+    public function can_check_existence(): void
+    {
+        $root = Root::fromString(__DIR__ . '/../../test-content');
+
+        $sut = PublicContentFile::inRoot($root);
+
+        $this->assertNotNull(
+            $sut
+        );
+
+        $result = $sut->toBool();
+
+        $this->assertTrue(
+            $result
+        );
+
+        $result = $sut->isFile();
+
+        $this->assertTrue(
+            $result
+        );
+
+        $result = $sut->notFound();
+
+        $this->assertFalse(
+            $result
+        );
+
+        $sut = PublicContentFile::inRoot($root, '/deeper-page');
+
+        $this->assertNotNull(
+            $sut
+        );
+
+        $result = $sut->toBool();
+
+        $this->assertFalse(
+            $result
+        );
+
+        $result = $sut->isFile();
+
+        $this->assertFalse(
+            $result
+        );
+
+        $result = $sut->notFound();
+
+        $this->assertTrue(
+            $result
+        );
+    }
+}
