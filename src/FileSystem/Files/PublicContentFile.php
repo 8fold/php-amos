@@ -60,7 +60,7 @@ final class PublicContentFile implements Falsifiable, Stringable
         if ($this->notFound()) {
             return '';
         }
-        return $this->fileInfo->getRealPath();
+        return $this->publicFile->toString();
     }
 
     public function __toString(): string

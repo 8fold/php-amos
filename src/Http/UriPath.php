@@ -15,7 +15,7 @@ class UriPath
 
     public static function fromUri(Uri $uri): self
     {
-
+        return new fromString()
     }
 
     public static function fromString(string $path): self
