@@ -5,11 +5,11 @@ namespace Eightfold\Amos\Tests\FileSystem;
 
 use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 
-use Eightfold\Amos\FileSystem\Directories\PublicRoot;
+use Eightfold\Amos\FileSystem\Directories\PublicDirectory;
 
 use SplFileInfo;
 
-class PublicTest extends BaseTestCase
+class PublicDirectoryTest extends BaseTestCase
 {
     /**
      * @test
@@ -17,9 +17,15 @@ class PublicTest extends BaseTestCase
      */
     public function is_expected_qualified_path(): void
     {
-        $expected = (new SplFileInfo(parent::BASE . '/public'))->getRealPath();
+        $expected = (new SplFileInfo(parent::PUBLIC_BASE . '/deeper-page'))
+            ->getRealPath();
 
-        $result = parent::publicRoot()->toString();
+        $sut = PublicDirectory::inRoot(
+            parent::root(),
+            '/deeper-page'
+        );
+
+        $result = $sut->toString();
 
         $this->assertSame(
             $expected,
@@ -34,8 +40,9 @@ class PublicTest extends BaseTestCase
      */
     public function can_check_existence(): void
     {
-        $sut = PublicRoot::inRoot(
-            parent::root()
+        $sut = PublicDirectory::inRoot(
+            parent::root(),
+            '/deeper-page'
         );
 
         $this->assertNotNull(

@@ -11,17 +11,38 @@ use SplFileInfo;
 
 use Nyholm\Psr7\ServerRequest;
 
+use Eightfold\Amos\FileSystem\Directories\Root;
+use Eightfold\Amos\FileSystem\Directories\PublicRoot;
+
 class TestCase extends BaseTestCase
 {
-    protected function domain(): string
+    protected const BASE = __DIR__ . '/test-content';
+
+    protected const NONEXISTENT_BASE = __DIR__ . '/nonexistent';
+
+    protected const PUBLIC_BASE = self::BASE . '/public';
+
+    protected function root(): Root
     {
-        return 'http://ex.ample';
+        return Root::fromString(self::BASE);
     }
 
-    protected function contentRoot(): string
+    protected function nonexistentRoot(): Root
     {
-        $content_root = __DIR__ . '/test-content';
-        return $content_root;
+        return Root::fromString(self::NONEXISTENT_BASE);
+    }
+
+    protected function publicRoot(): PublicRoot
+    {
+        return PublicRoot::inRoot($this->root());
+    }
+
+    protected function site(string $path = '/'): Site
+    {
+        return Site::init(
+            $this->root(),
+            $this->request($path)
+        );
     }
 
     protected function request(string $path = '/'): ServerRequest
@@ -29,11 +50,8 @@ class TestCase extends BaseTestCase
         return new ServerRequest('get', $this->domain() . $path);
     }
 
-    protected function site(string $path = '/'): Site
+    protected function domain(): string
     {
-        return Site::init(
-            $this->contentRoot(),
-            $this->request($path)
-        );
+        return 'http://ex.ample';
     }
 }

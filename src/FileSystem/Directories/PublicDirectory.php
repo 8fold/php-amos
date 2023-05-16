@@ -17,7 +17,7 @@ final class PublicDirectory implements Falsifiable, Stringable
 
     public static function inRoot(Root $root, string $at = ''): self
     {
-        return new self::inPublicRoot($root->publicRoot(), $at);
+        return self::inPublicRoot($root->publicRoot(), $at);
     }
 
     public static function inPublicRoot(PublicRoot $root, string $at = ''): self

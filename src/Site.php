@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
+use Eightfold\Amos\SiteInterface;
+
 use SplFileInfo;
 use StdClass;
 
@@ -10,15 +12,16 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
 
-use Eightfold\Amos\RealPaths\FromPrimitives;
+use Eightfold\Amos\FileSystem\Directories\Root;
+use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
 use Eightfold\Amos\PlainText\Content;
 
-use Eightfold\Amos\SiteInterface;
-
 class Site implements SiteInterface
 {
-    private string $content_root;
+    private Root $file_system_root;
+
+    private PublicRoot $file_system_public_root;
 
     private string $domain;
 
@@ -26,24 +29,19 @@ class Site implements SiteInterface
 
     private string $request_path;
 
-    private const COMPONENT_WRAPPER = '{!!(.*)!!}';
-
     public static function init(
-        SplFileInfo|string $contentIn,
+        Root $fileSystemRoot,
         RequestInterface $request,
         LoggerInterface|false $logger = false
     ): self|false {
-        if (is_string($contentIn) === false) {
-            $contentIn = $contentIn->getRealPath();
-            if ($contentIn === false) {
-                return false;
-            }
+        if ($fileSystemRoot->notFound()) {
+            return false;
         }
-        return new self($contentIn, $request, $logger);
+        return new self($fileSystemRoot, $request, $logger);
     }
 
     final private function __construct(
-        private readonly string $contentIn,
+        private readonly Root $fileSystemRoot,
         private readonly RequestInterface $request,
         private readonly LoggerInterface|false $logger
     ) {
@@ -58,19 +56,28 @@ class Site implements SiteInterface
         return $this->domain;
     }
 
-    public function contentRoot(): string
+    public function contentRoot(): Root
     {
-        if (isset($this->content_root) === false) {
-            $this->content_root = FromPrimitives::forDir($this->contentIn);
+        if (isset($this->file_system_root) === false) {
+            $this->file_system_root = $this->fileSystemRoot;
         }
-        return $this->content_root;
+        return $this->file_system_root;
+    }
+
+    public function publicRoot(): PublicRoot
+    {
+        if (isset($this->file_system_public_root) === false) {
+            $this->file_system_public_root = PublicRoot::inRoot(
+                $this->contentRoot()
+            );
+        }
+        return $this->file_system_public_root;
     }
 
     public function request(): RequestInterface
     {
         return $this->request;
     }
-
 
     private function uri(): UriInterface
     {
@@ -96,11 +103,11 @@ class Site implements SiteInterface
     /**
      * @param array<string, string> $components
      */
-    private function processPartials(
-        string $at,
-        string $content,
-        array $components
-    ): string {
+    // private function processPartials(
+    //     string $at,
+    //     string $content,
+    //     array $components
+    // ): string {
         // partialsInPublicFileFromSite(
         //   $contentRoot,
         //   $wrapper,
@@ -114,27 +121,27 @@ class Site implements SiteInterface
         //   $wrapper,
         //   $components
         // )
-        $partials = [];
-        if (
-            preg_match_all(
-                '/' . self::COMPONENT_WRAPPER . '/',
-                $content,
-                $partials // Populates $p
-            )
-        ) {
-            $replacements = $partials[0];
-            $templates    = $partials[1];
-
-            for ($i = 0; $i < count($replacements); $i++) {
-                $replace = $replacements[$i];
-
-                $partial = trim($templates[$i]);
-                $args = [];
-                if (str_contains($partial, ':')) {
-                    list($partial, $args) = explode(':', $partial, 2);
-                    $args = explode(',', $args);
-
-                }
+//         $partials = [];
+//         if (
+//             preg_match_all(
+//                 '/' . self::COMPONENT_WRAPPER . '/',
+//                 $content,
+//                 $partials // Populates $p
+//             )
+//         ) {
+//             $replacements = $partials[0];
+//             $templates    = $partials[1];
+//
+//             for ($i = 0; $i < count($replacements); $i++) {
+//                 $replace = $replacements[$i];
+//
+//                 $partial = trim($templates[$i]);
+//                 $args = [];
+//                 if (str_contains($partial, ':')) {
+//                     list($partial, $args) = explode(':', $partial, 2);
+//                     $args = explode(',', $args);
+//
+//                 }
 
 
                 // $partialKey  = $partialParts[0];
@@ -143,29 +150,29 @@ class Site implements SiteInterface
                 //     $partialArgs = explode(',', $partialParts[1]);
                 // }
 
-                if (! array_key_exists($partial, $components)) {
-                    continue;
-                }
-
-                $template = $components[$partialKey];
-
-                $content = str_replace(
-                    $replacements[$i],
-                    (string) $template::create($this, $at),
-                    $content
-                );
-            }
-        }
-        return $content;
-    }
+//                 if (! array_key_exists($partial, $components)) {
+//                     continue;
+//                 }
+//
+//                 $template = $components[$partialKey];
+//
+//                 $content = str_replace(
+//                     $replacements[$i],
+//                     (string) $template::create($this, $at),
+//                     $content
+//                 );
+//             }
+//         }
+//         return $content;
+//     }
 
     /**
      * @deprecated
      */
-    public function publicRoot(): string
-    {
-        return real_path_for_public_dir($this->contentRoot());
-    }
+    // public function publicRoot(): string
+    // {
+    //     return real_path_for_public_dir($this->contentRoot());
+    // }
 
     /**
      * @deprecated

@@ -3,15 +3,17 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
-use Stringable;
+use Traversable;
+use DateTime;
 
 use Eightfold\XMLBuilder\Document;
 use Eightfold\XMLBuilder\Element;
 
+use Eightfold\Amos\Php\Interfaces\Stringable;
+
 use Eightfold\Amos\Site;
 
-use function Eightfold\Amos\real_paths_for_public_meta_files;
-use function Eightfold\Amos\object_from_json_in_public_file;
+use Eightfold\Amos\ObjectsFromJson\PublicMeta;
 
 /**
  * https://www.sitemaps.org
@@ -34,13 +36,17 @@ class Sitemap implements Stringable
 
     private float $defaultPriority = 0.5;
 
-    public static function create(Site $site): self
-    {
-        return new self($site);
+    public static function create(
+        Traversable $traversable,
+        Site $site
+    ): self {
+        return new self($traversable, $site);
     }
 
-    final private function __construct(private readonly Site $site)
-    {
+    final private function __construct(
+        private readonly Traversable $traversable,
+        private readonly Site $site
+    ) {
     }
 
     public function withDefaultPriority(float $priority = 0.5): self
@@ -59,63 +65,58 @@ class Sitemap implements Stringable
         return $this->defaultPriority;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         $content_root = $this->site()->contentRoot();
+        $public_root  = $this->site()->publicRoot();
         $domain = $this->site()->domain();
 
-        $meta_file_paths = real_paths_for_public_meta_files($content_root);
-
-        $public_dir_path = real_path_for_public_dir($content_root);
-
         $urls = [];
-        foreach ($meta_file_paths as $meta_file_path) {
+        $iterator = $this->traversable;
+        foreach ($iterator as $meta_file_path) {
             $path = str_replace(
-                [$public_dir_path, '/meta.json'],
+                [$public_root, '/meta.json'],
                 ['', ''],
-                $meta_file_path
+                $meta_file_path->getRealPath()
             );
 
             $elements = [];
 
             $elements[] = Element::loc($domain . $path . '/');
 
-            $meta = meta_in_public_dir($content_root, $path);
+            $meta = PublicMeta::inRoot($content_root, $path);
 
-            if (
-                property_exists($meta, 'sitemap') and
-                $meta->sitemap === false
-            ) {
+            if ($meta->hasProperty('sitemap') and $meta->sitemap() === false) {
                 $urls[] = '';
                 continue;
             }
 
             $lastmod = false;
-            if (property_exists($meta, 'updated')) {
-                $lastmod = date_create($meta->updated);
+            if ($meta->hasProperty('updated')) {
+                $lastmod = $meta->updated();
 
-            } elseif (property_exists($meta, 'created')) {
-                $lastmod = date_create($meta->created);
-
-            }
-
-            if ($lastmod !== false) {
-                $elements[] = Element::lastmod(
-                    $lastmod->format('Y-m-d')
-                );
-            }
-
-            if (property_exists($meta, 'priority')) {
-                $priority = $meta->priority;
-
-                $elements[] = Element::priority(strval($priority));
-
-            } else {
-                $priority = $this->defaultPriority();
-
-                $elements[] = Element::priority(strval($priority));
+            } elseif ($meta->hasProperty('created')) {
+                $lastmod = $meta->created();
 
             }
+
+            if (is_string($lastmod)) {
+                $date = date_create($lastmod);
+                if (
+                    $date !== false and
+                    is_a($date, DateTime::class)
+                ) {
+                    $elements[] = Element::lastmod(
+                        $date->format('Y-m-d')
+                    );
+                }
+            }
+
+            $priority = $this->defaultPriority();
+            if ($meta->hasProperty('priority')) {
+                $priority = $meta->priority();
+            }
+            $elements[] = Element::priority(strval($priority));
 
             $urls[] = Element::url(...$elements);
         }
@@ -123,5 +124,10 @@ class Sitemap implements Stringable
         return (string) Document::urlset(
             ...$urls
         )->props('xmlns ' . self::SCHEMA);
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 }

@@ -7,19 +7,34 @@ use Eightfold\Amos\Tests\TestCase;
 
 use Eightfold\Amos\Sitemap;
 
+use Symfony\Component\Finder\Finder as SymfonyFinder;
+
+use Traversable;
+
 class SiteMapTest extends TestCase
 {
+    private function allPublicMetaFiles(): Traversable
+    {
+        return (new SymfonyFinder())->files()->name('meta.json')
+            ->in(
+                parent::publicRoot()->toString()
+            );
+    }
+
     /**
      * @test
+     * @group oop
      */
     public function can_skip_sitemap(): void
     {
+
         $expected = <<<xml
         <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://ex.ample/deeper-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/</loc><priority>0.5</priority></url></urlset>
         xml;
 
         $result = (string) Sitemap::create(
+            $this->allPublicMetaFiles(),
             $this->site()
         );
 
@@ -31,6 +46,7 @@ class SiteMapTest extends TestCase
 
     /**
      * @test
+     * @group oop
      */
     public function can_change_default_priority(): void
     {
@@ -40,6 +56,7 @@ class SiteMapTest extends TestCase
         xml;
 
         $result = (string) Sitemap::create(
+            $this->allPublicMetaFiles(),
             $this->site()
         )->withDefaultPriority(0.75);
 
@@ -51,6 +68,7 @@ class SiteMapTest extends TestCase
 
     /**
      * @test
+     * @group oop
      */
     public function is_expected_xml(): void
     {
@@ -60,6 +78,7 @@ class SiteMapTest extends TestCase
         xml;
 
         $result = (string) Sitemap::create(
+            $this->allPublicMetaFiles(),
             $this->site()
         );
 

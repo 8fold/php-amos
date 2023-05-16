@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos\Tests\FileSystem\Directories;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
+
+use SplFileInfo;
 
 class RootTest extends BaseTestCase
 {
@@ -13,9 +15,40 @@ class RootTest extends BaseTestCase
      * @test
      * @group oop
      */
+    public function is_expected_qualified_path(): void
+    {
+        $expected = (new SplFileInfo(parent::BASE))->getRealPath();
+
+        $result = parent::root()->toString();
+
+        $this->assertSame(
+            $expected,
+            $result,
+            $expected . ' is not the same as ' . $result
+        );
+
+        $realPath = (new SplFileInfo(parent::NONEXISTENT_BASE))->getRealPath();
+
+        $expected = '';
+
+        $result = parent::nonexistentRoot()->toString();
+
+        $this->assertFalse($realPath);
+
+        $this->assertSame(
+            $expected,
+            $result,
+            $expected . ' is not the same as ' . $result
+        );
+    }
+
+    /**
+     * @test
+     * @group oop
+     */
     public function can_check_existence(): void
     {
-        $sut = Root::fromString(__DIR__ . '/../../test-content');
+        $sut = parent::root();
 
         $this->assertNotNull(
             $sut
@@ -39,7 +72,7 @@ class RootTest extends BaseTestCase
             $result
         );
 
-        $sut = Root::fromString(__DIR__ . '/../nonexistent');
+        $sut = parent::nonexistentRoot();
 
         $this->assertNotNull(
             $sut

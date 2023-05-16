@@ -60,7 +60,7 @@ final class PublicMetaFile implements Falsifiable, Stringable
         if ($this->notFound()) {
             return '';
         }
-        return $this->publicFile->getRealPath();
+        return $this->publicFile->toString();
     }
 
     public function __toString(): string

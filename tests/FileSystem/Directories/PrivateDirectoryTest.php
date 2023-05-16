@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos\Tests\FileSystem;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 
 use Eightfold\Amos\FileSystem\Directories\PrivateDirectory;
 
-use Eightfold\Amos\FileSystem\Directories\Root;
+use SplFileInfo;
 
 class PrivateDirectoryTest extends BaseTestCase
 {
@@ -15,11 +15,34 @@ class PrivateDirectoryTest extends BaseTestCase
      * @test
      * @group oop
      */
+    public function is_expected_qualified_path(): void
+    {
+        $expected = (new SplFileInfo(parent::BASE . '/navigation'))->getRealPath();
+
+        $sut = PrivateDirectory::inRoot(
+            parent::root(),
+            'navigation'
+        );
+
+        $result = $sut->toString();
+
+        $this->assertSame(
+            $expected,
+            $result,
+            $expected . ' is not the same as ' . $result
+        );
+    }
+
+    /**
+     * @test
+     * @group oop
+     */
     public function can_check_existence(): void
     {
-        $root = Root::fromString(__DIR__ . '/../../test-content');
-
-        $sut = PrivateDirectory::inRoot($root, 'navigation');
+        $sut = PrivateDirectory::inRoot(
+            parent::root(),
+            'navigation'
+        );
 
         $this->assertNotNull(
             $sut

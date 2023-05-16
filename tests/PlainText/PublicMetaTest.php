@@ -5,9 +5,9 @@ namespace Eightfold\Amos\Tests\PlainText;
 
 use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 
-use Eightfold\Amos\PlainText\PublicContent;
+use Eightfold\Amos\PlainText\PublicMeta;
 
-class PublicContentTest extends BaseTestCase
+class PublicMetaTest extends BaseTestCase
 {
     /**
      * @test
@@ -15,12 +15,14 @@ class PublicContentTest extends BaseTestCase
      */
     public function can_get_content(): void
     {
-        $sut = PublicContent::inRoot(parent::root());
+        $sut = PublicMeta::inRoot(parent::root());
 
-        $expected = <<<md
-        # Root test content
+        $expected = <<<json
+        {
+          "title": "Root test content"
+        }
 
-        md;
+        json;
 
         $result = $sut->toString();
 
@@ -29,9 +31,16 @@ class PublicContentTest extends BaseTestCase
             $result
         );
 
-        $expected = '';
+        $expected = <<<json
+        {
+          "title": "Deeper page",
+          "created": "20230101",
+          "priority": 1.0
+        }
 
-        $sut = PublicContent::inRoot(parent::root(), '/deeper-page');
+        json;
+
+        $sut = PublicMeta::inRoot(parent::root(), '/deeper-page');
 
         $result = $sut->toString();
 
