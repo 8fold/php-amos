@@ -12,6 +12,9 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
 
+use Nyholm\Psr7\Factory\Psr17Factory; // optional
+use Nyholm\Psr7Server\ServerRequestCreator; // optional
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
@@ -31,20 +34,39 @@ class Site implements SiteInterface
 
     public static function init(
         Root $fileSystemRoot,
-        RequestInterface $request,
-        LoggerInterface|false $logger = false
+        RequestInterface|false $request = false
     ): self|false {
         if ($fileSystemRoot->notFound()) {
             return false;
         }
-        return new self($fileSystemRoot, $request, $logger);
+        return new self($fileSystemRoot, $request);
     }
 
     final private function __construct(
         private readonly Root $fileSystemRoot,
-        private readonly RequestInterface $request,
-        private readonly LoggerInterface|false $logger
+        private RequestInterface|false $request
     ) {
+    }
+
+    public function withRequest(RequestInterface $request): self
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    public function request(): RequestInterface
+    {
+        if ($this->request === false) {
+            $psr17Factory = new Psr17Factory();
+
+            $this->request = (new ServerRequestCreator(
+                $psr17Factory, // ServerRequestFactory
+                $psr17Factory, // UriFactory
+                $psr17Factory, // UploadedFileFactory
+                $psr17Factory  // StreamFactory
+            ))->fromGlobals();
+        }
+        return $this->request;
     }
 
     public function domain(): string
@@ -74,11 +96,6 @@ class Site implements SiteInterface
         return $this->file_system_public_root;
     }
 
-    public function request(): RequestInterface
-    {
-        return $this->request;
-    }
-
     private function uri(): UriInterface
     {
         if (isset($this->uri) === false) {
@@ -93,10 +110,5 @@ class Site implements SiteInterface
             $this->request_path = $this->uri()->getPath();
         }
         return $this->request_path;
-    }
-
-    public function logger(): LoggerInterface|false
-    {
-        return $this->logger;
     }
 }
