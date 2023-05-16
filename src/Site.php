@@ -5,20 +5,11 @@ namespace Eightfold\Amos;
 
 use Eightfold\Amos\SiteInterface;
 
-use SplFileInfo;
-use StdClass;
-
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriInterface;
-use Psr\Log\LoggerInterface;
-
-use Nyholm\Psr7\Factory\Psr17Factory; // optional
-use Nyholm\Psr7Server\ServerRequestCreator; // optional
-
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
-use Eightfold\Amos\PlainText\Content;
+use Eightfold\Amos\ObjectsFromJson\PublicMeta;
+use Eightfold\Amos\PlainText\PublicContent;
 
 class Site implements SiteInterface
 {
@@ -26,55 +17,28 @@ class Site implements SiteInterface
 
     private PublicRoot $file_system_public_root;
 
-    private string $domain;
+    private array $publicMetas = [];
 
-    private UriInterface $uri;
-
-    private string $request_path;
+    private array $publicContents = [];
 
     public static function init(
         Root $fileSystemRoot,
-        RequestInterface|false $request = false
+        string $domain
     ): self|false {
         if ($fileSystemRoot->notFound()) {
             return false;
         }
-        return new self($fileSystemRoot, $request);
+        return new self($fileSystemRoot, $domain);
     }
 
     final private function __construct(
         private readonly Root $fileSystemRoot,
-        private RequestInterface|false $request
+        private readonly string $domain
     ) {
-    }
-
-    public function withRequest(RequestInterface $request): self
-    {
-        $this->request = $request;
-        return $this;
-    }
-
-    public function request(): RequestInterface
-    {
-        if ($this->request === false) {
-            $psr17Factory = new Psr17Factory();
-
-            $this->request = (new ServerRequestCreator(
-                $psr17Factory, // ServerRequestFactory
-                $psr17Factory, // UriFactory
-                $psr17Factory, // UploadedFileFactory
-                $psr17Factory  // StreamFactory
-            ))->fromGlobals();
-        }
-        return $this->request;
     }
 
     public function domain(): string
     {
-        if (isset($this->domain) === false) {
-            $this->domain = $this->uri()->getScheme() . '://' .
-                $this->uri()->getAuthority();
-        }
         return $this->domain;
     }
 
@@ -96,19 +60,55 @@ class Site implements SiteInterface
         return $this->file_system_public_root;
     }
 
-    private function uri(): UriInterface
+    public function hasPublicMeta(string $at = ''): bool
     {
-        if (isset($this->uri) === false) {
-            $this->uri = $this->request()->getUri();
-        }
-        return $this->uri;
+        return $this->publicMeta($at)->toBool();
     }
 
-    public function requestPath(): string
+    public function publicMeta(string $at = '/'): PublicMeta
     {
-        if (isset($this->request_path) === false) {
-            $this->request_path = $this->uri()->getPath();
+        if (array_key_exists($at, $this->publicMetas)) {
+            return $this->publicMetas[$at];
         }
-        return $this->request_path;
+
+        $meta = PublicMeta::inRoot($this->contentRoot(), $at);
+        $this->publicMetas[$at] = $meta;
+
+        return $meta;
+    }
+
+    public function hasPublicContent(string $at = '/'): bool
+    {
+        return $this->publicContent($at)->toBool();
+    }
+
+    public function publicContent(string $at = '/'): PublicContent
+    {
+        if (array_key_exists($at, $this->publicContents)) {
+            return $this->publicContents[$at];
+        }
+
+        $content = PublicContent::inRoot($this->contentRoot(), $at);
+        $this->publicContents[$at] = $content;
+
+        return $content;
+    }
+
+    public function titles(string $at = ''): array
+    {
+        $pathParts = explode('/', $at);
+        $filtered  = array_filter($pathParts);
+
+        $titles = [];
+        while (count($filtered) > 0) {
+            $path = '/' . implode('/', $filtered) . '/';
+            $titles[] = $this->publicMeta(at: $path)->title();
+
+            array_pop($filtered);
+        }
+
+        $titles[] = $this->publicMeta(at: '/')->title();
+
+        return array_filter($titles);
     }
 }

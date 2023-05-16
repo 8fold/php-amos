@@ -41,7 +41,7 @@ class TestCase extends BaseTestCase
     {
         return Site::init(
             $this->root(),
-            $this->request($path)
+            $this->domain()
         );
     }
 
