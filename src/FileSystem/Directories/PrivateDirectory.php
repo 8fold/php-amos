@@ -23,8 +23,8 @@ final class PrivateDirectory implements Falsifiable, Stringable
     }
 
     private function __construct(
-        private readonly Root $root,
-        private readonly string $at = ''
+        private readonly Root $root, // @phpstan-ignore-line
+        private readonly string $at = '' // @phpstan-ignore-line
     ) {
         $this->fileInfo = new SplFileInfo($root . $at);
     }

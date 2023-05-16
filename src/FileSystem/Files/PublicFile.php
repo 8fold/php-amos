@@ -40,9 +40,9 @@ final class PublicFile implements Falsifiable, Stringable
     }
 
     private function __construct(
-        private readonly PublicRoot $root,
-        private readonly string $filename,
-        private readonly string $at = ''
+        private readonly PublicRoot $root, // @phpstan-ignore-line
+        private readonly string $filename, // @phpstan-ignore-line
+        private readonly string $at = '' // @phpstan-ignore-line
     ) {
         $this->fileInfo = new SplFileInfo($root->toString() . $at . $filename);
     }

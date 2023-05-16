@@ -51,12 +51,17 @@ final class PublicMeta
     public function title(): string
     {
         $value = $this->valueForProperty('title');
-        if ($value === false) {
+        if ($value === false or is_string($value) === false) {
             return '';
         }
         return $value;
     }
 
+    /**
+     * @param array<mixed> $args
+     *
+     * @return string|int|float|bool|array<mixed>|object
+     */
     public function __call(
         string $name,
         array $args = []
@@ -64,6 +69,9 @@ final class PublicMeta
         return $this->valueForProperty($name);
     }
 
+    /**
+     * @return string|int|float|bool|array<mixed>|object
+     */
     private function valueForProperty(
         string $name
     ): string|int|float|bool|array|object {

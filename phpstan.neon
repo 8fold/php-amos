@@ -6,3 +6,4 @@ parameters:
 	ignoreErrors:
 		- '#Call to an undefined static method Eightfold\\XMLBuilder\\Element::(.*)#'
 		- '#Call to an undefined static method Eightfold\\XMLBuilder\\Document::(.*)#'
+		- '#Call to an undefined method Eightfold\\Amos\\ObjectsFromJson\\PublicMeta::(.*)#'

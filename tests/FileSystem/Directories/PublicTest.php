@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Eightfold\Amos\Tests\FileSystem;
+namespace Eightfold\Amos\Tests\FileSystem\Directories;
 
 use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 

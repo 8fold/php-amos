@@ -41,14 +41,9 @@ final class PrivateFile implements Falsifiable, Stringable
         return new self($directory, $filename);
     }
 
-    public static function fromSplFileInfo(SplFileInfo $fileInfo): self
-    {
-        return new self($fileInfo);
-    }
-
     private function __construct(
-        private readonly PrivateDirectory $directory,
-        private readonly string $filename
+        private readonly PrivateDirectory $directory, // @phpstan-ignore-line
+        private readonly string $filename // @phpstan-ignore-line
     ) {
         $this->fileInfo = new SplFileInfo($directory->toString() . $filename);
     }

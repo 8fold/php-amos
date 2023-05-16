@@ -29,8 +29,8 @@ final class PublicDirectory implements Falsifiable, Stringable
     }
 
     private function __construct(
-        private readonly PublicRoot $root,
-        private readonly string $at = ''
+        private readonly PublicRoot $root, // @phpstan-ignore-line
+        private readonly string $at = '' // @phpstan-ignore-line
     ) {
         $this->fileInfo = new SplFileInfo($root . $at);
     }

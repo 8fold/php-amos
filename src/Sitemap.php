@@ -5,6 +5,7 @@ namespace Eightfold\Amos;
 
 use Traversable;
 use DateTime;
+use SplFileInfo;
 
 use Eightfold\XMLBuilder\Document;
 use Eightfold\XMLBuilder\Element;
@@ -36,6 +37,9 @@ class Sitemap implements Stringable
 
     private float $defaultPriority = 0.5;
 
+    /**
+     * @param Traversable<string, SplFileInfo> $traversable
+     */
     public static function create(
         Traversable $traversable,
         Site $site
@@ -43,6 +47,9 @@ class Sitemap implements Stringable
         return new self($traversable, $site);
     }
 
+    /**
+     * @param Traversable<string, SplFileInfo> $traversable
+     */
     final private function __construct(
         private readonly Traversable $traversable,
         private readonly Site $site

@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos\FileSystem\Files;
 
-use SplFileInfo;
-
 use Eightfold\Amos\Php\Interfaces\Falsifiable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
@@ -16,8 +14,6 @@ use Eightfold\Amos\FileSystem\Files\PublicFile;
 final class PublicContentFile implements Falsifiable, Stringable
 {
     private const FILENAME = 'content.md';
-
-    private readonly SplFileInfo $fileInfo;
 
     public static function inRoot(Root $root, string $at = ''): self
     {
