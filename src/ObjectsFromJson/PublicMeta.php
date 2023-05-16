@@ -6,6 +6,8 @@ namespace Eightfold\Amos\ObjectsFromJson;
 use StdClass;
 use DateTime;
 
+use Eightfold\Amos\Php\Interfaces\Falsifiable;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\PlainText\PublicMeta as PlainTextPublicMeta;
 
@@ -23,6 +25,16 @@ final class PublicMeta
     private function __construct(
         private readonly PlainTextPublicMeta $publicMeta
     ) {
+    }
+
+    public function toBool(): bool
+    {
+        return $this->publicMeta->toBool();
+    }
+
+    public function notFound(): bool
+    {
+        return ! $this->toBool();
     }
 
     public function hasProperty(string $property): bool

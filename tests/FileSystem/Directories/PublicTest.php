@@ -13,7 +13,6 @@ class PublicTest extends BaseTestCase
 {
     /**
      * @test
-     * @group oop
      */
     public function is_expected_qualified_path(): void
     {
@@ -30,7 +29,6 @@ class PublicTest extends BaseTestCase
 
     /**
      * @test
-     * @group oop
      */
     public function can_check_existence(): void
     {

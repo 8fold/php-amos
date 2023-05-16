@@ -11,7 +11,6 @@ class PublicMetaTest extends BaseTestCase
 {
     /**
      * @test
-     * @group oop
      */
     public function can_get_content(): void
     {

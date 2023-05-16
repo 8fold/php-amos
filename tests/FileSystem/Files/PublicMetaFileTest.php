@@ -13,7 +13,6 @@ class PublicMetaFileTest extends BaseTestCase
 {
     /**
      * @test
-     * @group oop
      */
     public function can_check_existence(): void
     {

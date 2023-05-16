@@ -10,16 +10,15 @@ use Psr\Http\Message\RequestInterface;
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
+use Eightfold\Amos\ObjectsFromJson\PublicMeta;
+use Eightfold\Amos\PlainText\PublicContent;
+
 interface SiteInterface
 {
     public static function init(
         Root $fileSystemRoot,
-        RequestInterface|false $request = false
+        string $domain
     ): self|false;
-
-    public function withRequest(RequestInterface $request): self;
-
-    public function request(): RequestInterface;
 
     public function domain(): string;
 
@@ -27,5 +26,11 @@ interface SiteInterface
 
     public function publicRoot(): PublicRoot;
 
-    public function requestPath(): string;
+    public function hasPublicMeta(string $at = ''): bool;
+
+    public function publicMeta(string $at = '/'): PublicMeta;
+
+    public function hasPublicContent(string $at = '/'): bool;
+
+    public function publicContent(string $at = '/'): PublicContent;
 }
