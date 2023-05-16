@@ -10,15 +10,30 @@ ini_set('realpath_cache_ttl', '600');
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
-$documentRoot = Eightfold\Amos\FileSystem\DocumentRoot::fromString(
-    __DIR__ . '/../docs'
+$psr17Factory = new Nyholm\Psr7\Factory\Psr17Factory();
+
+$request = (new Nyholm\Psr7Server\ServerRequestCreator(
+    $psr17Factory, // ServerRequestFactory
+    $psr17Factory, // UriFactory
+    $psr17Factory, // UploadedFileFactory
+    $psr17Factory  // StreamFactory
+))->fromGlobals();
+
+$site = Eightfold\Amos\Site::init(
+    Eightfold\Amos\FileSystem\Directories\Root::fromString(__DIR__ . '/../docs'),
+    $request
 );
 
-$publicRoot = Eightfold\Amos\FileSystem\PublicRoot($documentRoot);
-if ($documentRoot->notFound() or $publicRoot->notFound()) {
+if ($site->contentRoot()->notFound() or $site->publicRoot()->notFound()) {
     die('return 500 response');
 }
 
+$request_path = $site->requestPath();
+if (str_ends_with($request_path, 'sitemap.xml')) {
+    die('sitemap');
+}
+
+die('here');
 $request = Eightfold\Amos\Http\ServerRequestGet::usingDefault();
 
 $uri = Eightfold\Amos\Http\Uri::fromPsr7($request);
