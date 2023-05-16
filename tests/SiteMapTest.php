@@ -23,7 +23,6 @@ class SiteMapTest extends TestCase
 
     /**
      * @test
-     * @group oop
      */
     public function can_skip_sitemap(): void
     {
@@ -46,7 +45,6 @@ class SiteMapTest extends TestCase
 
     /**
      * @test
-     * @group oop
      */
     public function can_change_default_priority(): void
     {
@@ -68,7 +66,6 @@ class SiteMapTest extends TestCase
 
     /**
      * @test
-     * @group oop
      */
     public function is_expected_xml(): void
     {

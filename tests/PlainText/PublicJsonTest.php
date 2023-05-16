@@ -11,7 +11,6 @@ class PublicJsonTest extends BaseTestCase
 {
     /**
      * @test
-     * @group oop
      */
     public function can_get_content(): void
     {
