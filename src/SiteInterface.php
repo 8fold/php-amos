@@ -10,6 +10,9 @@ use Psr\Http\Message\RequestInterface;
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
+use Eightfold\Amos\ObjectsFromJson\PublicMeta;
+use Eightfold\Amos\PlainText\PublicContent;
+
 interface SiteInterface
 {
     public static function init(

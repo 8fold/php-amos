@@ -17,8 +17,14 @@ class Site implements SiteInterface
 
     private PublicRoot $file_system_public_root;
 
+    /**
+     * @var array<string, PublicMeta>
+     */
     private array $publicMetas = [];
 
+    /**
+     * @var array<string, PublicContent>
+     */
     private array $publicContents = [];
 
     public static function init(
@@ -94,6 +100,9 @@ class Site implements SiteInterface
         return $content;
     }
 
+    /**
+     * @return string[]
+     */
     public function titles(string $at = ''): array
     {
         $pathParts = explode('/', $at);
