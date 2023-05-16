@@ -3,194 +3,100 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
+use Eightfold\Amos\SiteInterface;
+
 use SplFileInfo;
 use StdClass;
 
-use function Eightfold\Amos\real_path_for_public_meta;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerInterface;
 
-class Site
+use Eightfold\Amos\FileSystem\Directories\Root;
+use Eightfold\Amos\FileSystem\Directories\PublicRoot;
+
+use Eightfold\Amos\PlainText\Content;
+
+class Site implements SiteInterface
 {
-    private string $contentRoot;
+    private Root $file_system_root;
 
-    private const COMPONENT_WRAPPER = '{!!(.*)!!}';
+    private PublicRoot $file_system_public_root;
+
+    private string $domain;
+
+    private UriInterface $uri;
+
+    private string $request_path;
 
     public static function init(
-        string $withDomain,
-        string $contentIn
-    ): self {
-        return new self($withDomain, $contentIn);
+        Root $fileSystemRoot,
+        RequestInterface $request,
+        LoggerInterface|false $logger = false
+    ): self|false {
+        if ($fileSystemRoot->notFound()) {
+            return false;
+        }
+        return new self($fileSystemRoot, $request, $logger);
     }
 
     final private function __construct(
-        private readonly string $withDomain,
-        private readonly string $contentIn
+        private readonly Root $fileSystemRoot,
+        private readonly RequestInterface $request,
+        private readonly LoggerInterface|false $logger
     ) {
     }
 
     public function domain(): string
     {
-        return $this->withDomain;
-    }
-
-    public function contentRoot(): string
-    {
-        if (isset($this->contentRoot) === false) {
-            $this->contentRoot = real_path_for_dir($this->contentIn);
+        if (isset($this->domain) === false) {
+            $this->domain = $this->uri()->getScheme() . '://' .
+                $this->uri()->getAuthority();
         }
-        return $this->contentRoot;
+        return $this->domain;
     }
 
-    /**
-     * @param array<string, string> $components
-     */
-    private function processPartials(
-        string $at,
-        string $content,
-        array $components
-    ): string {
-        $partials = [];
-        if (
-            preg_match_all(
-                '/' . self::COMPONENT_WRAPPER . '/',
-                $content,
-                $partials // Populates $p
-            )
-        ) {
-            $replacements = $partials[0];
-            $templates    = $partials[1];
-
-            for ($i = 0; $i < count($replacements); $i++) {
-                $partial      = trim($templates[$i]);
-                $partialParts = explode(':', $partial, 2);
-
-                $partialKey  = $partialParts[0];
-                $partialArgs = [];
-                if (count($partialParts) > 1) {
-                    $partialArgs = explode(',', $partialParts[1]);
-                }
-
-                if (! array_key_exists($partialKey, $components)) {
-                    continue;
-                }
-
-                $template = $components[$partialKey];
-
-                $content = str_replace(
-                    $replacements[$i],
-                    (string) $template::create($this, $at),
-                    $content
-                );
-            }
+    public function contentRoot(): Root
+    {
+        if (isset($this->file_system_root) === false) {
+            $this->file_system_root = $this->fileSystemRoot;
         }
-        return $content;
+        return $this->file_system_root;
     }
 
-    /**
-     * @deprecated
-     */
-    public function publicRoot(): string
+    public function publicRoot(): PublicRoot
     {
-        return real_path_for_public_dir($this->contentRoot());
-    }
-
-    /**
-     * @deprecated
-     */
-    public function rootFilePath(string $filename, string $at = ''): string
-    {
-        return real_path_for_file($this->contentRoot(), $filename, $at);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function publicFilePath(string $filename, string $at = ''): string
-    {
-        return real_path_for_public_file($this->contentRoot(), $filename, $at);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function publicMarkdown(string $filename, string $at = ''): string
-    {
-        $filePath = $this->publicFilePath($filename, $at);
-        if (is_file($filePath) === false) {
-            return '';
+        if (isset($this->file_system_public_root) === false) {
+            $this->file_system_public_root = PublicRoot::inRoot(
+                $this->contentRoot()
+            );
         }
+        return $this->file_system_public_root;
+    }
 
-        $content = file_get_contents($filePath);
-        if ($content === false) {
-            return '';
+    public function request(): RequestInterface
+    {
+        return $this->request;
+    }
+
+    private function uri(): UriInterface
+    {
+        if (isset($this->uri) === false) {
+            $this->uri = $this->request()->getUri();
         }
-
-        return $content;
+        return $this->uri;
     }
 
-    /**
-     * @deprecated
-     *
-     * @param array<string, string> $partials
-     */
-    public function content(string $at = '', array $partials = []): string
+    public function requestPath(): string
     {
-        $content = $this->publicMarkdown('content.md', $at);
-        if (strlen($content) === 0) {
-            return '';
+        if (isset($this->request_path) === false) {
+            $this->request_path = $this->uri()->getPath();
         }
-
-        if (count($partials) > 0) {
-            $content = $this->processPartials($at, $content, $partials);
-        }
-
-        return $content;
+        return $this->request_path;
     }
 
-    /**
-     * @deprecated
-     */
-    public function metaPath(string $at = ''): string
+    public function logger(): LoggerInterface|false
     {
-        return $this->publicFilePath('meta.json', $at);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function meta(string $at = ''): StdClass|false
-    {
-        $obj = meta_object_in_public_dir($this->contentRoot(), $at);
-        if (count(get_object_vars($obj)) === 0) {
-            return false;
-        }
-        return $obj;
-    }
-
-    /**
-     * @deprecated
-     */
-    public function title(string $at = ''): string
-    {
-        return title_for_meta_object_in_public_dir($this->contentRoot(), $at);
-    }
-
-    /**
-     * @deprecated
-     * @return string[]
-     */
-    public function titles(string $at = ''): array
-    {
-        return titles_for_meta_objects_in_public_dir(
-            $this->contentRoot(),
-            $at
-        );
-    }
-
-    /**
-     * @deprecated
-     */
-    public function hasPublishedContent(string $at = ''): bool
-    {
-        return is_file($this->metaPath($at));
+        return $this->logger;
     }
 }

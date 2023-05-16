@@ -9,16 +9,49 @@ use Eightfold\Amos\Site;
 
 use SplFileInfo;
 
+use Nyholm\Psr7\ServerRequest;
+
+use Eightfold\Amos\FileSystem\Directories\Root;
+use Eightfold\Amos\FileSystem\Directories\PublicRoot;
+
 class TestCase extends BaseTestCase
 {
-    protected function site(): Site
-    {
-        $realPath = (new SplFileInfo(__DIR__ . '/test-content'))
-            ->getRealPath();
+    protected const BASE = __DIR__ . '/test-content';
 
+    protected const NONEXISTENT_BASE = __DIR__ . '/nonexistent';
+
+    protected const PUBLIC_BASE = self::BASE . '/public';
+
+    protected function root(): Root
+    {
+        return Root::fromString(self::BASE);
+    }
+
+    protected function nonexistentRoot(): Root
+    {
+        return Root::fromString(self::NONEXISTENT_BASE);
+    }
+
+    protected function publicRoot(): PublicRoot
+    {
+        return PublicRoot::inRoot($this->root());
+    }
+
+    protected function site(string $path = '/'): Site
+    {
         return Site::init(
-            'http://ex.ample',
-            $realPath
+            $this->root(),
+            $this->request($path)
         );
+    }
+
+    protected function request(string $path = '/'): ServerRequest
+    {
+        return new ServerRequest('get', $this->domain() . $path);
+    }
+
+    protected function domain(): string
+    {
+        return 'http://ex.ample';
     }
 }
