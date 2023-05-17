@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Eightfold\Amos\PlainText;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
-use Eightfold\Amos\FileSystem\Files\PrivateFile;
+use Eightfold\Amos\FileSystem\Files\PrivateFile as FileSystemPrivateFile;
 
 use Eightfold\Amos\Php\Interfaces\Falsifiable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
@@ -17,12 +17,12 @@ final class PrivateFile
         string $at = ''
     ): self {
         return new self(
-            PrivateFile::inRoot($root, $filename, $at)
+            FileSystemPrivateFile::inRoot($root, $filename, $at)
         );
     }
 
     final private function __construct(
-        private readonly PrivateFile $privateFile
+        private readonly FileSystemPrivateFile $privateFile
     ) {
     }
 
