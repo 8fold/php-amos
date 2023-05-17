@@ -11,8 +11,11 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 final class PrivateJson
 {
-    public static function inRoot(Root $root, string $filename, string $at = ''): self
-    {
+    public static function inRoot(
+        Root $root,
+        string $filename,
+        string $at = ''
+    ): self {
         return new self(
             PrivateFile::inRoot($root, $filename, $at)
         );
