@@ -9,7 +9,7 @@ use Eightfold\Amos\FileSystem\Files\PrivateFile;
 use Eightfold\Amos\Php\Interfaces\Falsifiable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
-final class PrivateJson
+final class PrivateFile
 {
     public static function inRoot(
         Root $root,
