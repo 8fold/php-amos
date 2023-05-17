@@ -10,6 +10,7 @@ use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
 use Eightfold\Amos\ObjectsFromJson\PublicMeta;
 use Eightfold\Amos\PlainText\PublicContent;
+use Eightfold\Amos\FileSystem\Files\PublicFile;
 
 class Site implements SiteInterface
 {
@@ -99,6 +100,12 @@ class Site implements SiteInterface
 
         return $content;
     }
+
+    public function publicFile(string $filename, string $at = '/'): PublicFile
+    {
+        return PublicFile::inRoot($this->contentRoot(), $filename, $at);
+    }
+
 
     /**
      * @return string[]
