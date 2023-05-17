@@ -10,7 +10,7 @@ use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
 use Eightfold\Amos\ObjectsFromJson\PublicMeta;
 use Eightfold\Amos\PlainText\PublicContent;
-use Eightfold\Amos\FileSystem\Files\PublicFile;
+use Eightfold\Amos\PlainText\PublicFile;
 
 class Site implements SiteInterface
 {
