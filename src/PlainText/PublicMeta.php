@@ -6,10 +6,10 @@ namespace Eightfold\Amos\PlainText;
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Files\PublicMetaFile;
 
-use Eightfold\Amos\Php\Interfaces\Falsifiable;
+use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
-final class PublicMeta
+final class PublicMeta implements Findable, Stringable
 {
     public static function inRoot(Root $root, string $at = ''): self
     {
@@ -31,17 +31,32 @@ final class PublicMeta
 
     public function notFound(): bool
     {
-        return $this->publicFile->notFound();
+        return ! $this->toBool();
     }
 
-    public function isFile(): bool
+    public function found(): bool
     {
-        return $this->publicFile->isFile();
+        return $this->toBool();
+    }
+
+    public function exists(): bool
+    {
+        return $this->toBool();
+    }
+
+    public function nonexistent(): bool
+    {
+        return ! $this->toBool();
     }
 
     public function toBool(): bool
     {
         return $this->publicFile->toBool();
+    }
+
+    public function isFile(): bool
+    {
+        return $this->publicFile->isFile();
     }
 
     public function toString(): string

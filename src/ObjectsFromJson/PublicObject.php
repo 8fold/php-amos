@@ -6,12 +6,12 @@ namespace Eightfold\Amos\ObjectsFromJson;
 use StdClass;
 use DateTime;
 
-use Eightfold\Amos\Php\Interfaces\Falsifiable;
+use Eightfold\Amos\Php\Interfaces\Findable;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\PlainText\PublicJson as PlainTextPublicJson;
 
-final class PublicObject
+final class PublicObject implements Findable
 {
     private StdClass $object;
 
@@ -30,14 +30,29 @@ final class PublicObject
     ) {
     }
 
-    public function toBool(): bool
-    {
-        return $this->publicJson->toBool();
-    }
-
     public function notFound(): bool
     {
         return ! $this->toBool();
+    }
+
+    public function found(): bool
+    {
+        return $this->toBool();
+    }
+
+    public function exists(): bool
+    {
+        return $this->toBool();
+    }
+
+    public function nonexistent(): bool
+    {
+        return ! $this->toBool();
+    }
+
+    public function toBool(): bool
+    {
+        return $this->publicJson->toBool();
     }
 
     public function hasProperty(string $property): bool

@@ -6,10 +6,10 @@ namespace Eightfold\Amos\PlainText;
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Files\PrivateFile;
 
-use Eightfold\Amos\Php\Interfaces\Falsifiable;
+use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
-final class PrivateJson
+final class PrivateJson implements Findable, Stringable
 {
     public static function inRoot(
         Root $root,
@@ -28,17 +28,32 @@ final class PrivateJson
 
     public function notFound(): bool
     {
-        return $this->privateFile->notFound();
+        return ! $this->toBool();
     }
 
-    public function isFile(): bool
+    public function found(): bool
     {
-        return $this->privateFile->isFile();
+        return $this->toBool();
+    }
+
+    public function exists(): bool
+    {
+        return $this->toBool();
+    }
+
+    public function nonexistent(): bool
+    {
+        return ! $this->toBool();
     }
 
     public function toBool(): bool
     {
         return $this->privateFile->toBool();
+    }
+
+    public function isFile(): bool
+    {
+        return $this->privateFile->isFile();
     }
 
     public function toString(): string

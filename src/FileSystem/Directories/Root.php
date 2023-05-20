@@ -5,12 +5,12 @@ namespace Eightfold\Amos\FileSystem\Directories;
 
 use SplFileInfo;
 
-use Eightfold\Amos\Php\Interfaces\Falsifiable;
+use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
-final class Root implements Falsifiable, Stringable
+final class Root implements Findable, Stringable
 {
     public static function fromString(string $path): self
     {
@@ -38,14 +38,29 @@ final class Root implements Falsifiable, Stringable
         return ! $this->toBool();
     }
 
-    public function isDir(): bool
+    public function found(): bool
     {
-        return $this->fileInfo->isDir();
+        return $this->toBool();
+    }
+
+    public function exists(): bool
+    {
+        return $this->toBool();
+    }
+
+    public function nonexistent(): bool
+    {
+        return ! $this->toBool();
     }
 
     public function toBool(): bool
     {
         return $this->isDir();
+    }
+
+    public function isDir(): bool
+    {
+        return $this->fileInfo->isDir();
     }
 
     public function toString(): string
