@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos\FileSystem\Files;
 
-use Eightfold\Amos\Php\Interfaces\Falsifiable;
+use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
@@ -11,7 +11,7 @@ use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
 use Eightfold\Amos\FileSystem\Files\PublicFile;
 
-final class PublicMetaFile implements Falsifiable, Stringable
+final class PublicMetaFile implements Findable, Stringable
 {
     private const FILENAME = 'meta.json';
 
@@ -38,17 +38,32 @@ final class PublicMetaFile implements Falsifiable, Stringable
 
     public function notFound(): bool
     {
-        return $this->publicFile->notFound();
+        return ! $this->toBool();
     }
 
-    public function isFile(): bool
+    public function found(): bool
     {
-        return $this->publicFile->isFile();
+        return $this->toBool();
+    }
+
+    public function exists(): bool
+    {
+        return $this->toBool();
+    }
+
+    public function nonexistent(): bool
+    {
+        return ! $this->toBool();
     }
 
     public function toBool(): bool
     {
         return $this->publicFile->toBool();
+    }
+
+    public function isFile(): bool
+    {
+        return $this->publicFile->isFile();
     }
 
     public function toString(): string

@@ -5,13 +5,13 @@ namespace Eightfold\Amos\FileSystem\Files;
 
 use SplFileInfo;
 
-use Eightfold\Amos\Php\Interfaces\Falsifiable;
+use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
-final class PublicFile implements Falsifiable, Stringable
+final class PublicFile implements Findable, Stringable
 {
     private readonly SplFileInfo $fileInfo;
 
@@ -52,14 +52,29 @@ final class PublicFile implements Falsifiable, Stringable
         return ! $this->toBool();
     }
 
-    public function isFile(): bool
+    public function found(): bool
     {
-        return $this->fileInfo->isFile();
+        return $this->toBool();
+    }
+
+    public function exists(): bool
+    {
+        return $this->toBool();
+    }
+
+    public function nonexistent(): bool
+    {
+        return ! $this->toBool();
     }
 
     public function toBool(): bool
     {
         return $this->isFile();
+    }
+
+    public function isFile(): bool
+    {
+        return $this->fileInfo->isFile();
     }
 
     public function toString(): string
