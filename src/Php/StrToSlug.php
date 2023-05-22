@@ -5,6 +5,10 @@ namespace Eightfold\Amos\Php;
 
 use voku\helper\ASCII;
 
+/**
+ * Derived from laravel/framework - Str.php - slug()
+ * Copyright (c) Taylor Otwell
+ */
 class StrToSlug
 {
     /**
