@@ -5,8 +5,10 @@ namespace Eightfold\Amos;
 
 use Eightfold\Amos\SiteInterface;
 
-use Eightfold\Amos\FileSystem\Directories\Root;
+use Eightfold\Amos\FileSystem\Directories\Root as ContentRoot;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
+
+use Eightfold\Amos\Http\Root as HttpRoot;
 
 use Eightfold\Amos\ObjectsFromJson\PublicMeta;
 use Eightfold\Amos\PlainText\PublicContent;
@@ -14,7 +16,7 @@ use Eightfold\Amos\PlainText\PublicFile;
 
 class Site implements SiteInterface
 {
-    private Root $file_system_root;
+    private ContentRoot $file_system_root;
 
     private PublicRoot $file_system_public_root;
 
@@ -29,8 +31,8 @@ class Site implements SiteInterface
     private array $publicContents = [];
 
     public static function init(
-        Root $fileSystemRoot,
-        string $domain
+        ContentRoot $fileSystemRoot,
+        HttpRoot $domain
     ): self|false {
         if ($fileSystemRoot->notFound()) {
             return false;
@@ -39,17 +41,17 @@ class Site implements SiteInterface
     }
 
     final private function __construct(
-        private readonly Root $fileSystemRoot,
-        private readonly string $domain
+        private readonly ContentRoot $fileSystemRoot,
+        private readonly HttpRoot $domain
     ) {
     }
 
-    public function domain(): string
+    public function domain(): HttpRoot
     {
         return $this->domain;
     }
 
-    public function contentRoot(): Root
+    public function contentRoot(): ContentRoot
     {
         if (isset($this->file_system_root) === false) {
             $this->file_system_root = $this->fileSystemRoot;

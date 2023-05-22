@@ -68,9 +68,9 @@ class SiteTest extends TestCase
      */
     public function has_expected_domain(): void
     {
-        $expected = $this->domain();
+        $expected = $this->domain()->toString();
 
-        $result = $this->site()->domain();
+        $result = $this->site()->domain()->toString();
 
         $this->assertSame(
             $expected,
