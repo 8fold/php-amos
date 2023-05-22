@@ -11,8 +11,10 @@ use SplFileInfo;
 
 use Nyholm\Psr7\ServerRequest;
 
-use Eightfold\Amos\FileSystem\Directories\Root;
+use Eightfold\Amos\FileSystem\Directories\Root as ContentRoot;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
+
+use Eightfold\Amos\Http\Root as HttpRoot;
 
 class TestCase extends BaseTestCase
 {
@@ -22,14 +24,14 @@ class TestCase extends BaseTestCase
 
     protected const PUBLIC_BASE = self::BASE . '/public';
 
-    protected function root(): Root
+    protected function root(): ContentRoot
     {
-        return Root::fromString(self::BASE);
+        return ContentRoot::fromString(self::BASE);
     }
 
-    protected function nonexistentRoot(): Root
+    protected function nonexistentRoot(): ContentRoot
     {
-        return Root::fromString(self::NONEXISTENT_BASE);
+        return ContentRoot::fromString(self::NONEXISTENT_BASE);
     }
 
     protected function publicRoot(): PublicRoot
@@ -50,8 +52,8 @@ class TestCase extends BaseTestCase
         return new ServerRequest('get', $this->domain() . $path);
     }
 
-    protected function domain(): string
+    protected function domain(): HttpRoot
     {
-        return 'http://ex.ample';
+        return HttpRoot::fromString('http://ex.ample');
     }
 }

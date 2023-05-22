@@ -33,7 +33,7 @@ class RootTest extends BaseTestCase
             parent::request()
         );
 
-        $expected = parent::domain();
+        $expected = parent::domain()->toString();
 
         $this->assertSame(
             $expected,
