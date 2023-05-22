@@ -21,7 +21,7 @@ class Site implements SiteInterface
     /**
      * @var array<string, PublicMeta>
      */
-    private array $publicMetas = [];
+    private array $public_metas = [];
 
     /**
      * @var array<string, PublicContent>
@@ -74,12 +74,12 @@ class Site implements SiteInterface
 
     public function publicMeta(string $at = '/'): PublicMeta
     {
-        if (array_key_exists($at, $this->publicMetas)) {
-            return $this->publicMetas[$at];
+        if (array_key_exists($at, $this->public_metas)) {
+            return $this->public_metas[$at];
         }
 
         $meta = PublicMeta::inRoot($this->contentRoot(), $at);
-        $this->publicMetas[$at] = $meta;
+        $this->public_metas[$at] = $meta;
 
         return $meta;
     }
