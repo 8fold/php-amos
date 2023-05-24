@@ -36,6 +36,10 @@ final class PublicFile implements Findable, Stringable
             $at = substr($at, 0, -1);
         }
 
+        if (str_starts_with($at, '/') === false) {
+            $at = '/' . $at;
+        }
+
         return new self($root, $filename, $at);
     }
 
