@@ -61,7 +61,7 @@ final class PrivateObject implements Findable
         return property_exists($object, $property);
     }
 
-    private function object(): StdClass
+    public function object(): StdClass
     {
         if (isset($this->object) === false) {
             $json = $this->publicJson->toString();
