@@ -146,6 +146,8 @@ class Site implements SiteInterface
             array_pop($filtered);
         }
 
+        $crumbs = array_reverse($crumbs, true);
+
         $root = ['/' => $this->publicMeta(at: '/')->title()];
 
         $crumbs = array_merge($root, $crumbs);
