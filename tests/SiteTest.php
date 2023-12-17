@@ -37,11 +37,29 @@ class SiteTest extends TestCase
     public function has_titles(): void
     {
         $expected = [
-            'Deeper page',
+            'L1 page',
             'Root test content'
         ];
 
-        $result = $this->site()->titles('/deeper-page');
+        $result = $this->site()->titles('/l1-page');
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function can_return_breadcrumb_base(): void
+    {
+        $expected = [
+            '/' => 'Root test content',
+            '/l1-page/' => 'L1 page'
+        ];
+
+        $result = $this->site()->breadcrumb('/l1-page');
 
         $this->assertSame(
             $expected,

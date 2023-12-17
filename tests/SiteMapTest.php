@@ -29,7 +29,7 @@ class SiteMapTest extends TestCase
 
         $expected = <<<xml
         <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://ex.ample/deeper-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/</loc><priority>0.5</priority></url></urlset>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://ex.ample/l1-page/l2-page/l3-page/l4-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/l2-page/l3-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/l2-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/</loc><priority>0.5</priority></url></urlset>
         xml;
 
         $result = (string) Sitemap::create(
@@ -50,7 +50,7 @@ class SiteMapTest extends TestCase
     {
         $expected = <<<xml
         <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://ex.ample/deeper-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/</loc><priority>0.75</priority></url></urlset>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://ex.ample/l1-page/l2-page/l3-page/l4-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/l2-page/l3-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/l2-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/</loc><priority>0.75</priority></url></urlset>
         xml;
 
         $result = (string) Sitemap::create(
@@ -71,7 +71,7 @@ class SiteMapTest extends TestCase
     {
         $expected = <<<xml
         <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://ex.ample/deeper-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/</loc><priority>0.5</priority></url></urlset>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://ex.ample/l1-page/l2-page/l3-page/l4-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/l2-page/l3-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/l2-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/l1-page/</loc><lastmod>2023-01-01</lastmod><priority>1</priority></url><url><loc>http://ex.ample/</loc><priority>0.5</priority></url></urlset>
         xml;
 
         $result = (string) Sitemap::create(

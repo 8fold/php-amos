@@ -25,7 +25,7 @@ class PublicMetaTest extends BaseTestCase
             $result
         );
 
-        $sut = PublicMeta::inRoot(parent::root(), '/deeper-page');
+        $sut = PublicMeta::inRoot(parent::root(), '/l1-page');
 
         $expected = 1.0;
 
@@ -36,7 +36,7 @@ class PublicMetaTest extends BaseTestCase
             $result
         );
 
-        $sut = PublicMeta::inRoot(parent::root(), '/deeper-page');
+        $sut = PublicMeta::inRoot(parent::root(), '/l1-page');
 
         $result = $sut->nonexistent();
 
