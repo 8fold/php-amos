@@ -31,7 +31,7 @@ class Site implements SiteInterface
     private array $publicContents = [];
 
     /**
-     * @var array<string, string>
+     * @var array<string, array<string, string>>
      */
     private array $title_stack = [];
 
