@@ -30,6 +30,11 @@ class Site implements SiteInterface
      */
     private array $publicContents = [];
 
+    /**
+     * @var array<string, string>
+     */
+    private array $title_stack = [];
+
     public static function init(
         ContentRoot $fileSystemRoot,
         HttpRoot $domain
@@ -114,20 +119,9 @@ class Site implements SiteInterface
      */
     public function titles(string $at = ''): array
     {
-        $pathParts = explode('/', $at);
-        $filtered  = array_filter($pathParts);
-
-        $titles = [];
-        while (count($filtered) > 0) {
-            $path = '/' . implode('/', $filtered) . '/';
-            $titles[] = $this->publicMeta(at: $path)->title();
-
-            array_pop($filtered);
-        }
-
-        $titles[] = $this->publicMeta(at: '/')->title();
-
-        return array_filter($titles);
+        return array_reverse(array_values(
+            $this->titleStack($at)
+        ));
     }
 
     /**
@@ -135,23 +129,35 @@ class Site implements SiteInterface
      */
     public function breadcrumb(string $at = ''): array
     {
-        $pathParts = explode('/', $at);
-        $filtered  = array_filter($pathParts);
+        return $this->titleStack($at);
+    }
 
-        $crumbs = [];
-        while (count($filtered) > 0) {
-            $path = '/' . implode('/', $filtered) . '/';
-            $crumbs[$path] = $this->publicMeta(at: $path)->title();
+    /**
+     * @return array<string, string>
+     */
+    private function titleStack(string $at = ''): array
+    {
+        if (
+            count($this->title_stack) === 0 or
+            array_key_exists($at, $this->title_stack) === false
+        ) {
+            $pathParts = explode('/', $at);
+            $filtered  = array_filter($pathParts);
 
-            array_pop($filtered);
+            $crumbs = [];
+            while (count($filtered) > 0) {
+                $path = '/' . implode('/', $filtered) . '/';
+                $crumbs[$path] = $this->publicMeta(at: $path)->title();
+
+                array_pop($filtered);
+            }
+
+            $crumbs = array_reverse($crumbs, true);
+
+            $root = ['/' => $this->publicMeta(at: '/')->title()];
+
+            $this->title_stack[$at] = array_merge($root, $crumbs);
         }
-
-        $crumbs = array_reverse($crumbs, true);
-
-        $root = ['/' => $this->publicMeta(at: '/')->title()];
-
-        $crumbs = array_merge($root, $crumbs);
-
-        return array_filter($crumbs);
+        return array_filter($this->title_stack[$at]);
     }
 }
