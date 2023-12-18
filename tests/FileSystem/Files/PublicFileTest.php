@@ -42,7 +42,7 @@ class PublicFileTest extends BaseTestCase
             $result
         );
 
-        $sut = PublicFile::inRoot($root, 'meta.json', '/deeper-page');
+        $sut = PublicFile::inRoot($root, 'meta.json', '/l1-page');
 
         $this->assertNotNull(
             $sut

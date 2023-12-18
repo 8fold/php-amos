@@ -42,7 +42,7 @@ class PublicContentFileTest extends BaseTestCase
             $result
         );
 
-        $sut = PublicContentFile::inRoot($root, '/deeper-page');
+        $sut = PublicContentFile::inRoot($root, '/l1-page');
 
         $this->assertNotNull(
             $sut

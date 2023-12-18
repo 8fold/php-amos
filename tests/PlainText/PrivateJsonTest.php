@@ -48,7 +48,7 @@ class PrivateJsonTest extends BaseTestCase
 
         $expected = '';
 
-        $sut = PrivateJson::inRoot(parent::root(), '/deeper-page');
+        $sut = PrivateJson::inRoot(parent::root(), '/l1-page');
 
         $result = $sut->toString();
 

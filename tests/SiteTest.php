@@ -41,7 +41,7 @@ class SiteTest extends TestCase
             'Root test content'
         ];
 
-        $result = $this->site()->titles('/deeper-page');
+        $result = $this->site()->titles('/l1-page');
 
         $this->assertSame(
             $expected,
