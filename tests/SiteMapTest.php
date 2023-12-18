@@ -16,6 +16,7 @@ class SiteMapTest extends TestCase
     private function allPublicMetaFiles(): Traversable
     {
         return (new SymfonyFinder())->files()->name('meta.json')
+            ->sortByName(true)
             ->in(
                 parent::publicRoot()->toString()
             );
