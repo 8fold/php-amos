@@ -37,11 +37,11 @@ class SiteTest extends TestCase
     public function has_titles(): void
     {
         $expected = [
-            'Deeper page',
+            'L1 page',
             'Root test content'
         ];
 
-        $result = $this->site()->titles('/deeper-page');
+        $result = $this->site()->titles('/l1-page');
 
         $this->assertSame(
             $expected,
