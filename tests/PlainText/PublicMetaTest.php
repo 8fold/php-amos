@@ -32,14 +32,14 @@ class PublicMetaTest extends BaseTestCase
 
         $expected = <<<json
         {
-          "title": "Deeper page",
+          "title": "L1 page",
           "created": "20230101",
           "priority": 1.0
         }
 
         json;
 
-        $sut = PublicMeta::inRoot(parent::root(), '/deeper-page');
+        $sut = PublicMeta::inRoot(parent::root(), '/l1-page');
 
         $result = $sut->toString();
 

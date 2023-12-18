@@ -37,7 +37,7 @@ class SiteTest extends TestCase
     public function has_titles(): void
     {
         $expected = [
-            'Deeper page',
+            'L1 page',
             'Root test content'
         ];
 
