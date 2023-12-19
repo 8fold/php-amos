@@ -125,7 +125,7 @@ class Site implements SiteInterface
     public function breadcrumbs(
         string $at = '',
         int $offset = 0,
-        int|bool $length = false
+        int|false $length = false
     ): array {
         $sorted = array_reverse(
             $this->linkStack($at)
@@ -133,6 +133,7 @@ class Site implements SiteInterface
 
         if ($length === false) {
             $length = null;
+
         }
 
         return array_slice($sorted, $offset, $length);
