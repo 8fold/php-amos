@@ -89,6 +89,28 @@ class SiteTest extends TestCase
 
     /**
      * @test
+     * @group current
+     */
+    public function can_build_breadcrumbs_l4(): void
+    {
+        $expected = [
+            '/' => 'Root test content',
+            '/l1-page/'                         => 'L1 page',
+            '/l1-page/l2-page/'                 => 'L2 page',
+            '/l1-page/l2-page/l3-page/'         => 'L3 page',
+            '/l1-page/l2-page/l3-page/l4-page/' => 'L4 page'
+        ];
+
+        $result = $this->site()->breadcrumbs('/l1-page/l2-page/l3-page/l4-page');
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+    }
+
+    /**
+     * @test
      */
     public function has_public_meta(): void
     {
