@@ -52,6 +52,44 @@ class SiteTest extends TestCase
     /**
      * @test
      */
+    public function has_expected_link_stack(): void
+    {
+        $expected = [
+            '/l1-page/l2-page/' => 'L2 page',
+            '/l1-page/' => 'L1 page',
+            '/' => 'Root test content'
+        ];
+
+        $result = $this->site()->linkStack('/l1-page/l2-page');
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function can_build_breadcrumbs_l2(): void
+    {
+        $expected = [
+            '/' => 'Root test content',
+            '/l1-page/' => 'L1 page',
+            '/l1-page/l2-page/' => 'L2 page'
+        ];
+
+        $result = $this->site()->breadcrumbs('/l1-page/l2-page');
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+    }
+
+    /**
+     * @test
+     */
     public function has_public_meta(): void
     {
         $result = $this->site()->hasPublicMeta();

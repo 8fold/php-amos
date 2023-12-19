@@ -129,4 +129,35 @@ class Site implements SiteInterface
 
         return array_filter($titles);
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function breadcrumbs(string $at = ''): array
+    {
+        return array_reverse(
+            $this->linkStack($at)
+        );
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function linkStack(string $at = ''): array
+    {
+        $pathParts = explode('/', $at);
+        $filtered  = array_filter($pathParts);
+
+        $stack = [];
+        while (count($filtered) > 0) {
+            $path = '/' . implode('/', $filtered) . '/';
+            $stack[$path] = $this->publicMeta(at: $path)->title();
+
+            array_pop($filtered);
+        }
+
+        $stack['/'] = $this->publicMeta(at: '/')->title();
+
+        return array_filter($stack);
+    }
 }
