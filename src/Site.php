@@ -114,20 +114,9 @@ class Site implements SiteInterface
      */
     public function titles(string $at = ''): array
     {
-        $pathParts = explode('/', $at);
-        $filtered  = array_filter($pathParts);
-
-        $titles = [];
-        while (count($filtered) > 0) {
-            $path = '/' . implode('/', $filtered) . '/';
-            $titles[] = $this->publicMeta(at: $path)->title();
-
-            array_pop($filtered);
-        }
-
-        $titles[] = $this->publicMeta(at: '/')->title();
-
-        return array_filter($titles);
+        return array_values(
+            $this->linkStack($at)
+        );
     }
 
     /**
