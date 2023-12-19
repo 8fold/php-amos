@@ -122,11 +122,13 @@ class Site implements SiteInterface
     /**
      * @return array<string, string>
      */
-    public function breadcrumbs(string $at = ''): array
+    public function breadcrumbs(string $at = '', int $start = 0): array
     {
-        return array_reverse(
+        $sorted = array_reverse(
             $this->linkStack($at)
         );
+
+        return array_slice($sorted, $start);
     }
 
     /**
