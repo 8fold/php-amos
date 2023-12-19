@@ -114,19 +114,49 @@ class Site implements SiteInterface
      */
     public function titles(string $at = ''): array
     {
+        return array_values(
+            $this->linkStack($at)
+        );
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function breadcrumbs(
+        string $at = '',
+        int $offset = 0,
+        int|false $length = false
+    ): array {
+        $sorted = array_reverse(
+            $this->linkStack($at)
+        );
+
+        if ($length === false) {
+            $length = null;
+
+        }
+
+        return array_slice($sorted, $offset, $length);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function linkStack(string $at = ''): array
+    {
         $pathParts = explode('/', $at);
         $filtered  = array_filter($pathParts);
 
-        $titles = [];
+        $stack = [];
         while (count($filtered) > 0) {
             $path = '/' . implode('/', $filtered) . '/';
-            $titles[] = $this->publicMeta(at: $path)->title();
+            $stack[$path] = $this->publicMeta(at: $path)->title();
 
             array_pop($filtered);
         }
 
-        $titles[] = $this->publicMeta(at: '/')->title();
+        $stack['/'] = $this->publicMeta(at: '/')->title();
 
-        return array_filter($titles);
+        return array_filter($stack);
     }
 }
