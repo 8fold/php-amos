@@ -133,7 +133,6 @@ class Site implements SiteInterface
 
         if ($length === false) {
             $length = null;
-
         }
 
         return array_slice($sorted, $offset, $length);
