@@ -7,6 +7,7 @@ use Eightfold\Amos\FileSystem\Path;
 use Eightfold\Amos\FileSystem\Filename;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
+
 use Eightfold\Amos\FileSystem\Files\PublicFile as FileSystemPublicFile;
 
 use Eightfold\Amos\Php\Interfaces\Findable;

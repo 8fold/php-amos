@@ -6,6 +6,7 @@ namespace Eightfold\Amos\PlainText;
 use Eightfold\Amos\FileSystem\Path;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
+
 use Eightfold\Amos\FileSystem\Files\PublicContentFile;
 
 use Eightfold\Amos\Php\Interfaces\Findable;
