@@ -8,9 +8,9 @@ use SplFileInfo;
 use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
-use Eightfold\Amos\FileSystem\Directories\Root;
-
 use Eightfold\Amos\FileSystem\PathFromRoot;
+
+use Eightfold\Amos\FileSystem\Directories\Root;
 
 final class PrivateDirectory implements Findable, Stringable
 {
@@ -20,9 +20,6 @@ final class PrivateDirectory implements Findable, Stringable
         Root $root,
         string|PathFromRoot $at = ''
     ): self {
-        if (is_string($at)) {
-            $at = PathFromRoot::fromString($at)->toString();
-        }
         return new self($root, $at);
     }
 
@@ -31,7 +28,7 @@ final class PrivateDirectory implements Findable, Stringable
         private readonly Root $root, // @phpstan-ignore-line
         private readonly PathFromRoot $at // @phpstan-ignore-line
     ) {
-        $this->fileInfo = new SplFileInfo($root . $at);
+        $this->fileInfo = new SplFileInfo($root . $at->toString());
     }
 
     public function notFound(): bool
