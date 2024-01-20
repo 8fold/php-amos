@@ -36,7 +36,7 @@ final class PrivateFile implements Findable, Stringable
         return new self($directory, $filename);
     }
 
-    private function __construct(
+    final private function __construct(
         private readonly PrivateDirectory $directory, // @phpstan-ignore-line
         private readonly Filename $filename // @phpstan-ignore-line
     ) {
