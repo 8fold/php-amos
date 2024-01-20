@@ -26,7 +26,7 @@ class PrivateDirectoryTest extends BaseTestCase
 
         $sut = PrivateDirectory::inRoot(
             parent::root(),
-            'navigation'
+            Path::fromString('navigation')
         );
 
         $result = $sut->toString();
@@ -41,7 +41,8 @@ class PrivateDirectoryTest extends BaseTestCase
             ->getRealPath();
 
         $sut = PrivateDirectory::inRoot(
-            parent::root()
+            parent::root(),
+            Path::fromString('')
         );
 
         $result = $sut->toString();
@@ -55,7 +56,6 @@ class PrivateDirectoryTest extends BaseTestCase
 
     /**
      * @test
-     * @group current
      */
     public function can_check_existence_using_path(): void
     {
@@ -86,37 +86,37 @@ class PrivateDirectoryTest extends BaseTestCase
             $result
         );
     }
-
-    /**
-     * @test
-     */
-    public function can_check_existence(): void
-    {
-        $sut = PrivateDirectory::inRoot(
-            parent::root(),
-            'navigation'
-        );
-
-        $this->assertNotNull(
-            $sut
-        );
-
-        $result = $sut->toBool();
-
-        $this->assertTrue(
-            $result
-        );
-
-        $result = $sut->isDir();
-
-        $this->assertTrue(
-            $result
-        );
-
-        $result = $sut->notFound();
-
-        $this->assertFalse(
-            $result
-        );
-    }
+//
+//     /**
+//      * @test
+//      */
+//     public function can_check_existence(): void
+//     {
+//         $sut = PrivateDirectory::inRoot(
+//             parent::root(),
+//             'navigation'
+//         );
+//
+//         $this->assertNotNull(
+//             $sut
+//         );
+//
+//         $result = $sut->toBool();
+//
+//         $this->assertTrue(
+//             $result
+//         );
+//
+//         $result = $sut->isDir();
+//
+//         $this->assertTrue(
+//             $result
+//         );
+//
+//         $result = $sut->notFound();
+//
+//         $this->assertFalse(
+//             $result
+//         );
+//     }
 }

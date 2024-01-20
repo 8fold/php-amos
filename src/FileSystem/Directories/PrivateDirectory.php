@@ -18,7 +18,7 @@ final class PrivateDirectory implements Findable, Stringable
 
     public static function inRoot(
         Root $root,
-        string|Path $at = ''
+        Path $at
     ): self {
         if (is_string($at)) {
             $at = Path::fromString($at);
