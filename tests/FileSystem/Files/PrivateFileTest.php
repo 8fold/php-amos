@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 use Eightfold\Amos\FileSystem\Files\PrivateFile;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PrivateDirectory;
 
@@ -27,7 +28,7 @@ class PrivateFileTest extends BaseTestCase
 
         $sut = PrivateFile::inRoot(
             $root,
-            'meta.json',
+            Filename::fromString('meta.json'),
             Path::fromString(
                 DIRECTORY_SEPARATOR . 'navigation' . DIRECTORY_SEPARATOR
             )

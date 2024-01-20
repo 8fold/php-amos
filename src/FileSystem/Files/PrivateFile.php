@@ -9,6 +9,7 @@ use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PrivateDirectory;
@@ -19,13 +20,12 @@ final class PrivateFile implements Findable, Stringable
 
     public static function inRoot(
         Root $root,
-        string $filename, // TODO: Create filename class
+        string|Filename $filename, // TODO: Create filename class
         string|Path $at = ''
     ): self {
         if (is_string($at)) {
             $at = Path::fromString($at);
         }
-
         return self::inPrivateDirectory(
             PrivateDirectory::inRoot($root, $at),
             $filename
@@ -34,20 +34,22 @@ final class PrivateFile implements Findable, Stringable
 
     public static function inPrivateDirectory(
         PrivateDirectory $directory,
-        string $filename
+        string|Filename $filename
     ): self {
-        if (str_starts_with($filename, '/') === false) {
-            $filename = '/' . $filename;
+        if (is_string($filename)) {
+            $filename = Filename::fromString($filename);
         }
-
         return new self($directory, $filename);
     }
 
     private function __construct(
         private readonly PrivateDirectory $directory, // @phpstan-ignore-line
-        private readonly string $filename // @phpstan-ignore-line
+        private readonly Filename $filename // @phpstan-ignore-line
     ) {
-        $this->fileInfo = new SplFileInfo($directory->toString() . $filename);
+        $this->fileInfo = new SplFileInfo(
+            $directory->toString() .
+            $filename->toString()
+        );
     }
 
     public function notFound(): bool
