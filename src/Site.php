@@ -8,6 +8,7 @@ use Psr\Http\Message\UriInterface;
 use Eightfold\Amos\SiteInterface;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
 
 use Eightfold\Amos\FileSystem\Directories\Root as ContentRoot;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
@@ -96,9 +97,6 @@ class Site implements SiteInterface
     //       is URI (known) or file system (unknown)
     public function hasPublicContent(Path $at): bool
     {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         return $this->publicContent($at)->toBool();
     }
 
@@ -117,14 +115,10 @@ class Site implements SiteInterface
     }
 
     // TODO: Convert to using Filename
-    public function publicFile(string $filename, Path $at): PublicFile
+    public function publicFile(Filename $filename, Path $at): PublicFile
     {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         return PublicFile::inRoot($this->contentRoot(), $filename, $at);
     }
-
 
     /**
      * @return string[]
