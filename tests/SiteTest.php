@@ -16,7 +16,9 @@ class SiteTest extends TestCase
      */
     public function has_public_content(): void
     {
-        $result = $this->site()->hasPublicContent();
+        $result = $this->site()->hasPublicContent(
+            Path::fromString()
+        );
 
         $this->assertTrue($result);
 
@@ -25,7 +27,9 @@ class SiteTest extends TestCase
 
         md;
 
-        $result = $this->site()->publicContent()->toString();
+        $result = $this->site()->publicContent(
+            Path::fromString()
+        )->toString();
 
         $this->assertSame(
             $expected,
@@ -44,7 +48,7 @@ class SiteTest extends TestCase
         ];
 
         $result = $this->site()->titles(
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Path::fromString('l1-page')
         );
 
         $this->assertSame(
@@ -65,8 +69,10 @@ class SiteTest extends TestCase
         ];
 
         $result = $this->site()->linkStack(
-            DIRECTORY_SEPARATOR . 'l1-page' .
-            DIRECTORY_SEPARATOR . 'l2-page'
+            Path::fromString(
+                DIRECTORY_SEPARATOR . 'l1-page' .
+                DIRECTORY_SEPARATOR . 'l2-page'
+            )
         );
 
         $this->assertSame(
@@ -87,8 +93,10 @@ class SiteTest extends TestCase
         ];
 
         $result = $this->site()->breadcrumbs(
-            DIRECTORY_SEPARATOR . 'l1-page' .
-            DIRECTORY_SEPARATOR . 'l2-page'
+            Path::fromString(
+                DIRECTORY_SEPARATOR . 'l1-page' .
+                DIRECTORY_SEPARATOR . 'l2-page'
+            )
         );
 
         $this->assertSame(
@@ -110,7 +118,9 @@ class SiteTest extends TestCase
             '/l1-page/l2-page/l3-page/l4-page/' => 'L4 page'
         ];
 
-        $result = $this->site()->breadcrumbs('/l1-page/l2-page/l3-page/l4-page');
+        $result = $this->site()->breadcrumbs(
+            Path::fromString('/l1-page/l2-page/l3-page/l4-page')
+        );
 
         $this->assertSame(
             $expected,
@@ -131,7 +141,10 @@ class SiteTest extends TestCase
             '/l1-page/l2-page/l3-page/l4-page/' => 'L4 page'
         ];
 
-        $result = $this->site()->breadcrumbs('/l1-page/l2-page/l3-page/l4-page', 1);
+        $result = $this->site()->breadcrumbs(
+            Path::fromString('/l1-page/l2-page/l3-page/l4-page'),
+            1
+        );
 
         $this->assertSame(
             $expected,
@@ -147,10 +160,12 @@ class SiteTest extends TestCase
         ];
 
         $result = $this->site()->breadcrumbs(
-            DIRECTORY_SEPARATOR . 'l1-page' .
-            DIRECTORY_SEPARATOR . 'l2-page' .
-            DIRECTORY_SEPARATOR . 'l3-page' .
-            DIRECTORY_SEPARATOR . 'l4-page',
+            Path::fromString(
+                DIRECTORY_SEPARATOR . 'l1-page' .
+                DIRECTORY_SEPARATOR . 'l2-page' .
+                DIRECTORY_SEPARATOR . 'l3-page' .
+                DIRECTORY_SEPARATOR . 'l4-page'
+            ),
             2,
             2
         );
@@ -172,7 +187,9 @@ class SiteTest extends TestCase
 
         $this->assertTrue($result);
 
-        $result = $this->site()->publicMeta(DIRECTORY_SEPARATOR);
+        $result = $this->site()->publicMeta(
+            Path::fromString()
+        );
 
         $expected = "Root test content";
 
@@ -182,7 +199,7 @@ class SiteTest extends TestCase
         );
 
         $result = $this->site()->hasPublicMeta(
-            DIRECTORY_SEPARATOR . 'nonexistent'
+            Path::fromString('nonexistent')
         );
 
         $this->assertFalse($result);
