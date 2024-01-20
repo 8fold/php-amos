@@ -9,6 +9,8 @@ use Eightfold\Amos\FileSystem\Directories\PrivateDirectory;
 
 use SplFileInfo;
 
+use Eightfold\Amos\FileSystem\PathFromRoot;
+
 class PrivateDirectoryTest extends BaseTestCase
 {
     /**
@@ -48,6 +50,40 @@ class PrivateDirectoryTest extends BaseTestCase
             $expected,
             $result,
             $expected . ' is not the same as ' . $result
+        );
+    }
+
+    /**
+     * @test
+     * @group current
+     */
+    public function can_check_existence_using_path_from_root(): void
+    {
+        $sut = PrivateDirectory::inRoot(
+            parent::root(),
+            PathFromRoot::fromString('navigation')
+        );
+
+        $this->assertNotNull(
+            $sut
+        );
+
+        $result = $sut->toBool();
+
+        $this->assertTrue(
+            $result
+        );
+
+        $result = $sut->isDir();
+
+        $this->assertTrue(
+            $result
+        );
+
+        $result = $sut->notFound();
+
+        $this->assertFalse(
+            $result
         );
     }
 

@@ -16,15 +16,20 @@ final class PrivateDirectory implements Findable, Stringable
 {
     private readonly SplFileInfo $fileInfo;
 
-    public static function inRoot(Root $root, string $at = ''): self
-    {
-        $at = PathFromRoot::fromString($at)->toString();
+    public static function inRoot(
+        Root $root,
+        string|PathFromRoot $at = ''
+    ): self {
+        if (is_string($at)) {
+            $at = PathFromRoot::fromString($at)->toString();
+        }
         return new self($root, $at);
     }
 
+    // TODO: mark as final
     private function __construct(
         private readonly Root $root, // @phpstan-ignore-line
-        private readonly string $at = '' // @phpstan-ignore-line
+        private readonly PathFromRoot $at // @phpstan-ignore-line
     ) {
         $this->fileInfo = new SplFileInfo($root . $at);
     }
