@@ -114,7 +114,6 @@ class Site implements SiteInterface
         return $content;
     }
 
-    // TODO: Convert to using Filename
     public function publicFile(Filename $filename, Path $at): PublicFile
     {
         return PublicFile::inRoot($this->contentRoot(), $filename, $at);
