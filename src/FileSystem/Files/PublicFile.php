@@ -28,7 +28,7 @@ final class PublicFile implements Findable, Stringable
     public static function inPublicRoot(
         PublicRoot $root,
         string $filename, // TODO: convert to class
-        string|Path $at = '' // TODO: use Path
+        string|Path $at = ''
     ): self {
         if (is_string($at)) {
             $at = Path::fromString($at);
