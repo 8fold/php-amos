@@ -14,15 +14,8 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 final class PrivateJson implements Findable, Stringable
 {
-    public static function inRoot(
-        Root $root,
-        string|Filename $filename,
-        Path $at
-    ): self {
-        if (is_string($filename)) {
-            $filename = Filename::fromString($filename);
-        }
-
+    public static function inRoot(Root $root, Filename $filename, Path $at): self
+    {
         return new self(
             PrivateFile::inRoot($root, $filename, $at)
         );
