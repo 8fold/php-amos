@@ -7,6 +7,8 @@ use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 
 use Eightfold\Amos\PlainText\PublicContent;
 
+use Eightfold\Amos\FileSystem\Path;
+
 class PublicContentTest extends BaseTestCase
 {
     /**
@@ -14,7 +16,10 @@ class PublicContentTest extends BaseTestCase
      */
     public function can_get_content(): void
     {
-        $sut = PublicContent::inRoot(parent::root());
+        $sut = PublicContent::inRoot(
+            parent::root(),
+            Path::fromString()
+        );
 
         $expected = <<<md
         # Root test content
@@ -32,7 +37,7 @@ class PublicContentTest extends BaseTestCase
 
         $sut = PublicContent::inRoot(
             parent::root(),
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Path::fromString('l1-page')
         );
 
         $result = $sut->toString();
