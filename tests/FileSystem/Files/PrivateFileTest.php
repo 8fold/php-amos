@@ -16,7 +16,6 @@ class PrivateFileTest extends BaseTestCase
 {
     /**
      * @test
-     * @group current
      */
     public function can_check_existence_using_path(): void
     {

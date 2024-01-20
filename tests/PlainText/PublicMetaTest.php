@@ -13,7 +13,6 @@ class PublicMetaTest extends BaseTestCase
 {
     /**
      * @test
-     * @group current
      */
     public function can_get_content_using_path(): void
     {
