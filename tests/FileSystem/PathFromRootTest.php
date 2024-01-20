@@ -18,6 +18,23 @@ class PathFromRootTest extends BaseTestCase
     /**
      * @test
      */
+    public function can_accept_uri_path(): void
+    {
+        $uri = parent::request(self::TEST_PATH)->getUri();
+
+        $expected = self::TEST_PATH;
+
+        $result = (string) PathFromRoot::fromUri($uri);
+
+        $this->assertSame(
+            $expected,
+            $result
+        );
+    }
+
+    /**
+     * @test
+     */
     public function can_cast_to_string(): void
     {
         $expected = self::TEST_PATH;
