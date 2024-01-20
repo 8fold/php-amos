@@ -12,7 +12,7 @@ use Eightfold\Amos\FileSystem\Directories\Root;
 
 final class PublicRoot implements Findable, Stringable
 {
-    private const FOLDER_NAME = '/public';
+    private const FOLDER_NAME = DIRECTORY_SEPARATOR . 'public';
 
     public static function inRoot(Root $root): self
     {

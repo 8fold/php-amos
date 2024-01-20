@@ -10,15 +10,15 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 
+use Eightfold\Amos\FileSystem\PathFromRoot;
+
 final class PrivateDirectory implements Findable, Stringable
 {
     private readonly SplFileInfo $fileInfo;
 
     public static function inRoot(Root $root, string $at = ''): self
     {
-        if (str_starts_with($at, '/') === false) {
-            $at = '/' . $at;
-        }
+        $at = PathFromRoot::fromString($at)->toString();
         return new self($root, $at);
     }
 

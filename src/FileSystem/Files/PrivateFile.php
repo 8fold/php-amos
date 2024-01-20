@@ -8,6 +8,8 @@ use SplFileInfo;
 use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
+use Eightfold\Amos\FileSystem\PathFromRoot;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PrivateDirectory;
 
@@ -17,12 +19,10 @@ final class PrivateFile implements Findable, Stringable
 
     public static function inRoot(
         Root $root,
-        string $filename,
-        string $at = ''
+        string $filename, // TODO: Create filename class
+        string $at = '' // TODO: Convert to using PathFromRoot
     ): self {
-        if (str_ends_with($at, '/')) {
-            $at = substr($at, 0, -1);
-        }
+        $at = PathFromRoot::fromString($at)->toString();
 
         return self::inPrivateDirectory(
             PrivateDirectory::inRoot($root, $at),

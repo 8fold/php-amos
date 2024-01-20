@@ -6,6 +6,8 @@ namespace Eightfold\Amos\FileSystem\Files;
 use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
+use Eightfold\Amos\FileSystem\PathFromRoot;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
@@ -22,9 +24,7 @@ final class PublicMetaFile implements Findable, Stringable
 
     public static function inPublicRoot(PublicRoot $root, string $at = ''): self
     {
-        if (str_ends_with($at, '/')) {
-            $at = substr($at, 0, -1);
-        }
+        $at = PathFromRoot::fromString($at)->toString();
 
         return new self(
             PublicFile::inPublicRoot($root, self::FILENAME, $at)

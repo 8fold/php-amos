@@ -16,12 +16,13 @@ class PublicDirectoryTest extends BaseTestCase
      */
     public function is_expected_qualified_path(): void
     {
-        $expected = (new SplFileInfo(parent::PUBLIC_BASE . '/l1-page'))
-            ->getRealPath();
+        $expected = (new SplFileInfo(
+            parent::PUBLIC_BASE . DIRECTORY_SEPARATOR . 'l1-page')
+        )->getRealPath();
 
         $sut = PublicDirectory::inRoot(
             parent::root(),
-            '/l1-page'
+            DIRECTORY_SEPARATOR . 'l1-page'
         );
 
         $result = $sut->toString();
@@ -40,7 +41,7 @@ class PublicDirectoryTest extends BaseTestCase
     {
         $sut = PublicDirectory::inRoot(
             parent::root(),
-            '/l1-page'
+            DIRECTORY_SEPARATOR . 'l1-page'
         );
 
         $this->assertNotNull(

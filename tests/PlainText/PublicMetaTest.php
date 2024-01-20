@@ -39,7 +39,10 @@ class PublicMetaTest extends BaseTestCase
 
         json;
 
-        $sut = PublicMeta::inRoot(parent::root(), '/l1-page');
+        $sut = PublicMeta::inRoot(
+            parent::root(),
+            DIRECTORY_SEPARATOR . 'l1-page'
+        );
 
         $result = $sut->toString();
 

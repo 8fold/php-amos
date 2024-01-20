@@ -16,7 +16,11 @@ class PublicMetaFileTest extends BaseTestCase
      */
     public function can_check_existence(): void
     {
-        $root = Root::fromString(__DIR__ . '/../../test-content');
+        $root = Root::fromString(
+            __DIR__ .
+            DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . 'test-content');
 
         $sut = PublicMetaFile::inRoot($root);
 
@@ -42,7 +46,10 @@ class PublicMetaFileTest extends BaseTestCase
             $result
         );
 
-        $sut = PublicMetaFile::inRoot($root, '/nonexistent');
+        $sut = PublicMetaFile::inRoot(
+            $root,
+            DIRECTORY_SEPARATOR . 'nonexistent'
+        );
 
         $this->assertNotNull(
             $sut

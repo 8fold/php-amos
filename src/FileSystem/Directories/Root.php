@@ -10,6 +10,9 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
+/**
+ * Move to /FileSystem
+ */
 final class Root implements Findable, Stringable
 {
     public static function fromString(string $path): self

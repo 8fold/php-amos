@@ -30,7 +30,10 @@ class PublicContentTest extends BaseTestCase
 
         $expected = '';
 
-        $sut = PublicContent::inRoot(parent::root(), '/l1-page');
+        $sut = PublicContent::inRoot(
+            parent::root(),
+            DIRECTORY_SEPARATOR . 'l1-page'
+        );
 
         $result = $sut->toString();
 

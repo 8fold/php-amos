@@ -16,7 +16,11 @@ class PublicContentFileTest extends BaseTestCase
      */
     public function can_check_existence(): void
     {
-        $root = Root::fromString(__DIR__ . '/../../test-content');
+        $root = Root::fromString(
+            __DIR__ .
+            DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . 'test-content');
 
         $sut = PublicContentFile::inRoot($root);
 
@@ -42,7 +46,10 @@ class PublicContentFileTest extends BaseTestCase
             $result
         );
 
-        $sut = PublicContentFile::inRoot($root, '/l1-page');
+        $sut = PublicContentFile::inRoot(
+            $root,
+            DIRECTORY_SEPARATOR . 'l1-page'
+        );
 
         $this->assertNotNull(
             $sut

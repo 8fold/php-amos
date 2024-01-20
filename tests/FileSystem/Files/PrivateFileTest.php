@@ -17,9 +17,16 @@ class PrivateFileTest extends BaseTestCase
      */
     public function can_check_existence(): void
     {
-        $root = Root::fromString(__DIR__ . '/../../test-content');
+        $root = Root::fromString(
+            __DIR__ .
+            DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . 'test-content');
 
-        $sut = PrivateFile::inRoot($root, 'meta.json', '/navigation/');
+        $sut = PrivateFile::inRoot(
+            $root,
+            'meta.json',
+            DIRECTORY_SEPARATOR . 'navigation' . DIRECTORY_SEPARATOR);
 
         $this->assertNotNull(
             $sut

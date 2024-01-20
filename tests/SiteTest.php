@@ -41,7 +41,9 @@ class SiteTest extends TestCase
             'Root test content'
         ];
 
-        $result = $this->site()->titles('/l1-page');
+        $result = $this->site()->titles(
+            DIRECTORY_SEPARATOR . 'l1-page'
+        );
 
         $this->assertSame(
             $expected,
@@ -60,7 +62,10 @@ class SiteTest extends TestCase
             '/' => 'Root test content'
         ];
 
-        $result = $this->site()->linkStack('/l1-page/l2-page');
+        $result = $this->site()->linkStack(
+            DIRECTORY_SEPARATOR . 'l1-page' .
+            DIRECTORY_SEPARATOR . 'l2-page'
+        );
 
         $this->assertSame(
             $expected,
@@ -79,7 +84,10 @@ class SiteTest extends TestCase
             '/l1-page/l2-page/' => 'L2 page'
         ];
 
-        $result = $this->site()->breadcrumbs('/l1-page/l2-page');
+        $result = $this->site()->breadcrumbs(
+            DIRECTORY_SEPARATOR . 'l1-page' .
+            DIRECTORY_SEPARATOR . 'l2-page'
+        );
 
         $this->assertSame(
             $expected,
@@ -136,7 +144,14 @@ class SiteTest extends TestCase
             // '/l1-page/l2-page/l3-page/l4-page/' => 'L4 page'
         ];
 
-        $result = $this->site()->breadcrumbs('/l1-page/l2-page/l3-page/l4-page', 2, 2);
+        $result = $this->site()->breadcrumbs(
+            DIRECTORY_SEPARATOR . 'l1-page' .
+            DIRECTORY_SEPARATOR . 'l2-page' .
+            DIRECTORY_SEPARATOR . 'l3-page' .
+            DIRECTORY_SEPARATOR . 'l4-page',
+            2,
+            2
+        );
 
         $this->assertSame(
             $expected,
@@ -153,7 +168,18 @@ class SiteTest extends TestCase
 
         $this->assertTrue($result);
 
-        $result = $this->site()->hasPublicMeta('/nonexistent');
+        $result = $this->site()->publicMeta(DIRECTORY_SEPARATOR);
+
+        $expected = "Root test content";
+
+        $this->assertEquals(
+            $expected,
+            $result->title()
+        );
+
+        $result = $this->site()->hasPublicMeta(
+            DIRECTORY_SEPARATOR . 'nonexistent'
+        );
 
         $this->assertFalse($result);
     }
