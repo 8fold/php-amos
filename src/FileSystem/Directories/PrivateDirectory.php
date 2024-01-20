@@ -20,6 +20,9 @@ final class PrivateDirectory implements Findable, Stringable
         Root $root,
         string|PathFromRoot $at = ''
     ): self {
+        if (is_string($at)) {
+            $at = PathFromRoot::fromString($at);
+        }
         return new self($root, $at);
     }
 

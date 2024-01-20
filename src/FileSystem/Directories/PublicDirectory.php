@@ -28,7 +28,9 @@ final class PublicDirectory implements Findable, Stringable
         PublicRoot $root,
         string|PathFromRoot $at = ''
     ): self {
-        // $at = PathFromRoot::fromString($at)->toString();
+        if (is_string($at)) {
+            $at = PathFromRoot::fromString($at);
+        }
         return new self($root, $at);
     }
 
