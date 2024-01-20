@@ -8,7 +8,7 @@ use SplFileInfo;
 use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
-use Eightfold\Amos\FileSystem\PathFromRoot;
+use Eightfold\Amos\FileSystem\Path;
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
@@ -27,13 +27,13 @@ final class PublicFile implements Findable, Stringable
     public static function inPublicRoot(
         PublicRoot $root,
         string $filename, // TODO: convert to class
-        string $at = '' // TODO: user PathFromRoot
+        string $at = '' // TODO: use Path
     ): self {
         if (str_starts_with($filename, '/') === false) {
             $filename = '/' . $filename;
         }
 
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
 
         return new self($root, $filename, $at);
     }

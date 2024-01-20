@@ -7,10 +7,7 @@ use Stringable;
 
 use Psr\Http\Message\UriInterface;
 
-/**
- * Rename to PathFromRoot
- */
-class PathFromRoot implements Stringable
+class Path implements Stringable
 {
     static public function fromUri(UriInterface $uri): self
     {

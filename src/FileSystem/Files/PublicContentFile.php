@@ -6,7 +6,7 @@ namespace Eightfold\Amos\FileSystem\Files;
 use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
-use Eightfold\Amos\FileSystem\PathFromRoot;
+use Eightfold\Amos\FileSystem\Path;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
@@ -24,7 +24,7 @@ final class PublicContentFile implements Findable, Stringable
 
     public static function inPublicRoot(PublicRoot $root, string $at = ''): self
     {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
 
         return new self(
             PublicFile::inPublicRoot($root, self::FILENAME, $at)

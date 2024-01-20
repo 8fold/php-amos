@@ -9,7 +9,7 @@ use Eightfold\Amos\FileSystem\Directories\PrivateDirectory;
 
 use SplFileInfo;
 
-use Eightfold\Amos\FileSystem\PathFromRoot;
+use Eightfold\Amos\FileSystem\Path;
 
 class PrivateDirectoryTest extends BaseTestCase
 {
@@ -61,7 +61,7 @@ class PrivateDirectoryTest extends BaseTestCase
     {
         $sut = PrivateDirectory::inRoot(
             parent::root(),
-            PathFromRoot::fromString('navigation')
+            Path::fromString('navigation')
         );
 
         $this->assertNotNull(

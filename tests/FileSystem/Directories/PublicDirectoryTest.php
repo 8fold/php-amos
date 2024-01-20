@@ -9,7 +9,7 @@ use Eightfold\Amos\FileSystem\Directories\PublicDirectory;
 
 use SplFileInfo;
 
-use Eightfold\Amos\FileSystem\PathFromRoot;
+use Eightfold\Amos\FileSystem\Path;
 
 class PublicDirectoryTest extends BaseTestCase
 {
@@ -44,7 +44,7 @@ class PublicDirectoryTest extends BaseTestCase
     {
         $sut = PublicDirectory::inRoot(
             parent::root(),
-            PathFromRoot::fromString('l1-page')
+            Path::fromString('l1-page')
         );
 
         $this->assertNotNull(

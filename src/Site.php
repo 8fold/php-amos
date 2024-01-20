@@ -5,7 +5,7 @@ namespace Eightfold\Amos;
 
 use Eightfold\Amos\SiteInterface;
 
-use Eightfold\Amos\FileSystem\PathFromRoot;
+use Eightfold\Amos\FileSystem\Path;
 
 use Eightfold\Amos\FileSystem\Directories\Root as ContentRoot;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
@@ -73,13 +73,13 @@ class Site implements SiteInterface
 
     public function hasPublicMeta(string $at = ''): bool
     {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
         return $this->publicMeta($at)->toBool();
     }
 
     public function publicMeta(string $at = ''): PublicMeta
     {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
         if (array_key_exists($at, $this->public_metas)) {
             return $this->public_metas[$at];
         }
@@ -93,13 +93,13 @@ class Site implements SiteInterface
     // TODO: Recurring question will be whether "at" separator is URI (known) or file system (unknown)
     public function hasPublicContent(string $at = '/'): bool
     {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
         return $this->publicContent($at)->toBool();
     }
 
     public function publicContent(string $at = '/'): PublicContent
     {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
         if (array_key_exists($at, $this->publicContents)) {
             return $this->publicContents[$at];
         }
@@ -112,7 +112,7 @@ class Site implements SiteInterface
 
     public function publicFile(string $filename, string $at = '/'): PublicFile
     {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
         return PublicFile::inRoot($this->contentRoot(), $filename, $at);
     }
 
@@ -122,7 +122,7 @@ class Site implements SiteInterface
      */
     public function titles(string $at = ''): array
     {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
         return array_values(
             $this->linkStack($at)
         );
@@ -136,7 +136,7 @@ class Site implements SiteInterface
         int $offset = 0,
         int|false $length = false
     ): array {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
         $sorted = array_reverse(
             $this->linkStack($at)
         );
@@ -153,7 +153,7 @@ class Site implements SiteInterface
      */
     public function linkStack(string $at = ''): array
     {
-        $at = PathFromRoot::fromString($at)->toString();
+        $at = Path::fromString($at)->toString();
         $pathParts = explode('/', $at);
         $filtered  = array_filter($pathParts);
 

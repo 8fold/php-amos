@@ -5,11 +5,11 @@ namespace Eightfold\Amos\Tests\FileSystem;
 
 use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 
-use Eightfold\Amos\FileSystem\PathFromRoot;
+use Eightfold\Amos\FileSystem\Path;
 
 use SplFileInfo;
 
-class PathFromRootTest extends BaseTestCase
+class PathTest extends BaseTestCase
 {
     private const TEST_PATH = DIRECTORY_SEPARATOR . 'test' .
         DIRECTORY_SEPARATOR . 'relative' .
@@ -24,7 +24,7 @@ class PathFromRootTest extends BaseTestCase
 
         $expected = self::TEST_PATH;
 
-        $result = (string) PathFromRoot::fromUri($uri);
+        $result = (string) Path::fromUri($uri);
 
         $this->assertSame(
             $expected,
@@ -39,7 +39,7 @@ class PathFromRootTest extends BaseTestCase
     {
         $expected = self::TEST_PATH;
 
-        $result = (string) PathFromRoot::fromString($expected);
+        $result = (string) Path::fromString($expected);
 
         $this->assertSame(
             $expected,
@@ -54,7 +54,7 @@ class PathFromRootTest extends BaseTestCase
     {
         $expected = self::TEST_PATH;
 
-        $result = PathFromRoot::fromString($expected . DIRECTORY_SEPARATOR)
+        $result = Path::fromString($expected . DIRECTORY_SEPARATOR)
             ->toString();
 
         $this->assertSame(
@@ -73,7 +73,7 @@ class PathFromRootTest extends BaseTestCase
         $use = 'test' . DIRECTORY_SEPARATOR .
             'relative' . DIRECTORY_SEPARATOR . 'path';
 
-        $result = PathFromRoot::fromString($use)->toString();
+        $result = Path::fromString($use)->toString();
 
         $this->assertSame(
             $expected,
@@ -88,7 +88,7 @@ class PathFromRootTest extends BaseTestCase
     {
         $expected = self::TEST_PATH;
 
-        $result = PathFromRoot::fromString($expected)->toString();
+        $result = Path::fromString($expected)->toString();
         $this->assertSame(
             $expected,
             $result
@@ -102,7 +102,7 @@ class PathFromRootTest extends BaseTestCase
     {
         $this->assertSame(
             '/',
-            PathFromRoot::fromString()->toString()
+            Path::fromString()->toString()
         );
     }
 }
