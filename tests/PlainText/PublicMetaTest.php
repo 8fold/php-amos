@@ -16,7 +16,10 @@ class PublicMetaTest extends BaseTestCase
      */
     public function can_get_content_using_path(): void
     {
-        $sut = PublicMeta::inRoot(parent::root());
+        $sut = PublicMeta::inRoot(
+            parent::root(),
+            Path::fromString()
+        );
 
         $expected = <<<json
         {
@@ -59,7 +62,10 @@ class PublicMetaTest extends BaseTestCase
      */
     public function can_get_content(): void
     {
-        $sut = PublicMeta::inRoot(parent::root());
+        $sut = PublicMeta::inRoot(
+            parent::root(),
+            Path::fromString()
+        );
 
         $expected = <<<json
         {
