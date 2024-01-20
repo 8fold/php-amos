@@ -24,7 +24,7 @@ class PublicContentFileTest extends BaseTestCase
             DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'test-content');
 
-        $sut = PublicContentFile::inRoot($root);
+        $sut = PublicContentFile::inRoot($root, Path::fromString());
 
         $this->assertNotNull(
             $sut
@@ -87,7 +87,7 @@ class PublicContentFileTest extends BaseTestCase
             DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'test-content');
 
-        $sut = PublicContentFile::inRoot($root);
+        $sut = PublicContentFile::inRoot($root, Path::fromString());
 
         $this->assertNotNull(
             $sut
@@ -113,7 +113,7 @@ class PublicContentFileTest extends BaseTestCase
 
         $sut = PublicContentFile::inRoot(
             $root,
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Path::fromString('l1-page')
         );
 
         $this->assertNotNull(
