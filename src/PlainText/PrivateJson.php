@@ -17,14 +17,10 @@ final class PrivateJson implements Findable, Stringable
     public static function inRoot(
         Root $root,
         string|Filename $filename,
-        string|Path $at = ''
+        Path $at
     ): self {
         if (is_string($filename)) {
             $filename = Filename::fromString($filename);
-        }
-
-        if (is_string($at)) {
-            $at = Path::fromString($at);
         }
 
         return new self(
