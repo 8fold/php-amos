@@ -19,12 +19,9 @@ final class PublicObject implements Findable
 
     public static function inRoot(
         Root $root,
-        string $filename,
-        string|Path $at = ''
+        string $filename, // TODO: Use Filename
+        Path $at
     ): self {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         return new self(
             PlainTextPublicJson::inRoot($root, $filename, $at)
         );
