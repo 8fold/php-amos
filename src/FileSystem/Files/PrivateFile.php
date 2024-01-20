@@ -20,9 +20,11 @@ final class PrivateFile implements Findable, Stringable
     public static function inRoot(
         Root $root,
         string $filename, // TODO: Create filename class
-        string $at = '' // TODO: Convert to using Path
+        string|Path $at = '' // TODO: Convert to using Path
     ): self {
-        $at = Path::fromString($at)->toString();
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
 
         return self::inPrivateDirectory(
             PrivateDirectory::inRoot($root, $at),
