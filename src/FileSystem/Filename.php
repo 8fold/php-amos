@@ -17,7 +17,7 @@ class Filename implements Stringable
             return new self('');
         }
 
-        if (str_starts_with($filename, '/') === false) {
+        if (str_starts_with($filename, DIRECTORY_SEPARATOR) === false) {
             $filename = DIRECTORY_SEPARATOR . $filename;
         }
 
