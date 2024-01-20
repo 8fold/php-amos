@@ -21,7 +21,7 @@ final class PublicFile implements Findable, Stringable
     public static function inRoot(
         Root $root,
         string|Filename $filename,
-        string|Path $at = ''
+        Path $at
     ): self {
         return self::inPublicRoot($root->publicRoot(), $filename, $at);
     }
@@ -29,15 +29,12 @@ final class PublicFile implements Findable, Stringable
     public static function inPublicRoot(
         PublicRoot $root,
         string|Filename $filename, // TODO: convert to class
-        string|Path $at = ''
+        Path $at
     ): self {
         if (is_string($filename)) {
             $filename = Filename::fromString($filename);
         }
 
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         return new self($root, $filename, $at);
     }
 

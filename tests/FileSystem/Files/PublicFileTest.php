@@ -54,7 +54,7 @@ class PublicFileTest extends BaseTestCase
         $sut = PublicFile::inRoot(
             $root,
             'meta.json',
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Path::fromString('l1-page')
         );
 
         $this->assertNotNull(
@@ -91,7 +91,11 @@ class PublicFileTest extends BaseTestCase
             DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'test-content');
 
-        $sut = PublicFile::inRoot($root, 'meta.json');
+        $sut = PublicFile::inRoot(
+            $root,
+            'meta.json',
+            Path::fromString()
+        );
 
         $this->assertNotNull(
             $sut
@@ -118,7 +122,8 @@ class PublicFileTest extends BaseTestCase
         $sut = PublicFile::inRoot(
             $root,
             'meta.json',
-            DIRECTORY_SEPARATOR . 'l1-page');
+            Path::fromString('l1-page')
+        );
 
         $this->assertNotNull(
             $sut
