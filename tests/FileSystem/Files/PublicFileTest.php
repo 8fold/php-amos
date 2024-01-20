@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 use Eightfold\Amos\FileSystem\Files\PublicFile;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 
 class PublicFileTest extends BaseTestCase
@@ -25,7 +27,7 @@ class PublicFileTest extends BaseTestCase
 
         $sut = PublicFile::inRoot(
             $root,
-            'meta.json',
+            Filename::fromString('meta.json'),
             Path::fromString()
         );
 
@@ -53,7 +55,7 @@ class PublicFileTest extends BaseTestCase
 
         $sut = PublicFile::inRoot(
             $root,
-            'meta.json',
+            Filename::fromString('meta.json'),
             Path::fromString('l1-page')
         );
 
@@ -93,7 +95,7 @@ class PublicFileTest extends BaseTestCase
 
         $sut = PublicFile::inRoot(
             $root,
-            'meta.json',
+            Filename::fromString('meta.json'),
             Path::fromString()
         );
 
@@ -121,7 +123,7 @@ class PublicFileTest extends BaseTestCase
 
         $sut = PublicFile::inRoot(
             $root,
-            'meta.json',
+            Filename::fromString('meta.json'),
             Path::fromString('l1-page')
         );
 
