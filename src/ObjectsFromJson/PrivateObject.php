@@ -20,13 +20,9 @@ final class PrivateObject implements Findable
 
     public static function inRoot(
         Root $root,
-        string|Filename $filename,
+        Filename $filename,
         Path $at
     ): self {
-        if (is_string($filename)) {
-            $filename = Filename::fromString($filename);
-        }
-
         return new self(
             PlainTextPrivateJson::inRoot($root, $filename, $at)
         );
