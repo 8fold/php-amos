@@ -21,11 +21,12 @@ final class PrivateFile implements Findable, Stringable
     public static function inRoot(
         Root $root,
         string|Filename $filename, // TODO: Create filename class
-        string|Path $at = ''
+        Path $at
     ): self {
         if (is_string($at)) {
             $at = Path::fromString($at);
         }
+
         return self::inPrivateDirectory(
             PrivateDirectory::inRoot($root, $at),
             $filename
@@ -39,6 +40,7 @@ final class PrivateFile implements Findable, Stringable
         if (is_string($filename)) {
             $filename = Filename::fromString($filename);
         }
+
         return new self($directory, $filename);
     }
 
