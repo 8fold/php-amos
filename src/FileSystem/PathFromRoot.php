@@ -5,22 +5,34 @@ namespace Eightfold\Amos\FileSystem;
 
 use Stringable;
 
+use Psr\Http\Message\UriInterface;
+
 /**
  * Rename to PathFromRoot
  */
 class PathFromRoot implements Stringable
 {
+    static public function fromUri(UriInterface $uri): self
+    {
+        return self::fromString(
+            str_replace('/', DIRECTORY_SEPARATOR, $uri->getPath())
+        );
+    }
+
     static public function fromString(string $path = ''): self
     {
         if ($path === '') {
-            $path = '/';
+            $path = DIRECTORY_SEPARATOR;
         }
 
-        if (str_starts_with($path, '/') === false) {
-            $path = '/' . $path;
+        if (str_starts_with($path, DIRECTORY_SEPARATOR) === false) {
+            $path = DIRECTORY_SEPARATOR . $path;
         }
 
-        if ($path !== '/' and str_ends_with($path, '/')) {
+        if (
+            $path !== DIRECTORY_SEPARATOR and
+            str_ends_with($path, DIRECTORY_SEPARATOR)
+        ) {
             $path = substr($path, 0, -1);
         }
         return new self($path);
