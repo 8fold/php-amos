@@ -17,15 +17,21 @@ final class PublicContentFile implements Findable, Stringable
 {
     private const FILENAME = 'content.md';
 
-    public static function inRoot(Root $root, string $at = ''): self
+    public static function inRoot(
+        Root $root,
+        string|Path $at = ''
+    ): self
     {
         return self::inPublicRoot($root->publicRoot(), $at);
     }
 
-    public static function inPublicRoot(PublicRoot $root, string $at = ''): self
-    {
-        $at = Path::fromString($at)->toString();
-
+    public static function inPublicRoot(
+        PublicRoot $root,
+        string|Path $at = ''
+    ): self {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return new self(
             PublicFile::inPublicRoot($root, self::FILENAME, $at)
         );
