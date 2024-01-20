@@ -84,15 +84,6 @@ final class PublicMeta implements Findable
         return $value;
     }
 
-    public function authors(): array
-    }
-        $value = $this->valueForProperty('authors');
-        if ($value === false or is_array($value) === false) {
-            retunr [];
-        }
-        return $value;
-    }
-
     /**
      * @param array<mixed> $args
      *
