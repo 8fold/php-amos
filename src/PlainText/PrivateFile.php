@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Eightfold\Amos\PlainText;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Files\PrivateFile as FileSystemPrivateFile;
@@ -13,11 +14,8 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 final class PrivateFile implements Findable, Stringable
 {
-    public static function inRoot(
-        Root $root,
-        string $filename,
-        Path $at
-    ): self {
+    public static function inRoot(Root $root, Filename $filename, Path $at): self
+    {
         return new self(
             FileSystemPrivateFile::inRoot($root, $filename, $at)
         );
