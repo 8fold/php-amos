@@ -9,6 +9,7 @@ use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Path;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
@@ -19,7 +20,7 @@ final class PublicFile implements Findable, Stringable
     public static function inRoot(
         Root $root,
         string $filename,
-        string $at = ''
+        string|Path $at = ''
     ): self {
         return self::inPublicRoot($root->publicRoot(), $filename, $at);
     }
@@ -27,23 +28,26 @@ final class PublicFile implements Findable, Stringable
     public static function inPublicRoot(
         PublicRoot $root,
         string $filename, // TODO: convert to class
-        string $at = '' // TODO: use Path
+        string|Path $at = '' // TODO: use Path
     ): self {
-        if (str_starts_with($filename, '/') === false) {
-            $filename = '/' . $filename;
+        if (is_string($at)) {
+            $at = Path::fromString($at);
         }
-
-        $at = Path::fromString($at)->toString();
-
         return new self($root, $filename, $at);
     }
 
+    // TODO: mark as final
     private function __construct(
         private readonly PublicRoot $root, // @phpstan-ignore-line
         private readonly string $filename, // @phpstan-ignore-line
-        private readonly string $at = '' // @phpstan-ignore-line
+        private readonly Path $at // @phpstan-ignore-line
     ) {
-        $this->fileInfo = new SplFileInfo($root->toString() . $at . $filename);
+        if (str_starts_with($filename, DIRECTORY_SEPARATOR) === false) {
+            $filename = DIRECTORY_SEPARATOR . $filename;
+        }
+        $this->fileInfo = new SplFileInfo(
+            $root->toString() . $at->toString() . $filename
+        );
     }
 
     public function notFound(): bool
