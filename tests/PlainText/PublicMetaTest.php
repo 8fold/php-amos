@@ -92,7 +92,7 @@ class PublicMetaTest extends BaseTestCase
 
         $sut = PublicMeta::inRoot(
             parent::root(),
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Path::fromString('l1-page')
         );
 
         $result = $sut->toString();
