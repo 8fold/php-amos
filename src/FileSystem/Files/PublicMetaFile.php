@@ -18,29 +18,20 @@ final class PublicMetaFile implements Findable, Stringable
 {
     private const FILENAME = 'meta.json';
 
-    public static function inRoot(
-        Root $root,
-        Path $at
-    ): self {
+    public static function inRoot(Root $root, Path $at): self
+    {
         return self::inPublicRoot($root->publicRoot(), $at);
     }
 
-    public static function inPublicRoot(
-        PublicRoot $root,
-        Path $at
-    ): self {
-        return new self(
-            PublicFile::inPublicRoot(
-                $root,
-                Filename::fromString(self::FILENAME),
-                $at
-            )
-        );
+    public static function inPublicRoot(PublicRoot $root, Path $at): self
+    {
+        $filename = Filename::fromString(self::FILENAME);
+        $pFile    = PublicFile::inPublicRoot($root, $filename, $at);
+        return new self($pFile);
     }
 
-    private function __construct(
-        private readonly PublicFile $publicFile
-    ) {
+    private function __construct(private readonly PublicFile $publicFile)
+    {
     }
 
     public function notFound(): bool
