@@ -18,11 +18,8 @@ final class PrivateObject implements Findable
 {
     private StdClass $object;
 
-    public static function inRoot(
-        Root $root,
-        Filename $filename,
-        Path $at
-    ): self {
+    public static function inRoot(Root $root, Filename $filename, Path $at): self
+    {
         return new self(
             PlainTextPrivateJson::inRoot($root, $filename, $at)
         );
