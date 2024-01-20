@@ -8,6 +8,8 @@ use DateTime;
 
 use Eightfold\Amos\Php\Interfaces\Findable;
 
+use Eightfold\Amos\FileSystem\Path;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\PlainText\PublicMeta as PlainTextPublicMeta;
 
@@ -15,8 +17,13 @@ final class PublicMeta implements Findable
 {
     private StdClass $object;
 
-    public static function inRoot(Root $root, string $at = ''): self
-    {
+    public static function inRoot(
+        Root $root,
+        string|Path $at = ''
+    ): self {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return new self(
             PlainTextPublicMeta::inRoot($root, $at)
         );
