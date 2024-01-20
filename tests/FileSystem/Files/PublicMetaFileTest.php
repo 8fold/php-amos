@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 use Eightfold\Amos\FileSystem\Files\PublicMetaFile;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 
@@ -24,7 +25,10 @@ class PublicMetaFileTest extends BaseTestCase
             DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'test-content');
 
-        $sut = PublicMetaFile::inRoot($root);
+        $sut = PublicMetaFile::inRoot(
+            $root,
+            Path::fromString()
+        );
 
         $this->assertNotNull(
             $sut
@@ -87,7 +91,7 @@ class PublicMetaFileTest extends BaseTestCase
             DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'test-content');
 
-        $sut = PublicMetaFile::inRoot($root);
+        $sut = PublicMetaFile::inRoot($root, Path::fromString());
 
         $this->assertNotNull(
             $sut
@@ -113,7 +117,7 @@ class PublicMetaFileTest extends BaseTestCase
 
         $sut = PublicMetaFile::inRoot(
             $root,
-            DIRECTORY_SEPARATOR . 'nonexistent'
+            Path::fromString('nonexistent')
         );
 
         $this->assertNotNull(
