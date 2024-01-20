@@ -39,6 +39,13 @@ class Path implements Stringable
     {
     }
 
+    public function parts(): array
+    {
+        return array_filter(
+            explode(DIRECTORY_SEPARATOR, $this->path)
+        );
+    }
+
     public function toString(): string
     {
         return $this->path;
