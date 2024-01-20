@@ -24,7 +24,7 @@ class PublicDirectoryTest extends BaseTestCase
 
         $sut = PublicDirectory::inRoot(
             parent::root(),
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Path::fromString('l1-page')
         );
 
         $result = $sut->toString();
@@ -44,39 +44,6 @@ class PublicDirectoryTest extends BaseTestCase
         $sut = PublicDirectory::inRoot(
             parent::root(),
             Path::fromString('l1-page')
-        );
-
-        $this->assertNotNull(
-            $sut
-        );
-
-        $result = $sut->toBool();
-
-        $this->assertTrue(
-            $result
-        );
-
-        $result = $sut->isDir();
-
-        $this->assertTrue(
-            $result
-        );
-
-        $result = $sut->notFound();
-
-        $this->assertFalse(
-            $result
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function can_check_existence(): void
-    {
-        $sut = PublicDirectory::inRoot(
-            parent::root(),
-            DIRECTORY_SEPARATOR . 'l1-page'
         );
 
         $this->assertNotNull(
