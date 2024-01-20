@@ -25,13 +25,9 @@ final class PublicContentFile implements Findable, Stringable
 
     public static function inPublicRoot(PublicRoot $root, Path $at): self
     {
-        return new self(
-            PublicFile::inPublicRoot(
-                $root,
-                Filename::fromString(self::FILENAME),
-                $at
-            )
-        );
+        $filename = Filename::fromString(self::FILENAME);
+        $pFile    = PublicFile::inPublicRoot($root, $filename, $at);
+        return new self($pFile);
     }
 
     private function __construct(
