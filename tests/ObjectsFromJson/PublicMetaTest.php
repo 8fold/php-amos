@@ -7,6 +7,8 @@ use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 
 use Eightfold\Amos\ObjectsFromJson\PublicMeta;
 
+use Eightfold\Amos\FileSystem\Path;
+
 class PublicMetaTest extends BaseTestCase
 {
     /**
@@ -14,7 +16,10 @@ class PublicMetaTest extends BaseTestCase
      */
     public function can_get_content(): void
     {
-        $sut = PublicMeta::inRoot(parent::root());
+        $sut = PublicMeta::inRoot(
+            parent::root(),
+            Path::fromString()
+        );
 
         $expected = 'Root test content';
 
@@ -27,7 +32,7 @@ class PublicMetaTest extends BaseTestCase
 
         $sut = PublicMeta::inRoot(
             parent::root(),
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Path::fromString('l1-page')
         );
 
         $expected = 1.0;
@@ -41,7 +46,7 @@ class PublicMetaTest extends BaseTestCase
 
         $sut = PublicMeta::inRoot(
             parent::root(),
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Path::fromString('l1-page')
         );
 
         $result = $sut->nonexistent();

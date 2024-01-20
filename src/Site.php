@@ -8,6 +8,7 @@ use Psr\Http\Message\UriInterface;
 use Eightfold\Amos\SiteInterface;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
 
 use Eightfold\Amos\FileSystem\Directories\Root as ContentRoot;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
@@ -73,73 +74,56 @@ class Site implements SiteInterface
         return $this->file_system_public_root;
     }
 
-    public function hasPublicMeta(string|Path $at = ''): bool
+    public function hasPublicMeta(Path $at): bool
     {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         return $this->publicMeta($at)->toBool();
     }
 
-    public function publicMeta(string|Path $at = ''): PublicMeta
+    public function publicMeta(Path $at): PublicMeta
     {
-        if (is_string($at) === false and is_a($at, Path::class)) {
-            $at = $at->toString();
-        }
+        $key = $at->toString();
 
-        if (array_key_exists($at, $this->public_metas)) {
-            return $this->public_metas[$at];
+        if (array_key_exists($key, $this->public_metas)) {
+            return $this->public_metas[$key];
         }
 
         $meta = PublicMeta::inRoot($this->contentRoot(), $at);
-        $this->public_metas[$at] = $meta; // TODO: Make a custom collection
+        $this->public_metas[$key] = $meta; // TODO: Make a custom collection
 
         return $meta;
     }
 
     // TODO: Recurring question will be whether "at" separator
     //       is URI (known) or file system (unknown)
-    public function hasPublicContent(string|Path $at = ''): bool
+    public function hasPublicContent(Path $at): bool
     {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         return $this->publicContent($at)->toBool();
     }
 
-    public function publicContent(string|Path $at = ''): PublicContent
+    public function publicContent(Path $at): PublicContent
     {
-        if (is_string($at) === false and is_a($at, Path::class)) {
-            $at = $at->toString();
-        }
+        $key = $at->toString();
 
-        if (array_key_exists($at, $this->publicContents)) {
-            return $this->publicContents[$at];
+        if (array_key_exists($key, $this->publicContents)) {
+            return $this->publicContents[$key];
         }
 
         $content = PublicContent::inRoot($this->contentRoot(), $at);
-        $this->publicContents[$at] = $content; // TODO: convert to custom collection
+        $this->publicContents[$key] = $content; // TODO: convert to custom collection
 
         return $content;
     }
 
-    public function publicFile(string $filename, string|Path $at = ''): PublicFile
+    public function publicFile(Filename $filename, Path $at): PublicFile
     {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         return PublicFile::inRoot($this->contentRoot(), $filename, $at);
     }
-
 
     /**
      * @return string[]
      */
-    public function titles(string|Path $at = ''): array
+    public function titles(Path $at): array
     {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         return array_values(
             $this->linkStack($at)
         );
@@ -149,14 +133,10 @@ class Site implements SiteInterface
      * @return array<string, string>
      */
     public function breadcrumbs(
-        string|Path $at = '',
+        Path $at,
         int $offset = 0,
         int|false $length = false
     ): array {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
-
         $sorted = array_reverse(
             $this->linkStack($at)
         );
@@ -171,11 +151,8 @@ class Site implements SiteInterface
     /**
      * @return array<string, string>
      */
-    public function linkStack(string|Path $at = ''): array
+    public function linkStack(Path $at): array
     {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
         $parts = $at->parts();
 
         $stack = [];

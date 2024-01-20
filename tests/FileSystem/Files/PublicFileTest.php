@@ -8,13 +8,14 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 use Eightfold\Amos\FileSystem\Files\PublicFile;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 
 class PublicFileTest extends BaseTestCase
 {
     /**
      * @test
-     * @group current
      */
     public function can_check_existence_using_path(): void
     {
@@ -26,7 +27,7 @@ class PublicFileTest extends BaseTestCase
 
         $sut = PublicFile::inRoot(
             $root,
-            'meta.json',
+            Filename::fromString('meta.json'),
             Path::fromString()
         );
 
@@ -54,8 +55,8 @@ class PublicFileTest extends BaseTestCase
 
         $sut = PublicFile::inRoot(
             $root,
-            'meta.json',
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Filename::fromString('meta.json'),
+            Path::fromString('l1-page')
         );
 
         $this->assertNotNull(
@@ -92,7 +93,11 @@ class PublicFileTest extends BaseTestCase
             DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'test-content');
 
-        $sut = PublicFile::inRoot($root, 'meta.json');
+        $sut = PublicFile::inRoot(
+            $root,
+            Filename::fromString('meta.json'),
+            Path::fromString()
+        );
 
         $this->assertNotNull(
             $sut
@@ -118,8 +123,9 @@ class PublicFileTest extends BaseTestCase
 
         $sut = PublicFile::inRoot(
             $root,
-            'meta.json',
-            DIRECTORY_SEPARATOR . 'l1-page');
+            Filename::fromString('meta.json'),
+            Path::fromString('l1-page')
+        );
 
         $this->assertNotNull(
             $sut

@@ -17,20 +17,13 @@ final class PublicDirectory implements Findable, Stringable
 {
     private readonly SplFileInfo $fileInfo;
 
-    public static function inRoot(
-        Root $root,
-        string|Path $at = ''
-    ): self {
+    public static function inRoot(Root $root, Path $at): self
+    {
         return self::inPublicRoot($root->publicRoot(), $at);
     }
 
-    public static function inPublicRoot(
-        PublicRoot $root,
-        string|Path $at = ''
-    ): self {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
+    public static function inPublicRoot(PublicRoot $root, Path $at): self
+    {
         return new self($root, $at);
     }
 

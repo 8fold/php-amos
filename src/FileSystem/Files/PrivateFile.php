@@ -18,14 +18,8 @@ final class PrivateFile implements Findable, Stringable
 {
     private readonly SplFileInfo $fileInfo;
 
-    public static function inRoot(
-        Root $root,
-        string|Filename $filename, // TODO: Create filename class
-        string|Path $at = ''
-    ): self {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
+    public static function inRoot(Root $root, Filename $filename, Path $at): self
+    {
         return self::inPrivateDirectory(
             PrivateDirectory::inRoot($root, $at),
             $filename
@@ -34,15 +28,12 @@ final class PrivateFile implements Findable, Stringable
 
     public static function inPrivateDirectory(
         PrivateDirectory $directory,
-        string|Filename $filename
+        Filename $filename
     ): self {
-        if (is_string($filename)) {
-            $filename = Filename::fromString($filename);
-        }
         return new self($directory, $filename);
     }
 
-    private function __construct(
+    final private function __construct(
         private readonly PrivateDirectory $directory, // @phpstan-ignore-line
         private readonly Filename $filename // @phpstan-ignore-line
     ) {

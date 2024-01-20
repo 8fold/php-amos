@@ -7,6 +7,7 @@ use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
@@ -17,23 +18,16 @@ final class PublicContentFile implements Findable, Stringable
 {
     private const FILENAME = 'content.md';
 
-    public static function inRoot(
-        Root $root,
-        string|Path $at = ''
-    ): self {
+    public static function inRoot(Root $root, Path $at): self
+    {
         return self::inPublicRoot($root->publicRoot(), $at);
     }
 
-    public static function inPublicRoot(
-        PublicRoot $root,
-        string|Path $at = ''
-    ): self {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
-        return new self(
-            PublicFile::inPublicRoot($root, self::FILENAME, $at)
-        );
+    public static function inPublicRoot(PublicRoot $root, Path $at): self
+    {
+        $filename = Filename::fromString(self::FILENAME);
+        $pFile    = PublicFile::inPublicRoot($root, $filename, $at);
+        return new self($pFile);
     }
 
     private function __construct(

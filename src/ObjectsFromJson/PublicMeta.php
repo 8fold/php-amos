@@ -17,13 +17,8 @@ final class PublicMeta implements Findable
 {
     private StdClass $object;
 
-    public static function inRoot(
-        Root $root,
-        string|Path $at = ''
-    ): self {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
+    public static function inRoot(Root $root, Path $at): self
+    {
         return new self(
             PlainTextPublicMeta::inRoot($root, $at)
         );

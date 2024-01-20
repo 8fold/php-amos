@@ -7,6 +7,8 @@ use SplFileInfo;
 
 use Psr\Http\Message\RequestInterface;
 
+use Eightfold\Amos\FileSystem\Path;
+
 use Eightfold\Amos\FileSystem\Directories\Root as ContentRoot;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
@@ -28,11 +30,11 @@ interface SiteInterface
 
     public function publicRoot(): PublicRoot;
 
-    public function hasPublicMeta(string $at = ''): bool;
+    public function hasPublicMeta(Path $at): bool;
 
-    public function publicMeta(string $at = '/'): PublicMeta;
+    public function publicMeta(Path $at): PublicMeta;
 
-    public function hasPublicContent(string $at = '/'): bool;
+    public function hasPublicContent(Path $at): bool;
 
-    public function publicContent(string $at = '/'): PublicContent;
+    public function publicContent(Path $at): PublicContent;
 }

@@ -7,6 +7,9 @@ use Eightfold\Amos\Tests\TestCase as BaseTestCase;
 
 use Eightfold\Amos\PlainText\PrivateJson;
 
+use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
+
 class PrivateJsonTest extends BaseTestCase
 {
     /**
@@ -14,7 +17,11 @@ class PrivateJsonTest extends BaseTestCase
      */
     public function can_get_content(): void
     {
-        $sut = PrivateJson::inRoot(parent::root(), 'meta.json');
+        $sut = PrivateJson::inRoot(
+            parent::root(),
+            Filename::fromString('meta.json'),
+            Path::fromString()
+        );
 
         $expected = <<<json
         {}
@@ -37,7 +44,11 @@ class PrivateJsonTest extends BaseTestCase
 
         json;
 
-        $sut = PrivateJson::inRoot(parent::root(), 'meta.json', 'navigation');
+        $sut = PrivateJson::inRoot(
+            parent::root(),
+            Filename::fromString('meta.json'),
+            Path::fromString('navigation')
+        );
 
         $result = $sut->toString();
 
@@ -50,7 +61,8 @@ class PrivateJsonTest extends BaseTestCase
 
         $sut = PrivateJson::inRoot(
             parent::root(),
-            DIRECTORY_SEPARATOR . 'l1-page'
+            Filename::fromString(''),
+            Path::fromString('l1-page')
         );
 
         $result = $sut->toString();

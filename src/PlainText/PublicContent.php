@@ -6,6 +6,7 @@ namespace Eightfold\Amos\PlainText;
 use Eightfold\Amos\FileSystem\Path;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
+
 use Eightfold\Amos\FileSystem\Files\PublicContentFile;
 
 use Eightfold\Amos\Php\Interfaces\Findable;
@@ -13,13 +14,8 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 final class PublicContent implements Findable, Stringable
 {
-    public static function inRoot(
-        Root $root,
-        string|Path $at = ''
-    ): self {
-        if (is_string($at)) {
-            $at = Path::fromString($at);
-        }
+    public static function inRoot(Root $root, Path $at): self
+    {
         return self::fromPublicContentFile(
             PublicContentFile::inRoot($root, $at)
         );
