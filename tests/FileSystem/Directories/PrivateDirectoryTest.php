@@ -86,37 +86,4 @@ class PrivateDirectoryTest extends BaseTestCase
             $result
         );
     }
-//
-//     /**
-//      * @test
-//      */
-//     public function can_check_existence(): void
-//     {
-//         $sut = PrivateDirectory::inRoot(
-//             parent::root(),
-//             'navigation'
-//         );
-//
-//         $this->assertNotNull(
-//             $sut
-//         );
-//
-//         $result = $sut->toBool();
-//
-//         $this->assertTrue(
-//             $result
-//         );
-//
-//         $result = $sut->isDir();
-//
-//         $this->assertTrue(
-//             $result
-//         );
-//
-//         $result = $sut->notFound();
-//
-//         $this->assertFalse(
-//             $result
-//         );
-//     }
 }
