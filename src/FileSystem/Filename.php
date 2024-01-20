@@ -7,7 +7,7 @@ use Stringable;
 
 class Filename implements Stringable
 {
-    static public function fromString(string $filename = ''): self
+    public static function fromString(string $filename = ''): self
     {
         if (empty($filename)) {
             return new self('');

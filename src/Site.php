@@ -83,7 +83,7 @@ class Site implements SiteInterface
 
     public function publicMeta(string|Path $at = ''): PublicMeta
     {
-        if (is_a($at, Path::class)) {
+        if (is_string($at) === false and is_a($at, Path::class)) {
             $at = $at->toString();
         }
 
@@ -97,7 +97,8 @@ class Site implements SiteInterface
         return $meta;
     }
 
-    // TODO: Recurring question will be whether "at" separator is URI (known) or file system (unknown)
+    // TODO: Recurring question will be whether "at" separator
+    //       is URI (known) or file system (unknown)
     public function hasPublicContent(string|Path $at = ''): bool
     {
         if (is_string($at)) {
@@ -108,7 +109,7 @@ class Site implements SiteInterface
 
     public function publicContent(string|Path $at = ''): PublicContent
     {
-        if (is_a($at, Path::class)) {
+        if (is_string($at) === false and is_a($at, Path::class)) {
             $at = $at->toString();
         }
 
@@ -190,6 +191,9 @@ class Site implements SiteInterface
         return array_filter($stack);
     }
 
+    /**
+     * @param array<string, string> $stack
+     */
     private function updateStack(string $key, array &$stack): void
     {
         $uriPath     = Path::fromString($key);

@@ -23,7 +23,7 @@ final class PrivateObject implements Findable
         string|Path $at = ''
     ): self {
         if (is_string($at)) {
-            $at = Path::createFromString($at);
+            $at = Path::fromString($at);
         }
         return new self(
             PlainTextPrivateJson::inRoot($root, $filename, $at)

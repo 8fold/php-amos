@@ -9,14 +9,14 @@ use Psr\Http\Message\UriInterface;
 
 class Path implements Stringable
 {
-    static public function fromUri(UriInterface $uri): self
+    public static function fromUri(UriInterface $uri): self
     {
         return self::fromString(
             str_replace('/', DIRECTORY_SEPARATOR, $uri->getPath())
         );
     }
 
-    static public function fromString(string $path = ''): self
+    public static function fromString(string $path = ''): self
     {
         if ($path === '') {
             $path = DIRECTORY_SEPARATOR;
@@ -39,6 +39,9 @@ class Path implements Stringable
     {
     }
 
+    /**
+     * @return string[]
+     */
     public function parts(): array
     {
         return array_filter(

@@ -20,8 +20,7 @@ final class PublicContentFile implements Findable, Stringable
     public static function inRoot(
         Root $root,
         string|Path $at = ''
-    ): self
-    {
+    ): self {
         return self::inPublicRoot($root->publicRoot(), $at);
     }
 
