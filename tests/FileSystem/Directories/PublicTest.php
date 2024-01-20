@@ -16,7 +16,9 @@ class PublicTest extends BaseTestCase
      */
     public function is_expected_qualified_path(): void
     {
-        $expected = (new SplFileInfo(parent::BASE . '/public'))->getRealPath();
+        $expected = (new SplFileInfo(
+            parent::BASE . DIRECTORY_SEPARATOR . 'public')
+        )->getRealPath();
 
         $result = parent::publicRoot()->toString();
 

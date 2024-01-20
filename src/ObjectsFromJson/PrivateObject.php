@@ -8,6 +8,8 @@ use DateTime;
 
 use Eightfold\Amos\Php\Interfaces\Findable;
 
+use Eightfold\Amos\FileSystem\Path;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\PlainText\PrivateJson as PlainTextPrivateJson;
 
@@ -18,8 +20,11 @@ final class PrivateObject implements Findable
     public static function inRoot(
         Root $root,
         string $filename,
-        string $at = ''
+        string|Path $at = ''
     ): self {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return new self(
             PlainTextPrivateJson::inRoot($root, $filename, $at)
         );

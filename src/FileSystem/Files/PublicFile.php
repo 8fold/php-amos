@@ -8,6 +8,9 @@ use SplFileInfo;
 use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
+use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
@@ -17,38 +20,36 @@ final class PublicFile implements Findable, Stringable
 
     public static function inRoot(
         Root $root,
-        string $filename,
-        string $at = ''
+        string|Filename $filename,
+        string|Path $at = ''
     ): self {
         return self::inPublicRoot($root->publicRoot(), $filename, $at);
     }
 
     public static function inPublicRoot(
         PublicRoot $root,
-        string $filename,
-        string $at = ''
+        string|Filename $filename, // TODO: convert to class
+        string|Path $at = ''
     ): self {
-        if (str_starts_with($filename, '/') === false) {
-            $filename = '/' . $filename;
+        if (is_string($filename)) {
+            $filename = Filename::fromString($filename);
         }
 
-        if (str_ends_with($at, '/')) {
-            $at = substr($at, 0, -1);
+        if (is_string($at)) {
+            $at = Path::fromString($at);
         }
-
-        if (str_starts_with($at, '/') === false) {
-            $at = '/' . $at;
-        }
-
         return new self($root, $filename, $at);
     }
 
+    // TODO: mark as final
     private function __construct(
         private readonly PublicRoot $root, // @phpstan-ignore-line
-        private readonly string $filename, // @phpstan-ignore-line
-        private readonly string $at = '' // @phpstan-ignore-line
+        private readonly Filename $filename, // @phpstan-ignore-line
+        private readonly Path $at // @phpstan-ignore-line
     ) {
-        $this->fileInfo = new SplFileInfo($root->toString() . $at . $filename);
+        $this->fileInfo = new SplFileInfo(
+            $root->toString() . $at->toString() . $filename->toString()
+        );
     }
 
     public function notFound(): bool

@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
+use Psr\Http\Message\UriInterface;
+
 use Eightfold\Amos\SiteInterface;
+
+use Eightfold\Amos\FileSystem\Path;
 
 use Eightfold\Amos\FileSystem\Directories\Root as ContentRoot;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
@@ -69,42 +73,61 @@ class Site implements SiteInterface
         return $this->file_system_public_root;
     }
 
-    public function hasPublicMeta(string $at = ''): bool
+    public function hasPublicMeta(string|Path $at = ''): bool
     {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return $this->publicMeta($at)->toBool();
     }
 
-    public function publicMeta(string $at = '/'): PublicMeta
+    public function publicMeta(string|Path $at = ''): PublicMeta
     {
+        if (is_string($at) === false and is_a($at, Path::class)) {
+            $at = $at->toString();
+        }
+
         if (array_key_exists($at, $this->public_metas)) {
             return $this->public_metas[$at];
         }
 
         $meta = PublicMeta::inRoot($this->contentRoot(), $at);
-        $this->public_metas[$at] = $meta;
+        $this->public_metas[$at] = $meta; // TODO: Make a custom collection
 
         return $meta;
     }
 
-    public function hasPublicContent(string $at = '/'): bool
+    // TODO: Recurring question will be whether "at" separator
+    //       is URI (known) or file system (unknown)
+    public function hasPublicContent(string|Path $at = ''): bool
     {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return $this->publicContent($at)->toBool();
     }
 
-    public function publicContent(string $at = '/'): PublicContent
+    public function publicContent(string|Path $at = ''): PublicContent
     {
+        if (is_string($at) === false and is_a($at, Path::class)) {
+            $at = $at->toString();
+        }
+
         if (array_key_exists($at, $this->publicContents)) {
             return $this->publicContents[$at];
         }
 
         $content = PublicContent::inRoot($this->contentRoot(), $at);
-        $this->publicContents[$at] = $content;
+        $this->publicContents[$at] = $content; // TODO: convert to custom collection
 
         return $content;
     }
 
-    public function publicFile(string $filename, string $at = '/'): PublicFile
+    public function publicFile(string $filename, string|Path $at = ''): PublicFile
     {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return PublicFile::inRoot($this->contentRoot(), $filename, $at);
     }
 
@@ -112,8 +135,11 @@ class Site implements SiteInterface
     /**
      * @return string[]
      */
-    public function titles(string $at = ''): array
+    public function titles(string|Path $at = ''): array
     {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return array_values(
             $this->linkStack($at)
         );
@@ -123,17 +149,20 @@ class Site implements SiteInterface
      * @return array<string, string>
      */
     public function breadcrumbs(
-        string $at = '',
+        string|Path $at = '',
         int $offset = 0,
         int|false $length = false
     ): array {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
+
         $sorted = array_reverse(
             $this->linkStack($at)
         );
 
         if ($length === false) {
             $length = null;
-
         }
 
         return array_slice($sorted, $offset, $length);
@@ -142,21 +171,32 @@ class Site implements SiteInterface
     /**
      * @return array<string, string>
      */
-    public function linkStack(string $at = ''): array
+    public function linkStack(string|Path $at = ''): array
     {
-        $pathParts = explode('/', $at);
-        $filtered  = array_filter($pathParts);
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
+        $parts = $at->parts();
 
         $stack = [];
-        while (count($filtered) > 0) {
-            $path = '/' . implode('/', $filtered) . '/';
-            $stack[$path] = $this->publicMeta(at: $path)->title();
+        while (count($parts) > 0) {
+            $key         = '/' . implode('/', $parts) . '/';
+            $this->updateStack($key, $stack);
 
-            array_pop($filtered);
+            array_pop($parts);
         }
 
-        $stack['/'] = $this->publicMeta(at: '/')->title();
+        $this->updateStack('/', $stack);
 
         return array_filter($stack);
+    }
+
+    /**
+     * @param array<string, string> $stack
+     */
+    private function updateStack(string $key, array &$stack): void
+    {
+        $uriPath     = Path::fromString($key);
+        $stack[$key] = $this->publicMeta(at: $uriPath)->title();
     }
 }

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos\PlainText;
 
+use Eightfold\Amos\FileSystem\Path;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Files\PublicMetaFile;
 
@@ -11,8 +13,13 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 final class PublicMeta implements Findable, Stringable
 {
-    public static function inRoot(Root $root, string $at = ''): self
-    {
+    public static function inRoot(
+        Root $root,
+        string|Path $at = ''
+    ): self {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return self::fromPublicMetaFile(
             PublicMetaFile::inRoot($root, $at)
         );

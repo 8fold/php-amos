@@ -9,6 +9,10 @@ use Psr\Http\Message\UriInterface;
 use Eightfold\Amos\Php\Interfaces\Falsifiable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
+/**
+ * @todo: Should we deprecate this class? It's effectively the same as one of
+ *        the nyholm PSR-7 classes, I thnk. Does anyone actually us it?
+ */
 final class Root implements Falsifiable, Stringable
 {
     private const SCHEMES = ['http' => 80, 'https' => 443];

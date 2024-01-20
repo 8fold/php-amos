@@ -14,6 +14,7 @@ class RootTest extends BaseTestCase
      */
     public function can_accept_valid_uri(): void
     {
+        // TODO: create fromURI - use PSR interface
         $sut = Root::fromString(
             'http://userinfo:password@ex.ample:1111/path?u=not#fragment'
         );

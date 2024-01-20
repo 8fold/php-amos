@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos\PlainText;
 
+use Eightfold\Amos\FileSystem\Path;
+
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Files\PublicFile;
 
@@ -11,8 +13,14 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 final class PublicJson implements Findable, Stringable
 {
-    public static function inRoot(Root $root, string $filename, string $at = ''): self
-    {
+    public static function inRoot(
+        Root $root,
+        string $filename,
+        string|Path $at = ''
+    ): self {
+        if (is_string($at)) {
+            $at = Path::fromString($at);
+        }
         return new self(
             PublicFile::inRoot($root, $filename, $at)
         );

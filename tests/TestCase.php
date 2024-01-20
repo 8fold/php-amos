@@ -18,11 +18,11 @@ use Eightfold\Amos\Http\Root as HttpRoot;
 
 class TestCase extends BaseTestCase
 {
-    protected const BASE = __DIR__ . '/test-content';
+    protected const BASE = __DIR__ . DIRECTORY_SEPARATOR . 'test-content';
 
-    protected const NONEXISTENT_BASE = __DIR__ . '/nonexistent';
+    protected const NONEXISTENT_BASE = __DIR__ . DIRECTORY_SEPARATOR . 'nonexistent';
 
-    protected const PUBLIC_BASE = self::BASE . '/public';
+    protected const PUBLIC_BASE = self::BASE . DIRECTORY_SEPARATOR . 'public';
 
     protected function root(): ContentRoot
     {

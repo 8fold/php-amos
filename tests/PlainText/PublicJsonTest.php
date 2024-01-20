@@ -43,7 +43,10 @@ class PublicJsonTest extends BaseTestCase
 
         $expected = '';
 
-        $sut = PublicJson::inRoot(parent::root(), '/l1-page');
+        $sut = PublicJson::inRoot(
+            parent::root(),
+            DIRECTORY_SEPARATOR . 'l1-page'
+        );
 
         $result = $sut->toString();
 
