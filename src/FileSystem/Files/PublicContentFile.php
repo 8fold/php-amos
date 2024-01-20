@@ -7,6 +7,7 @@ use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\FileSystem\Path;
+use Eightfold\Amos\FileSystem\Filename;
 
 use Eightfold\Amos\FileSystem\Directories\Root;
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
@@ -25,7 +26,11 @@ final class PublicContentFile implements Findable, Stringable
     public static function inPublicRoot(PublicRoot $root, Path $at): self
     {
         return new self(
-            PublicFile::inPublicRoot($root, self::FILENAME, $at)
+            PublicFile::inPublicRoot(
+                $root,
+                Filename::fromString(self::FILENAME),
+                $at
+            )
         );
     }
 

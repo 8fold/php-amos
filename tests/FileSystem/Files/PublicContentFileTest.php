@@ -24,7 +24,10 @@ class PublicContentFileTest extends BaseTestCase
             DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . 'test-content');
 
-        $sut = PublicContentFile::inRoot($root, Path::fromString());
+        $sut = PublicContentFile::inRoot(
+            $root,
+            Path::fromString()
+        );
 
         $this->assertNotNull(
             $sut
