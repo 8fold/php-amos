@@ -8,6 +8,8 @@ use SplFileInfo;
 use Eightfold\Amos\Php\Interfaces\Findable;
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
+use Eightfold\Amos\FileSystem\Path;
+
 use Eightfold\Amos\FileSystem\Directories\PublicRoot;
 
 /**
@@ -15,6 +17,13 @@ use Eightfold\Amos\FileSystem\Directories\PublicRoot;
  */
 final class Root implements Findable, Stringable
 {
+    public static function fromPath(Path $path): self
+    {
+        return self::fromString(
+            $path->toString()
+        );
+    }
+
     public static function fromString(string $path): self
     {
         return self::fromSplFileInfo(
@@ -27,6 +36,7 @@ final class Root implements Findable, Stringable
         return new self($fileInfo);
     }
 
+    // TODO: Mark as final
     private function __construct(private readonly SplFileInfo $fileInfo)
     {
     }
