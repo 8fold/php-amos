@@ -7,6 +7,8 @@ use Eightfold\Amos\Tests\TestCase;
 
 use function Eightfold\Amos\titles_for_meta_in_public_dir;
 
+use Eightfold\Amos\FileSystem\Path;
+
 class SiteTest extends TestCase
 {
     /**
@@ -164,7 +166,9 @@ class SiteTest extends TestCase
      */
     public function has_public_meta(): void
     {
-        $result = $this->site()->hasPublicMeta();
+        $result = $this->site()->hasPublicMeta(
+            Path::fromString()
+        );
 
         $this->assertTrue($result);
 
