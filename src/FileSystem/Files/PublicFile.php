@@ -18,17 +18,14 @@ final class PublicFile implements Findable, Stringable
 {
     private readonly SplFileInfo $fileInfo;
 
-    public static function inRoot(
-        Root $root,
-        Filename $filename,
-        Path $at
-    ): self {
+    public static function inRoot(Root $root, Filename $filename, Path $at): self
+    {
         return self::inPublicRoot($root->publicRoot(), $filename, $at);
     }
 
     public static function inPublicRoot(
         PublicRoot $root,
-        Filename $filename, // TODO: convert to class
+        Filename $filename,
         Path $at
     ): self {
         return new self($root, $filename, $at);
