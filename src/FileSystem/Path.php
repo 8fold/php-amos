@@ -49,6 +49,20 @@ class Path implements Stringable
         );
     }
 
+    public function toStringWithTrailingSlash(): string
+    {
+        $base = $this->toString();
+        if ($base === '/') {
+            return '/';
+        }
+
+        if (str_ends_with($base, '/')) {
+            return $base;
+        }
+
+        return $base . '/';
+    }
+
     public function toString(): string
     {
         return $this->path;

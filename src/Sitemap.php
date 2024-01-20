@@ -14,6 +14,8 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 use Eightfold\Amos\Site;
 
+use Eightfold\Amos\FileSystem\Path;
+
 use Eightfold\Amos\ObjectsFromJson\PublicMeta;
 
 /**
@@ -86,10 +88,11 @@ class Sitemap implements Stringable
                 ['', ''],
                 $meta_file_path->getRealPath()
             );
+            $path = Path::fromString($path);
 
             $elements = [];
 
-            $elements[] = Element::loc($domain . $path . '/');
+            $elements[] = Element::loc($domain . $path->toStringWithTrailingSlash());
 
             $meta = PublicMeta::inRoot($content_root, $path);
 
