@@ -15,11 +15,8 @@ use Eightfold\Amos\Php\Interfaces\Stringable;
 
 final class PublicJson implements Findable, Stringable
 {
-    public static function inRoot(
-        Root $root,
-        string|Filename $filename,
-        Path $at
-    ): self {
+    public static function inRoot(Root $root, Filename $filename, Path $at): self
+    {
         return new self(
             PublicFile::inRoot($root, $filename, $at)
         );
