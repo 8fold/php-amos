@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Eightfold\Amos;
 
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
 use Eightfold\Amos\SiteInterface;
@@ -21,9 +22,9 @@ use Eightfold\Amos\PlainText\PublicFile;
 
 class Site implements SiteInterface
 {
-    private ContentRoot $file_system_root;
+    private PublicRoot $fileSystemPublicRoot;
 
-    private PublicRoot $file_system_public_root;
+    private RequestInterface|false $request = false;
 
     /**
      * @var array<string, PublicMeta>
@@ -34,6 +35,18 @@ class Site implements SiteInterface
      * @var array<string, PublicContent>
      */
     private array $publicContents = [];
+
+    public static function initWithRequest(
+        ContentRoot $fileSystemRoot,
+        HttpRoot $domain,
+        RequestInterface $request
+    ): self|false {
+        $self = self::init($fileSystemRoot, $domain);
+        if ($self === false) {
+            return false;
+        }
+        return $self->withRequest($request);
+    }
 
     public static function init(
         ContentRoot $fileSystemRoot,
@@ -58,20 +71,28 @@ class Site implements SiteInterface
 
     public function contentRoot(): ContentRoot
     {
-        if (isset($this->file_system_root) === false) {
-            $this->file_system_root = $this->fileSystemRoot;
-        }
-        return $this->file_system_root;
+        return $this->fileSystemRoot;
     }
 
     public function publicRoot(): PublicRoot
     {
-        if (isset($this->file_system_public_root) === false) {
-            $this->file_system_public_root = PublicRoot::inRoot(
+        if (isset($this->fileSystemPublicRoot) === false) {
+            $this->fileSystemPublicRoot = PublicRoot::inRoot(
                 $this->contentRoot()
             );
         }
-        return $this->file_system_public_root;
+        return $this->fileSystemPublicRoot;
+    }
+
+    public function request(): RequestInterface|false
+    {
+        return $this->request;
+    }
+
+    public function withRequest(RequestInterface $request): self
+    {
+        $this->request = $request;
+        return $this;
     }
 
     public function hasPublicMeta(Path $at): bool
