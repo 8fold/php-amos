@@ -32,4 +32,9 @@ interface SiteInterface
     public function hasPublicContent(Path $at): bool;
 
     public function publicContent(Path $at): PublicContent;
+
+    /**
+     * @return string[]
+     */
+    public function titles(Path $at): array
 }
