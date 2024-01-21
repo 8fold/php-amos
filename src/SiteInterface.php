@@ -36,5 +36,5 @@ interface SiteInterface
     /**
      * @return string[]
      */
-    public function titles(Path $at): array
+    public function titles(Path $at): array;
 }
