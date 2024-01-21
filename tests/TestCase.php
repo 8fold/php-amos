@@ -6,6 +6,7 @@ namespace Eightfold\Amos\Tests;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 use Eightfold\Amos\Site;
+use Eightfold\Amos\SiteWithRequest;
 
 use SplFileInfo;
 
@@ -47,9 +48,17 @@ class TestCase extends BaseTestCase
         );
     }
 
+    protected function siteWithRequest(string $path = '/'): SiteWithRequest
+    {
+        return SiteWithRequest::init(
+            $this->root(),
+            $this->request($path)
+        );
+    }
+
     protected function request(string $path = '/'): ServerRequest
     {
-        return new ServerRequest('get', $this->domain() . $path);
+        return new ServerRequest('get', $this->domain()->toString() . $path);
     }
 
     protected function domain(): HttpRoot

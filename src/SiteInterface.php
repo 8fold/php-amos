@@ -19,11 +19,6 @@ use Eightfold\Amos\PlainText\PublicContent;
 
 interface SiteInterface
 {
-    public static function init(
-        ContentRoot $fileSystemRoot,
-        HttpRoot $domain
-    ): self|false;
-
     public function domain(): HttpRoot;
 
     public function contentRoot(): ContentRoot;
