@@ -12,7 +12,7 @@ use Eightfold\XMLBuilder\Element;
 
 use Eightfold\Amos\Php\Interfaces\Stringable;
 
-use Eightfold\Amos\Site;
+use Eightfold\Amos\SiteInterface;
 
 use Eightfold\Amos\FileSystem\Path;
 
@@ -44,7 +44,7 @@ class Sitemap implements Stringable
      */
     public static function create(
         Traversable $traversable,
-        Site $site
+        SiteInterface $site
     ): self {
         return new self($traversable, $site);
     }
@@ -54,7 +54,7 @@ class Sitemap implements Stringable
      */
     final private function __construct(
         private readonly Traversable $traversable,
-        private readonly Site $site
+        private readonly SiteInterface $site
     ) {
     }
 
@@ -64,7 +64,7 @@ class Sitemap implements Stringable
         return $this;
     }
 
-    private function site(): Site
+    private function site(): SiteInterface
     {
         return $this->site;
     }
