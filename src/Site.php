@@ -22,8 +22,6 @@ use Eightfold\Amos\PlainText\PublicFile;
 
 class Site implements SiteInterface
 {
-    private ContentRoot $file_system_root;
-
     private PublicRoot $fileSystemPublicRoot;
 
     private RequestInterface|false $request = false;
@@ -44,6 +42,9 @@ class Site implements SiteInterface
         RequestInterface $request
     ): self|false {
         $self = self::init($fileSystemRoot, $domain);
+        if ($self === false) {
+            return false;
+        }
         return $self->withRequest($request);
     }
 
