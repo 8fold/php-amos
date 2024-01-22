@@ -6,7 +6,7 @@ namespace Eightfold\Amos;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
-use Eightfold\Amos\SiteInterface;
+use Eightfold\Amos\SiteWithRequestInterface;
 
 use Eightfold\Amos\FileSystem\Path;
 use Eightfold\Amos\FileSystem\Filename;
@@ -20,7 +20,7 @@ use Eightfold\Amos\ObjectsFromJson\PublicMeta;
 use Eightfold\Amos\PlainText\PublicContent;
 use Eightfold\Amos\PlainText\PublicFile;
 
-class SiteWithRequest implements SiteInterface
+class SiteWithRequest implements SiteWithRequestInterface
 {
     private HttpRoot $domain;
 
