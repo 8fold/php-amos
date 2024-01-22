@@ -37,4 +37,18 @@ interface SiteInterface
      * @return string[]
      */
     public function titles(Path $at): array;
+
+    /**
+     * @return array<string, string>
+     */
+    public function breadcrumbs(
+        Path $at,
+        int $offset = 0,
+        int|false $length = false
+    ): array;
+
+    /**
+     * @return array<string, string>
+     */
+    public function linkStack(Path $at): array;
 }
