@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b987cdb4a7c6aaa6f8c733eb4781f75",
+    "content-hash": "bd929dc5c48d05233c53fbcec89a128a",
     "packages": [
         {
             "name": "8fold/php-xml-builder",
